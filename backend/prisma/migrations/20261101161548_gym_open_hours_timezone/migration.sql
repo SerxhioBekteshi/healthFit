@@ -1,0 +1,4 @@
+-- AlterTable
+ALTER TABLE "Gym" ADD COLUMN     "closesAt" TEXT NOT NULL DEFAULT '22:00',
+ADD COLUMN     "opensAt" TEXT NOT NULL DEFAULT '06:00',
+ADD COLUMN     "timezone" TEXT NOT NULL DEFAULT 'Europe/Tirane';

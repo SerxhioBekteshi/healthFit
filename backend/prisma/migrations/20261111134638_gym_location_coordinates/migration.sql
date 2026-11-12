@@ -1,0 +1,4 @@
+-- AlterTable
+ALTER TABLE "GymLocation" ADD COLUMN     "latitude" DOUBLE PRECISION,
+ADD COLUMN     "longitude" DOUBLE PRECISION,
+ADD COLUMN     "mapUrl" TEXT NOT NULL DEFAULT '';

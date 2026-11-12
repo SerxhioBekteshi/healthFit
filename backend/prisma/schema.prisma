@@ -1,0 +1,575 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ---------------------------------------------------------------------------
+// Enums
+// ---------------------------------------------------------------------------
+
+enum UserRole {
+  super_admin
+  gym_admin
+  client
+}
+
+enum MembershipPlanType {
+  monthly
+  three_months
+  six_months
+  yearly
+  visit_based
+  personal_training
+}
+
+enum PaymentChallengeKind {
+  deposit
+  membership
+}
+
+enum ProductCategory {
+  supplement
+  snack
+  drink
+  merchandise
+  shake
+  smoothie
+}
+
+enum Gender {
+  male
+  female
+}
+
+// Where a gym operates; sets the default language and currency of its admin and members.
+enum Country {
+  AL
+  GB
+  IT
+  DE
+  GR
+}
+
+enum PaymentMethod {
+  cash
+  card
+  bank_transfer
+  online
+  balance
+}
+
+enum MembershipStatus {
+  pending
+  active
+  expired
+  cancelled
+}
+
+enum PaymentStatus {
+  paid
+  pending
+  failed
+}
+
+enum WorkoutLevel {
+  beginner
+  intermediate
+  advanced
+}
+
+enum BalanceTransactionType {
+  deposit
+  purchase
+  membership
+  refund
+}
+
+enum GymSubscriptionCycle {
+  monthly
+  yearly
+}
+
+enum GymSubscriptionStatus {
+  trialing
+  active
+  past_due
+  cancelled
+}
+
+// ---------------------------------------------------------------------------
+// Platform level (not tenant scoped)
+// ---------------------------------------------------------------------------
+
+model Gym {
+  id            String   @id @default(cuid())
+  name          String
+  location      String   @default("")
+  country       Country  @default(AL)
+  address       String   @default("")
+  contactEmail  String   @default("")
+  contactPhone  String   @default("")
+  logoUrl       String   @default("")
+  subdomain     String?  @unique
+  customDomain  String?  @unique
+  businessHours String   @default("")
+  // Local opening window (HH:MM) in `timezone`; used for check-in validation.
+  opensAt       String   @default("06:00")
+  closesAt      String   @default("22:00")
+  timezone      String   @default("Europe/Tirane")
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  users                User[]
+  clients              Client[]
+  closures             GymClosure[]
+  membershipPlans      MembershipPlan[]
+  memberships          Membership[]
+  attendances          Attendance[]
+  products             Product[]
+  productSales         ProductSale[]
+  balanceTransactions  BalanceTransaction[]
+  workoutPrograms      WorkoutProgram[]
+  subscriptions        GymSubscription[]
+  subscriptionPayments GymSubscriptionPayment[]
+  photos               GymPhoto[]
+  priceListNotes       PriceListNote[]
+  paymentChallenges    PaymentChallenge[]
+  staffMembers         StaffMember[]
+  gymClasses           GymClass[]
+  locations            GymLocation[]
+}
+
+// Platform subscription: Super Admin -> Gym. Never merge with Membership.
+model GymSubscription {
+  id               String                @id @default(cuid())
+  gymId            String
+  planName         String
+  cycle            GymSubscriptionCycle
+  price            Decimal               @db.Decimal(10, 2)
+  status           GymSubscriptionStatus
+  startDate        DateTime
+  currentPeriodEnd DateTime
+  nextPaymentDue   DateTime
+  createdAt        DateTime              @default(now())
+  updatedAt        DateTime              @updatedAt
+
+  gym      Gym                      @relation(fields: [gymId], references: [id], onDelete: Cascade)
+  payments GymSubscriptionPayment[]
+
+  @@index([gymId])
+}
+
+model GymSubscriptionPayment {
+  id                String        @id @default(cuid())
+  subscriptionId    String
+  gymId             String
+  amount            Decimal       @db.Decimal(10, 2)
+  paymentMethod     PaymentMethod
+  paidAt            DateTime      @default(now())
+  providerReference String        @default("")
+
+  subscription GymSubscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+  gym          Gym             @relation(fields: [gymId], references: [id], onDelete: Cascade)
+
+  @@index([gymId])
+  @@index([subscriptionId])
+}
+
+// ---------------------------------------------------------------------------
+// Auth (Better Auth tables) + application user
+// ---------------------------------------------------------------------------
+
+model User {
+  id            String   @id @default(cuid())
+  name          String
+  email         String   @unique
+  emailVerified Boolean  @default(false)
+  image         String?
+  role          UserRole @default(client)
+  // null only for super_admin
+  gymId         String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  gym      Gym?      @relation(fields: [gymId], references: [id], onDelete: SetNull)
+  sessions Session[]
+  accounts Account[]
+  client   Client?
+
+  @@index([gymId])
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  ipAddress String?
+  userAgent String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model Account {
+  id                    String    @id @default(cuid())
+  userId                String
+  accountId             String
+  providerId            String
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model Verification {
+  id         String   @id @default(cuid())
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([identifier])
+}
+
+// ---------------------------------------------------------------------------
+// Tenant scoped models: every row has gymId
+// ---------------------------------------------------------------------------
+
+model Client {
+  id        String   @id @default(cuid())
+  gymId     String
+  userId    String?  @unique
+  fullName  String
+  email     String
+  phone     String   @default("")
+  // null for members created before gender was collected; they cannot self-subscribe until set.
+  gender    Gender?
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  gym                 Gym                  @relation(fields: [gymId], references: [id], onDelete: Cascade)
+  user                User?                @relation(fields: [userId], references: [id], onDelete: SetNull)
+  memberships         Membership[]
+  attendances         Attendance[]
+  balanceTransactions BalanceTransaction[]
+  productSales        ProductSale[]
+
+  @@unique([gymId, email])
+  @@index([gymId])
+}
+
+// A place where the gym's members train. One gym (the tenant) can have several; memberships,
+// balance and plans are shared by all of them. Locations are never deleted, only deactivated.
+model GymLocation {
+  id        String   @id @default(cuid())
+  gymId     String
+  name      String
+  address   String   @default("")
+  phone     String   @default("")
+  // Picked on the map by the owner; null for locations created before coordinates existed.
+  latitude  Float?
+  longitude Float?
+  // Google Maps link the owner pasted; empty means members get a link built from the coordinates.
+  mapUrl    String   @default("")
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  gym         Gym          @relation(fields: [gymId], references: [id], onDelete: Cascade)
+  attendances Attendance[]
+
+  @@index([gymId])
+}
+
+model GymClosure {
+  id        String   @id @default(cuid())
+  gymId     String
+  startDate DateTime
+  endDate   DateTime
+  reason    String   @default("")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  gym Gym @relation(fields: [gymId], references: [id], onDelete: Cascade)
+
+  @@index([gymId, startDate])
+}
+
+// Trainers and instructors the gym can put in front of a class.
+model StaffMember {
+  id        String   @id @default(cuid())
+  gymId     String
+  fullName  String
+  specialty String   @default("")
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  gym     Gym        @relation(fields: [gymId], references: [id], onDelete: Cascade)
+  classes GymClass[]
+
+  @@index([gymId])
+}
+
+// A recurring weekly class: weekdays are 1 (Monday) to 7 (Sunday), times are local HH:MM.
+model GymClass {
+  id            String   @id @default(cuid())
+  gymId         String
+  name          String
+  description   String   @default("")
+  weekdays      Int[]
+  startTime     String
+  endTime       String
+  staffMemberId String?
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  gym         Gym          @relation(fields: [gymId], references: [id], onDelete: Cascade)
+  staffMember StaffMember? @relation(fields: [staffMemberId], references: [id], onDelete: SetNull)
+
+  @@index([gymId])
+  @@index([staffMemberId])
+}
+
+model MembershipPlan {
+  id           String             @id @default(cuid())
+  gymId        String
+  name         String
+  type         MembershipPlanType
+  durationDays Int                @default(0)
+  visitCount   Int                @default(0)
+  // Who the plan is sold to; plans are separate per gender.
+  gender       Gender             @default(male)
+  // Allowed check-ins per week; 0 means no weekly cap.
+  weeklyVisits Int                @default(0)
+  price        Decimal            @db.Decimal(10, 2)
+  isActive     Boolean            @default(true)
+  createdAt    DateTime           @default(now())
+  updatedAt    DateTime           @updatedAt
+
+  gym         Gym          @relation(fields: [gymId], references: [id], onDelete: Cascade)
+  memberships Membership[]
+
+  @@index([gymId])
+}
+
+// Photos shown on the gym's price list; files live in the uploads directory.
+model GymPhoto {
+  id        String   @id @default(cuid())
+  gymId     String
+  filename  String
+  createdAt DateTime @default(now())
+
+  gym Gym @relation(fields: [gymId], references: [id], onDelete: Cascade)
+
+  @@index([gymId])
+}
+
+// Free-text lines under the price list, e.g. "Subscription at any hour of the day".
+model PriceListNote {
+  id       String @id @default(cuid())
+  gymId    String
+  text     String
+  position Int    @default(0)
+
+  gym Gym @relation(fields: [gymId], references: [id], onDelete: Cascade)
+
+  @@index([gymId, position])
+}
+
+// One-time-code check that must pass before a client's card payment is executed.
+model PaymentChallenge {
+  id        String                @id @default(cuid())
+  gymId     String
+  clientId  String
+  kind      PaymentChallengeKind
+  // The validated payment request, replayed once the code is verified (card brand and last 4 only).
+  payload   Json
+  codeHash  String
+  attempts  Int                   @default(0)
+  expiresAt DateTime
+  consumedAt DateTime?
+  createdAt DateTime              @default(now())
+
+  gym Gym @relation(fields: [gymId], references: [id], onDelete: Cascade)
+
+  @@index([gymId, clientId])
+}
+
+// Gym membership: Gym -> Client. Never merge with GymSubscription.
+model Membership {
+  id               String             @id @default(cuid())
+  gymId            String
+  clientId         String
+  planId           String
+  planName         String
+  planType         MembershipPlanType
+  // Snapshot of the plan's weekly cap at purchase time; 0 means no cap.
+  weeklyVisits     Int                @default(0)
+  startDate        DateTime
+  endDate          DateTime
+  price            Decimal            @db.Decimal(10, 2)
+  paymentMethod    PaymentMethod
+  paymentStatus    PaymentStatus      @default(pending)
+  paymentReference String             @default("")
+  status           MembershipStatus   @default(pending)
+  visitsRemaining  Int                @default(0)
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+
+  gym         Gym            @relation(fields: [gymId], references: [id], onDelete: Cascade)
+  client      Client         @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  plan        MembershipPlan @relation(fields: [planId], references: [id])
+  attendances Attendance[]
+
+  @@index([gymId, clientId])
+  @@index([gymId, status])
+}
+
+model Attendance {
+  id           String    @id @default(cuid())
+  gymId        String
+  clientId     String
+  membershipId String
+  // Where the member trained; null for check-ins made before locations existed.
+  locationId   String?
+  checkedInAt  DateTime  @default(now())
+  checkedOutAt DateTime?
+
+  gym        Gym          @relation(fields: [gymId], references: [id], onDelete: Cascade)
+  client     Client       @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  membership Membership   @relation(fields: [membershipId], references: [id])
+  location   GymLocation? @relation(fields: [locationId], references: [id], onDelete: SetNull)
+
+  @@index([gymId, checkedInAt])
+  @@index([gymId, clientId, checkedInAt])
+}
+
+model Product {
+  id        String          @id @default(cuid())
+  gymId     String
+  name      String
+  category  ProductCategory @default(supplement)
+  // Uploaded photo path; empty means the default icon of the category.
+  imageUrl  String          @default("")
+  price     Decimal         @db.Decimal(10, 2)
+  stock     Int             @default(0)
+  isActive  Boolean         @default(true)
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+
+  gym   Gym           @relation(fields: [gymId], references: [id], onDelete: Cascade)
+  sales ProductSale[]
+
+  @@index([gymId])
+}
+
+model ProductSale {
+  id            String        @id @default(cuid())
+  gymId         String
+  productId     String
+  clientId      String?
+  quantity      Int           @default(1)
+  unitPrice     Decimal       @db.Decimal(10, 2)
+  total         Decimal       @db.Decimal(10, 2)
+  paymentMethod PaymentMethod
+  createdAt     DateTime      @default(now())
+
+  gym     Gym     @relation(fields: [gymId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id])
+  client  Client? @relation(fields: [clientId], references: [id], onDelete: SetNull)
+
+  @@index([gymId, createdAt])
+}
+
+// Ledger: client balance is the SUM(amount) of these rows. No mutable balance column.
+model BalanceTransaction {
+  id             String                 @id @default(cuid())
+  gymId          String
+  clientId       String
+  type           BalanceTransactionType
+  amount         Decimal                @db.Decimal(10, 2)
+  paymentMethod  PaymentMethod
+  providerStatus PaymentStatus          @default(paid)
+  description    String                 @default("")
+  referenceId    String                 @default("")
+  createdAt      DateTime               @default(now())
+
+  gym    Gym    @relation(fields: [gymId], references: [id], onDelete: Cascade)
+  client Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
+  @@index([gymId, clientId, createdAt])
+}
+
+model WorkoutProgram {
+  id              String       @id @default(cuid())
+  gymId           String
+  name            String
+  level           WorkoutLevel
+  description     String       @default("")
+  // Uploaded cover photo path; empty means the default cover for the level.
+  imageUrl        String       @default("")
+  sessionsPerWeek Int          @default(3)
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  gym  Gym          @relation(fields: [gymId], references: [id], onDelete: Cascade)
+  days WorkoutDay[]
+
+  @@index([gymId])
+}
+
+model WorkoutDay {
+  id        String @id @default(cuid())
+  gymId     String
+  programId String
+  dayNumber Int
+  focus     String @default("")
+
+  program   WorkoutProgram @relation(fields: [programId], references: [id], onDelete: Cascade)
+  exercises Exercise[]
+
+  @@index([gymId, programId])
+}
+
+model Exercise {
+  id          String  @id @default(cuid())
+  gymId       String
+  dayId       String
+  // Order within the day.
+  position    Int     @default(0)
+  name        String
+  icon        String  @default("")
+  // Uploaded photo path; empty means the default figure for `icon`.
+  imageUrl    String  @default("")
+  sets        Int     @default(3)
+  reps        Int     @default(10)
+  weight      Decimal @default(0) @db.Decimal(6, 2)
+  restSeconds Int     @default(60)
+  notes       String  @default("")
+
+  day WorkoutDay @relation(fields: [dayId], references: [id], onDelete: Cascade)
+
+  @@index([gymId, dayId])
+}
