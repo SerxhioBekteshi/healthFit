@@ -1,4 +1,4 @@
-import type { Country, PrismaClient, UserRole } from '@prisma/client';
+import type { Country, Currency, PrismaClient, UserRole } from '@prisma/client';
 import type { Request } from 'express';
 import { prisma } from '@/db/client';
 import { ForbiddenError, UnauthorizedError } from '@/errors';
@@ -22,6 +22,13 @@ export interface PlatformContext {
   db: PrismaClient;
 }
 
+// For the few endpoints open to anonymous visitors (a sign-up request); never carries a user.
+export interface PublicContext {
+  db: PrismaClient;
+}
+
+export const publicContext = (): PublicContext => ({ db: prisma });
+
 export const requireUser = async (req: Request): Promise<SessionUser> => {
   const user = await getSessionUser(req);
   if (!user) {
@@ -30,18 +37,17 @@ export const requireUser = async (req: Request): Promise<SessionUser> => {
   return user;
 };
 
-// Country of the user's own gym, for the default language and currency.
-export const gymCountryOf = async (
+// Country and currency of the user's own gym: the country sets the default language, the currency never changes with it.
+export const gymLocaleOf = async (
   gymId: string | null
-): Promise<Country | null> => {
+): Promise<{ country: Country; currency: Currency } | null> => {
   if (!gymId) {
     return null;
   }
-  const gym = await prisma.gym.findUnique({
+  return prisma.gym.findUnique({
     where: { id: gymId },
-    select: { country: true },
+    select: { country: true, currency: true },
   });
-  return gym?.country ?? null;
 };
 
 export const requireTenant = async (

@@ -132,7 +132,10 @@ export const ClientFormDrawer: React.FC<ClientFormDrawerProps> = ({
         {isEditing ? null : (
           <FormField
             id="password"
-            label={t('Initial Password')}
+            label={t('Initial Password (optional)')}
+            hint={t(
+              'Leave it empty to get an invite link instead, so the client chooses their own password.'
+            )}
             error={errors.password?.message}
           >
             <input

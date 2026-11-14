@@ -4,7 +4,9 @@ import type { Prisma, UserRole } from '@prisma/client';
 interface CreateCredentialUserInput {
   name: string;
   email: string;
-  password: string;
+  // Either the plain password, or a hash already made with Better Auth's hashPassword.
+  password?: string;
+  passwordHash?: string;
   role: UserRole;
   gymId: string | null;
 }
@@ -29,7 +31,8 @@ export const createCredentialUser = async (
       userId: user.id,
       accountId: user.id,
       providerId: 'credential',
-      password: await hashPassword(input.password),
+      password:
+        input.passwordHash ?? (await hashPassword(input.password ?? '')),
     },
   });
 

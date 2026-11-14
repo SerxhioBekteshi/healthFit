@@ -4,10 +4,15 @@ import { useForm } from 'react-hook-form';
 import { Drawer } from '@/components/ui/Drawer';
 import { FormField, fieldInputClass } from '@/components/common/FormField';
 import { t } from '@/i18n';
-import { countryConfig, countryNames } from '@/utils/constants/countries';
+import {
+  countryConfig,
+  countryNames,
+  currencyNames,
+} from '@/utils/constants/countries';
 import type { CountryCode, Gym } from '@gym/shared/types';
 import {
   COUNTRY_CODES,
+  COUNTRY_CURRENCIES,
   gymFormSchema,
   type GymFormValues,
 } from '@gym/shared/validation/gyms';
@@ -66,11 +71,14 @@ export const GymFormDrawer: React.FC<GymFormDrawerProps> = ({
     handleSubmit,
     reset,
     setValue,
+    watch,
     formState: { errors },
   } = useForm<GymFormValues>({
     resolver: zodResolver(gymFormSchema),
     defaultValues: emptyValues,
   });
+  const isCountryLocked = gym?.countryLocked ?? false;
+  const country = watch('country');
 
   useEffect(() => {
     if (isOpen) {
@@ -109,33 +117,52 @@ export const GymFormDrawer: React.FC<GymFormDrawerProps> = ({
         <FormField
           id="country"
           label={t('Country')}
-          hint={t(
-            'Sets the language, currency and timezone members and staff start with.'
-          )}
+          hint={
+            isCountryLocked
+              ? t(
+                  'The country cannot be changed once the gym has prices or payments.'
+                )
+              : t(
+                  'Sets the starting language and timezone, and the currency members pay in.'
+                )
+          }
           error={errors.country?.message}
         >
-          <select
-            id="country"
-            className={fieldInputClass}
-            {...register('country', {
-              // A new gym starts with the country's timezone; an existing one keeps its own.
-              onChange: (event: React.ChangeEvent<HTMLSelectElement>) => {
-                if (!gym) {
-                  setValue(
-                    'timezone',
-                    countryConfig[event.target.value as CountryCode].timezone
-                  );
-                }
-              },
-            })}
-          >
-            {COUNTRY_CODES.map((code) => (
-              <option key={code} value={code}>
-                {countryNames[code]}
-              </option>
-            ))}
-          </select>
+          {isCountryLocked ? (
+            <p className="rounded-lg border border-white/10 bg-white/[0.02] px-3 py-2 text-sm text-bone/70">
+              {countryNames[country]}
+            </p>
+          ) : (
+            <select
+              id="country"
+              className={fieldInputClass}
+              {...register('country', {
+                // A new gym starts with the country's timezone; an existing one keeps its own.
+                onChange: (event: React.ChangeEvent<HTMLSelectElement>) => {
+                  if (!gym) {
+                    setValue(
+                      'timezone',
+                      countryConfig[event.target.value as CountryCode].timezone
+                    );
+                  }
+                },
+              })}
+            >
+              {COUNTRY_CODES.map((code) => (
+                <option key={code} value={code}>
+                  {countryNames[code]}
+                </option>
+              ))}
+            </select>
+          )}
         </FormField>
+
+        <p className="-mt-2 text-sm text-bone/70">
+          {t('Currency:')}{' '}
+          <span className="font-semibold text-bone">
+            {currencyNames[COUNTRY_CURRENCIES[country]]}
+          </span>
+        </p>
 
         <FormField
           id="businessHours"

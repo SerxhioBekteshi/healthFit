@@ -9,6 +9,7 @@ import { env } from '@/config/env';
 import { ForbiddenError, NotFoundError, ValidationError } from '@/errors';
 import { balanceService } from '@/services/balance';
 import { membershipService } from '@/services/memberships';
+import { paymentSettingsService } from '@/services/payment-settings';
 import type { TenantContext } from '@/tenant/context';
 import type {
   PaymentChallenge,
@@ -50,6 +51,10 @@ export const paymentChallengeService = {
         : input.subscription.paymentMethod;
     if (method !== 'card') {
       throw new ValidationError('Only card payments need verification.');
+    }
+    await paymentSettingsService.assertAccepted(ctx, 'card');
+    if (input.kind === 'deposit') {
+      await paymentSettingsService.assertBalanceInUse(ctx);
     }
 
     const challengeId = randomUUID();

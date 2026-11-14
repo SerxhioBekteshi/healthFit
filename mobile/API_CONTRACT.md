@@ -4,82 +4,109 @@ Base: `/api/v1`. Auth: session cookie (web) or `Authorization: Bearer <token>` (
 
 Roles: `SA` super_admin, `GA` gym_admin, `C` client. Keep this table in sync with `backend/src/routes/v1/*.ts`.
 
-| Method | Path                                | Roles | Body schema (`@gym/shared/validation/...`)                          | Success |
-| ------ | ----------------------------------- | ----- | ------------------------------------------------------------------- | ------- |
-| GET    | `/me`                               | any   | -                                                                   | 200     |
-| GET    | `/attendance`                       | GA, C | -                                                                   | 200     |
-| GET    | `/attendance/history?cursor=`       | GA, C | -                                                                   | 200     |
-| POST   | `/attendance/check-in`              | GA, C | `attendance.checkInSchema`                                          | 201     |
-| GET    | `/attendance/stats`                 | GA    | -                                                                   | 200     |
-| GET    | `/balance?clientId=&cursor=&limit=` | GA, C | -                                                                   | 200     |
-| POST   | `/balance/deposit`                  | GA, C | `balance.depositSchema`                                             | 201     |
-| POST   | `/payment-challenges`               | C     | `payment-challenges.startChallengeSchema`                           | 201     |
-| POST   | `/payment-challenges/:id/verify`    | C     | `payment-challenges.verifyChallengeSchema`                          | 200     |
-| GET    | `/billings`                         | SA    | -                                                                   | 200     |
-| GET    | `/clients`                          | GA    | -                                                                   | 200     |
-| POST   | `/clients`                          | GA    | `clients.createClientSchema`                                        | 201     |
-| GET    | `/clients/:id`                      | GA    | -                                                                   | 200     |
-| PATCH  | `/clients/:id`                      | GA    | `clients.updateClientSchema`                                        | 200     |
-| PATCH  | `/clients/:id/status`               | GA    | `clients.clientStatusSchema`                                        | 200     |
-| GET    | `/closures`                         | GA    | -                                                                   | 200     |
-| POST   | `/closures`                         | GA    | `gym-closures.gymClosureFormSchema`                                 | 201     |
-| PATCH  | `/closures/:id`                     | GA    | `gym-closures.gymClosureFormSchema`                                 | 200     |
-| DELETE | `/closures/:id`                     | GA    | -                                                                   | 200     |
-| GET    | `/dashboard/client`                 | C     | -                                                                   | 200     |
-| GET    | `/dashboard/gym`                    | GA    | -                                                                   | 200     |
-| GET    | `/dashboard/platform`               | SA    | -                                                                   | 200     |
-| GET    | `/gym-admins`                       | SA    | -                                                                   | 200     |
-| POST   | `/gym-admins`                       | SA    | `gym-admins.createGymAdminSchema`                                   | 201     |
-| PATCH  | `/gym-admins/:id`                   | SA    | `gym-admins.updateGymAdminSchema`                                   | 200     |
-| DELETE | `/gym-admins/:id`                   | SA    | -                                                                   | 200     |
-| GET    | `/gym-locations`                    | GA, C | -                                                                   | 200     |
-| POST   | `/gym-locations`                    | GA    | `gym-locations.gymLocationFormSchema`                               | 201     |
-| PATCH  | `/gym-locations/:id`                | GA    | `gym-locations.gymLocationFormSchema`                               | 200     |
-| PATCH  | `/gym-locations/:id/status`         | GA    | `common.activeStatusSchema`                                         | 200     |
-| GET    | `/gym-subscriptions`                | SA    | -                                                                   | 200     |
-| POST   | `/gym-subscriptions`                | SA    | `gym-subscriptions.createGymSubscriptionSchema`                     | 201     |
-| PATCH  | `/gym-subscriptions/:id`            | SA    | `gym-subscriptions.updateGymSubscriptionSchema`                     | 200     |
-| PATCH  | `/gym-subscriptions/:id/status`     | SA    | `gym-subscriptions.subscriptionStatusSchema`                        | 200     |
-| POST   | `/gym-subscriptions/:id/payments`   | SA    | `gym-subscriptions.subscriptionPaymentSchema`                       | 201     |
-| GET    | `/gyms`                             | SA    | -                                                                   | 200     |
-| POST   | `/gyms`                             | SA    | `gyms.gymFormSchema`                                                | 201     |
-| PATCH  | `/gyms/:id`                         | SA    | `gyms.gymFormSchema`                                                | 200     |
-| PATCH  | `/gyms/:id/status`                  | SA    | `gyms.gymStatusSchema`                                              | 200     |
-| GET    | `/membership-plans`                 | GA, C | -                                                                   | 200     |
-| POST   | `/membership-plans`                 | GA    | `membership-plans.membershipPlanFormSchema`                         | 201     |
-| PATCH  | `/membership-plans/:id`             | GA    | `membership-plans.membershipPlanFormSchema`                         | 200     |
-| PATCH  | `/membership-plans/:id/status`      | GA    | `common.activeStatusSchema`                                         | 200     |
-| PUT    | `/membership-plans/price-grid`      | GA    | `membership-plans.priceGridSchema`                                  | 200     |
-| GET    | `/price-list`                       | GA, C | -                                                                   | 200     |
-| PUT    | `/price-list/notes`                 | GA    | `price-lists.priceListNotesSchema`                                  | 200     |
-| POST   | `/price-list/photos`                | GA    | raw image bytes (`image/jpeg`, `image/png`, `image/webp`, max 5 MB) | 201     |
-| DELETE | `/price-list/photos/:id`            | GA    | -                                                                   | 200     |
-| POST   | `/uploads`                          | GA    | raw image bytes (`image/jpeg`, `image/png`, `image/webp`, max 5 MB) | 201     |
-| GET    | `/memberships`                      | GA, C | -                                                                   | 200     |
-| GET    | `/memberships/history?cursor=`      | GA, C | -                                                                   | 200     |
-| POST   | `/memberships`                      | GA    | `memberships.createMembershipSchema`                                | 201     |
-| POST   | `/memberships/subscribe`            | C     | `memberships.subscribeMembershipSchema`                             | 201     |
-| POST   | `/memberships/:id/confirm-payment`  | GA    | -                                                                   | 200     |
-| POST   | `/memberships/:id/cancel`           | GA    | -                                                                   | 200     |
-| POST   | `/memberships/:id/renew`            | GA    | `memberships.renewMembershipSchema`                                 | 201     |
-| GET    | `/products`                         | GA, C | -                                                                   | 200     |
-| POST   | `/products`                         | GA    | `products.productFormSchema`                                        | 201     |
-| PATCH  | `/products/:id`                     | GA    | `products.productFormSchema`                                        | 200     |
-| PATCH  | `/products/:id/status`              | GA    | `common.activeStatusSchema`                                         | 200     |
-| POST   | `/products/:id/purchase`            | GA, C | `products.purchaseProductSchema`                                    | 201     |
-| GET    | `/workout-programs`                 | GA, C | -                                                                   | 200     |
-| POST   | `/workout-programs`                 | GA    | `workout-programs.workoutProgramInputSchema`                        | 201     |
-| PATCH  | `/workout-programs/:id`             | GA    | `workout-programs.workoutProgramInputSchema`                        | 200     |
-| DELETE | `/workout-programs/:id`             | GA    | -                                                                   | 200     |
-| GET    | `/classes`                          | GA, C | -                                                                   | 200     |
-| POST   | `/classes`                          | GA    | `classes.classFormSchema`                                           | 201     |
-| PATCH  | `/classes/:id`                      | GA    | `classes.classFormSchema`                                           | 200     |
-| PATCH  | `/classes/:id/status`               | GA    | `common.activeStatusSchema`                                         | 200     |
-| DELETE | `/classes/:id`                      | GA    | -                                                                   | 200     |
-| GET    | `/staff-members`                    | GA    | -                                                                   | 200     |
-| POST   | `/staff-members`                    | GA    | `staff-members.staffMemberFormSchema`                               | 201     |
-| PATCH  | `/staff-members/:id`                | GA    | `staff-members.staffMemberFormSchema`                               | 200     |
-| PATCH  | `/staff-members/:id/status`         | GA    | `common.activeStatusSchema`                                         | 200     |
+| Method | Path                                | Roles  | Body schema (`@gym/shared/validation/...`)                          | Success |
+| ------ | ----------------------------------- | ------ | ------------------------------------------------------------------- | ------- |
+| GET    | `/me`                               | any    | -                                                                   | 200     |
+| GET    | `/attendance`                       | GA, C  | -                                                                   | 200     |
+| GET    | `/attendance/history?cursor=`       | GA, C  | -                                                                   | 200     |
+| POST   | `/attendance/check-in`              | GA, C  | `attendance.checkInSchema`                                          | 201     |
+| POST   | `/attendance/scan`                  | GA     | `attendance.scanSchema`                                             | 200     |
+| POST   | `/attendance/check-out`             | GA, C  | `attendance.checkOutSchema`                                         | 200     |
+| GET    | `/attendance/stats`                 | GA     | -                                                                   | 200     |
+| GET    | `/balance?clientId=&cursor=&limit=` | GA, C  | -                                                                   | 200     |
+| POST   | `/balance/deposit`                  | GA, C  | `balance.depositSchema`                                             | 201     |
+| POST   | `/payment-challenges`               | C      | `payment-challenges.startChallengeSchema`                           | 201     |
+| POST   | `/payment-challenges/:id/verify`    | C      | `payment-challenges.verifyChallengeSchema`                          | 200     |
+| GET    | `/billings`                         | SA     | -                                                                   | 200     |
+| GET    | `/clients`                          | GA     | -                                                                   | 200     |
+| POST   | `/clients`                          | GA     | `clients.createClientSchema`                                        | 201     |
+| GET    | `/clients/:id`                      | GA     | -                                                                   | 200     |
+| PATCH  | `/clients/:id`                      | GA     | `clients.updateClientSchema`                                        | 200     |
+| PATCH  | `/clients/:id/status`               | GA     | `clients.clientStatusSchema`                                        | 200     |
+| POST   | `/clients/:id/invite`               | GA     | -                                                                   | 201     |
+| GET    | `/client-invites/:token`            | public | -                                                                   | 200     |
+| POST   | `/client-invites/:token/accept`     | public | `client-invites.acceptClientInviteSchema`                           | 200     |
+| GET    | `/closures`                         | GA     | -                                                                   | 200     |
+| POST   | `/closures`                         | GA     | `gym-closures.gymClosureFormSchema`                                 | 201     |
+| PATCH  | `/closures/:id`                     | GA     | `gym-closures.gymClosureFormSchema`                                 | 200     |
+| DELETE | `/closures/:id`                     | GA     | -                                                                   | 200     |
+| GET    | `/dashboard/client`                 | C      | -                                                                   | 200     |
+| GET    | `/dashboard/gym`                    | GA     | -                                                                   | 200     |
+| GET    | `/dashboard/platform`               | SA     | -                                                                   | 200     |
+| GET    | `/gym-admins`                       | SA     | -                                                                   | 200     |
+| POST   | `/gym-admins`                       | SA     | `gym-admins.createGymAdminSchema`                                   | 201     |
+| PATCH  | `/gym-admins/:id`                   | SA     | `gym-admins.updateGymAdminSchema`                                   | 200     |
+| DELETE | `/gym-admins/:id`                   | SA     | -                                                                   | 200     |
+| POST   | `/signup-requests`                  | public | `signup-requests.signupRequestSchema`                               | 201     |
+| GET    | `/signup-requests`                  | SA     | -                                                                   | 200     |
+| POST   | `/signup-requests/:id/approve`      | SA     | -                                                                   | 200     |
+| POST   | `/signup-requests/:id/reject`       | SA     | `signup-requests.rejectSignupRequestSchema`                         | 200     |
+| GET    | `/gym-locations`                    | GA, C  | -                                                                   | 200     |
+| POST   | `/gym-locations`                    | GA     | `gym-locations.gymLocationFormSchema`                               | 201     |
+| PATCH  | `/gym-locations/:id`                | GA     | `gym-locations.gymLocationFormSchema`                               | 200     |
+| PATCH  | `/gym-locations/:id/status`         | GA     | `common.activeStatusSchema`                                         | 200     |
+| GET    | `/gym-subscriptions`                | SA     | -                                                                   | 200     |
+| POST   | `/gym-subscriptions`                | SA     | `gym-subscriptions.createGymSubscriptionSchema`                     | 201     |
+| PATCH  | `/gym-subscriptions/:id`            | SA     | `gym-subscriptions.updateGymSubscriptionSchema`                     | 200     |
+| PATCH  | `/gym-subscriptions/:id/status`     | SA     | `gym-subscriptions.subscriptionStatusSchema`                        | 200     |
+| POST   | `/gym-subscriptions/:id/payments`   | SA     | `gym-subscriptions.subscriptionPaymentSchema`                       | 201     |
+| GET    | `/gyms`                             | SA     | -                                                                   | 200     |
+| POST   | `/gyms`                             | SA     | `gyms.gymFormSchema`                                                | 201     |
+| PATCH  | `/gyms/:id`                         | SA     | `gyms.gymFormSchema`                                                | 200     |
+| PATCH  | `/gyms/:id/status`                  | SA     | `gyms.gymStatusSchema`                                              | 200     |
+| GET    | `/membership-plans`                 | GA, C  | -                                                                   | 200     |
+| POST   | `/membership-plans`                 | GA     | `membership-plans.membershipPlanFormSchema`                         | 201     |
+| PATCH  | `/membership-plans/:id`             | GA     | `membership-plans.membershipPlanFormSchema`                         | 200     |
+| PATCH  | `/membership-plans/:id/status`      | GA     | `common.activeStatusSchema`                                         | 200     |
+| PUT    | `/membership-plans/price-grid`      | GA     | `membership-plans.priceGridSchema`                                  | 200     |
+| GET    | `/price-offers`                     | GA     | -                                                                   | 200     |
+| POST   | `/price-offers`                     | GA     | `price-offers.priceOfferFormSchema`                                 | 201     |
+| PATCH  | `/price-offers/:id`                 | GA     | `price-offers.priceOfferFormSchema`                                 | 200     |
+| PATCH  | `/price-offers/:id/status`          | GA     | `common.activeStatusSchema`                                         | 200     |
+| DELETE | `/price-offers/:id`                 | GA     | -                                                                   | 200     |
+| GET    | `/price-list`                       | GA, C  | -                                                                   | 200     |
+| PUT    | `/price-list/notes`                 | GA     | `price-lists.priceListNotesSchema`                                  | 200     |
+| POST   | `/price-list/photos`                | GA     | raw image bytes (`image/jpeg`, `image/png`, `image/webp`, max 5 MB) | 201     |
+| DELETE | `/price-list/photos/:id`            | GA     | -                                                                   | 200     |
+| POST   | `/uploads`                          | GA     | raw image bytes (`image/jpeg`, `image/png`, `image/webp`, max 5 MB) | 201     |
+| GET    | `/memberships`                      | GA, C  | -                                                                   | 200     |
+| GET    | `/memberships/history?cursor=`      | GA, C  | -                                                                   | 200     |
+| POST   | `/memberships`                      | GA     | `memberships.createMembershipSchema`                                | 201     |
+| POST   | `/memberships/subscribe`            | C      | `memberships.subscribeMembershipSchema`                             | 201     |
+| POST   | `/memberships/:id/confirm-payment`  | GA     | -                                                                   | 200     |
+| POST   | `/memberships/:id/cancel`           | GA     | -                                                                   | 200     |
+| POST   | `/memberships/:id/renew`            | GA     | `memberships.renewMembershipSchema`                                 | 201     |
+| GET    | `/payment-settings`                 | GA, C  | -                                                                   | 200     |
+| PUT    | `/payment-settings`                 | GA     | `payment-settings.paymentSettingsSchema`                            | 200     |
+| GET    | `/access-settings`                  | GA, C  | -                                                                   | 200     |
+| PUT    | `/access-settings`                  | GA     | `access-settings.accessSettingsSchema`                              | 200     |
+| GET    | `/member-cards`                     | GA     | -                                                                   | 200     |
+| POST   | `/member-cards`                     | GA     | `member-cards.issueCardSchema`                                      | 201     |
+| PATCH  | `/member-cards/:id/status`          | GA     | `common.activeStatusSchema`                                         | 200     |
+| GET    | `/lockers?locationId=`              | GA     | -                                                                   | 200     |
+| POST   | `/lockers`                          | GA     | `lockers.lockerRangeSchema`                                         | 201     |
+| POST   | `/lockers/assign`                   | GA, C  | `lockers.assignLockerSchema`                                        | 200     |
+| POST   | `/lockers/release`                  | GA, C  | `lockers.releaseLockerSchema`                                       | 200     |
+| PATCH  | `/lockers/:id/status`               | GA     | `common.activeStatusSchema`                                         | 200     |
+| DELETE | `/lockers/:id`                      | GA     | -                                                                   | 200     |
+| GET    | `/products`                         | GA, C  | -                                                                   | 200     |
+| POST   | `/products`                         | GA     | `products.productFormSchema`                                        | 201     |
+| PATCH  | `/products/:id`                     | GA     | `products.productFormSchema`                                        | 200     |
+| PATCH  | `/products/:id/status`              | GA     | `common.activeStatusSchema`                                         | 200     |
+| POST   | `/products/:id/purchase`            | GA, C  | `products.purchaseProductSchema`                                    | 201     |
+| GET    | `/workout-programs`                 | GA, C  | -                                                                   | 200     |
+| POST   | `/workout-programs`                 | GA     | `workout-programs.workoutProgramInputSchema`                        | 201     |
+| PATCH  | `/workout-programs/:id`             | GA     | `workout-programs.workoutProgramInputSchema`                        | 200     |
+| DELETE | `/workout-programs/:id`             | GA     | -                                                                   | 200     |
+| GET    | `/classes`                          | GA, C  | -                                                                   | 200     |
+| POST   | `/classes`                          | GA     | `classes.classFormSchema`                                           | 201     |
+| PATCH  | `/classes/:id`                      | GA     | `classes.classFormSchema`                                           | 200     |
+| PATCH  | `/classes/:id/status`               | GA     | `common.activeStatusSchema`                                         | 200     |
+| DELETE | `/classes/:id`                      | GA     | -                                                                   | 200     |
+| GET    | `/staff-members`                    | GA     | -                                                                   | 200     |
+| POST   | `/staff-members`                    | GA     | `staff-members.staffMemberFormSchema`                               | 201     |
+| PATCH  | `/staff-members/:id`                | GA     | `staff-members.staffMemberFormSchema`                               | 200     |
+| PATCH  | `/staff-members/:id/status`         | GA     | `common.activeStatusSchema`                                         | 200     |
 
 Gym locations notes:
 
@@ -89,7 +116,14 @@ Gym locations notes:
 
 Class timetable notes:
 
-- Every new gym (`POST /gyms`) starts with default classes (Abs, Aerobics, Zumba, Yoga, Pilates, Spinning, Cross Training, Stretching & Mobility) and no instructors; the gym admin edits, hides or removes them.
+- Every new gym (`POST /gyms`, or an approved sign-up request) starts with default classes (Abs, Aerobics, Zumba, Yoga, Pilates, Spinning, Cross Training, Stretching & Mobility) and no instructors, plus three standard workout programs (`Full Body Starter` beginner, `Push / Pull / Legs` intermediate, `Upper / Lower Power` advanced) with their days, exercises and how-to notes. The gym admin edits, hides, removes or replaces them (`PATCH`/`DELETE /workout-programs/:id`); gyms created before this keep what they have.
+
+Country, language and currency notes:
+
+- A gym has a `country` (`AL`, `GB`, `IT`, `DE` or `GR`; default `AL`), set by the super admin in the gym form (`gyms.gymFormSchema`) or by the sign-up request. `GET /me` returns `gymCountry` and `gymCurrency` (country and currency of the user's gym, both `null` for the platform owner). The app starts in the country's language (AL Albanian, GB English, IT Italian, DE German, GR Greek); a user can still pick another language.
+- Currency is stored on the gym (`Gym.currency`: `ALL`, `EUR` or `GBP`), set by the server from the country (`AL` -> `ALL`, `GB` -> `GBP`, `IT`/`DE`/`GR` -> `EUR`; `COUNTRY_CURRENCIES` in `gyms` validation) and never sent by clients. Every amount of that gym (plans, products, balance, sales, its platform subscription and payments) is in it, whatever language the user picks. Show money with `gymCurrency`; amounts are never converted. The Gym object (`/gyms`) has `currency` and `countryLocked`: once the gym has any plan, product, membership, balance transaction, sale, subscription or subscription payment, `PATCH /gyms/:id` answers `422` if `country` changes.
+- `GET /gym-subscriptions` and `GET /billings` rows (subscriptions and payments) have `currency` (the gym's). `GET /dashboard/platform` returns `revenueTotal`, `revenueThisMonth` and `overdueAmount` as arrays of `{ currency, amount }`, one entry per currency that has an amount (never added across currencies).
+- API messages (`message` in an error body) are English texts; the web app translates the known ones. Send nothing localized and keep new messages as plain English sentences.
 
 - A class is a weekly repeating slot: `{ name, description, weekdays: number[] (1 = Monday to 7 = Sunday), startTime, endTime (gym-local HH:MM), staffMemberId | null, staffMemberName | null, isActive }`. Send `staffMemberId: ''` for no instructor. `GET /classes` returns only active classes to a client; show them per weekday ordered by `startTime`.
 - A class must end after it starts. An instructor cannot be on two overlapping active classes on the same weekday (`422` naming the clash); back-to-back is fine. Only active staff of the gym can be assigned, but a class keeps an instructor that was deactivated later. Staff are never deleted, only deactivated.
@@ -102,16 +136,21 @@ Membership plan notes:
 
 - The standard price list is the set of plans with a term (`monthly`, `three_months`, `six_months`, `yearly`) per `weeklyVisits` (3x to 6x, 0 = unlimited) and `gender`. Gym admins save it per gender with `PUT /membership-plans/price-grid` body `{ gender, cells: [{ weeklyVisits, type, price | null }] }` (`null` or 0 removes the price). Plans with `visit_based` or `personal_training` are extras (daily pass, packs).
 - `GET /price-list` returns `{ notes: string[], photos: [{ id, url, createdAt }] }`. A photo `url` is a path such as `/uploads/<gymId>/<file>.jpg`; prefix it with the API base URL. Files are public read-only under `/uploads`.
-- `GET /membership-plans` for a client returns only active plans of the client's own gender (`Client.gender`; none while unset). Each plan has `gender`, `weeklyVisits` (0 = unlimited), `type`, `durationDays`, `price` (ALL). Offers are the longer terms of the same gender and `weeklyVisits`; compute the saving against the monthly price in the app.
+- `GET /membership-plans` for a client returns only active plans of the client's own gender (`Client.gender`; none while unset). Each plan has `gender`, `weeklyVisits` (0 = unlimited), `type`, `durationDays`, `price` (the regular price, in the gym's currency) and `offer` (`{ id, name, price, startDate, endDate }` or `null`). The longer terms of the same gender and `weeklyVisits` are the term discounts; compute that saving against the monthly price in the app.
+- Special offers (`/price-offers`, gym admin): a named, limited-time price for some plans, `{ name, startDate, endDate, items: [{ planId, price }] }` (dates `YYYY-MM-DD` in the gym timezone, both days included). One offer can hold one plan (for example 3x per week for a month at 3500 instead of 4500 for New Year) or a whole seasonal price list. Each item price must be lower than the plan's regular price (`422` otherwise) and a plan appears once per offer. The offer has `status` (`active`, `scheduled`, `ended`, `paused`, derived from the dates and `isActive`) and its items carry `planName`, `regularPrice` and `price`. `PATCH /price-offers/:id/status` pauses or resumes it; `DELETE` removes it (memberships already bought keep their price).
+- While an offer is valid, `GET /membership-plans` returns it as the plan's `offer` (the lowest one if several apply). Show `offer.price` with the regular `price` struck through and the end date; a purchase (`POST /memberships`, `/memberships/subscribe`, renewals, card verification) is charged `offer.price`, decided by the server, and the membership `price` records what was paid.
   Card payments by a client (`C`) are verified with a one-time code and cannot be sent straight to `/balance/deposit` or `/memberships/subscribe` (those return `403`). Flow: `POST /payment-challenges` with `{ kind: 'deposit', deposit }` or `{ kind: 'membership', subscription }` (each with `paymentMethod: 'card'` and `card`) returns `{ challengeId, expiresAt, demoCode? }`; the member enters the 6-digit code and the app calls `POST /payment-challenges/:id/verify` with `{ code }`, which charges and returns `{ kind: 'deposit', transaction }` or `{ kind: 'membership', membership }`. Codes expire after 5 minutes, allow 3 attempts and work once; a new start replaces the open challenge. `demoCode` exists only outside production (no SMS provider yet).
 
 - `POST /balance/deposit` and `POST /memberships/subscribe` with `paymentMethod: 'card'` also need `card: { brand: 'visa' | 'mastercard', last4: '1234' }`. Send only these two values: the app collects the number, expiry and CVC on the device, validates them, and never sends or stores them. A deposit `amount` only has to be greater than zero; deposit methods are `card` (clients and gym admins) and `cash` (gym admins only).
 - `POST /memberships/subscribe` body is `{ planId, paymentMethod: 'balance' | 'card', card? }` (cash is not accepted from clients). Both return a paid membership: `active` when it starts today, `upcoming` when it is queued (see the next point). Errors: `422` for a plan of the other gender, missing gender, insufficient balance, or an existing pending membership.
-- `POST /memberships` and `POST /memberships/:id/renew` (gym staff) only accept `paymentMethod: 'cash'` (`422` otherwise) and the membership is paid at once. Members who pay by card or balance use `POST /memberships/subscribe` in their own app.
+- `POST /memberships` and `POST /memberships/:id/renew` (gym staff) take `paymentMethod: 'cash' | 'card' | 'balance'` (`422` for anything else); a `card` payment also needs `card: { brand, last4 }`. The membership is paid at once (balance needs enough credit). Members who pay in their own app use `POST /memberships/subscribe`.
+- Payment settings: `GET /payment-settings` (gym admin and client) returns `{ acceptCard, acceptBalance, acceptCash }`, all `true` by default for every gym; `PUT /payment-settings` (gym admin) saves them and answers `422` if all three are off. Show a member only the ways of paying that are on: `acceptCard` (online and counter card payments), `acceptBalance` (paying from credit; when off, balance top-ups are off too) and `acceptCash` (cash at the counter, and the cash-only shakes and smoothies). The server enforces it with `422`: `POST /memberships`, `/renew` and `/subscribe`, `POST /balance/deposit`, `POST /products/:id/purchase` and `POST /payment-challenges` refuse a method the gym has turned off (`Card payments are not accepted by this gym.`, `Paying from the balance is not accepted by this gym.`, `Cash payments are not accepted by this gym.`), and any deposit answers `This gym does not use balance credit.` while credit is off.
 - Memberships queue: a new paid membership (`subscribe`, `POST /memberships`, `renew`) never overlaps another one. Its `startDate` is the requested date, or the day after the client's last `active`/`upcoming` membership ends when that is later; `endDate` is `startDate` plus the plan duration. So 1 month, then another bought weeks before it ends, then 6 months later each start the day after the previous one ends. Read the real `startDate`/`endDate` from the response; the requested date is only a minimum.
 - Membership `status` is one of `pending` (waiting for payment), `active` (started, not ended), `upcoming` (paid, `startDate` in the future), `expired`, `cancelled`. `upcoming` and `expired` are derived from the dates when read. Only the `active` membership allows check-in. `GET /memberships` returns every membership of the client; show the queue as the `active`, `upcoming` and `pending` ones ordered by `startDate`.
 - `GET /balance` returns `{ balance, transactions, nextCursor }`: the newest transactions first, 20 per page (`?limit=` up to 50). While `nextCursor` is not `null`, request the next page with `?cursor=<nextCursor>` (add `clientId` again for gym admins). `balance` is always the full ledger sum, not the sum of the loaded page. Filters (all optional, combine with paging): `from` and `to` (`YYYY-MM-DD`, inclusive, days in the gym timezone), `minAmount` and `maxAmount` (>= 0; they match the size of a transaction, so `500` finds a 500 deposit and a -500 purchase). `422` when `from` is after `to` or `minAmount` is above `maxAmount`.
 - `GET /attendance` returns the latest check-ins (at most 100, newest first); add `?limit=10` to get fewer.
+- Cards, check-out and lockers: the gym turns them on in `GET/PUT /access-settings` (`{ cardsEnabled, lockersEnabled, lockersUseCard }`, all `false` by default; card lockers need both others on, `422` otherwise). A card (`/member-cards`) belongs to one member and has a `number` (stored upper case, unique per gym); issuing a card retires the member's previous active one, a blocked card is rejected (`422`) and a number is never reused. `POST /attendance/scan` takes a `code` that is a card number or the member code (the QR value) and toggles: it checks the member in, or out when they have an open visit; a second scan within 60 seconds of check-in is a double scan (`422`). The answer is `{ action: 'checked_in' | 'checked_out', record }`. `POST /attendance/check-out` ends the open visit (a member sends no body, staff send `clientId`; `422` when not checked in). A visit stays open until check-out or 12 hours. Attendance records carry `lockerNumber` (`null` when none).
+- Lockers belong to a gym location (`number` unique per location, added in ranges with an optional prefix). A locker is taken while the visit that holds it is open and is free again at check-out. `GET /lockers` lists them with `occupiedBy` (`{ clientId, clientName, since }` or `null`); `DELETE` refuses a locker in use (`409`). `POST /lockers/assign` `{ lockerNumber, code? }` puts the member's things in a locker for their open visit (`422` when not checked in or the locker is out of service, `409` when taken): staff pass the member `code`; a member sends no `code`, and is refused (`403`) when the gym locks lockers with the card, where the card number (`code`) must be sent from the locker or the desk. `POST /lockers/release` frees it earlier. `GET /dashboard/client` returns `card` (active card number, or `null`), `checkedIn` and `locker` (`{ lockerNumber, locationName, clientName }` or `null`).
 - `GET /attendance/history` returns `{ records, nextCursor }` for long histories: newest check-ins first, 20 per page (`?limit=` up to 50). While `nextCursor` is not `null`, request the next page with `?cursor=<nextCursor>`. Clients only get their own check-ins.
 - `GET /memberships/history` returns `{ memberships, nextCursor }` the same way: latest `startDate` first, 20 per page (`?limit=` up to 50), next page with `?cursor=<nextCursor>`. Clients only get their own memberships. Filters (optional, combine with paging): `status` (`pending`, `active`, `upcoming`, `expired`, `cancelled`; `upcoming` and `expired` are matched by the dates like in the responses) and `from`/`to` (`YYYY-MM-DD`, inclusive) which match memberships whose period overlaps that range. `422` when `from` is after `to`.
 - `POST /attendance/check-in` returns `422` when the membership's `weeklyVisits` limit for the current week is used up. A member can check in several times on the same local day (in and out); only the first entry of the day counts as a visit for the weekly limit, visit packs and `visitsUsed`. A repeated scan within 60 seconds returns `422`.
@@ -119,3 +158,12 @@ Membership plan notes:
 - `Client` payloads and the create/update client bodies include `gender` (`male` | `female`; `null` on legacy rows).
 
 Auth routes (Better Auth, not under `/api/v1`): `POST /api/auth/sign-in/email`, `POST /api/auth/sign-out`, `GET /api/auth/get-session`, `POST /api/auth/change-password`. `GET /health` returns `{ "status": "ok" }`.
+
+Sign-up request and rate limit notes:
+
+- Client invite links: the gym admin can create a client without a password (`POST /clients` with `password: ''`); that client has no login yet (`hasLogin: false` on the client). `POST /clients/:id/invite` returns `201 { token, expiresAt }` once; the server stores only a SHA-256 hash of the token, a new call cancels the earlier unused link, and the link expires after 7 days. Build the link as `<web origin>/invite/<token>` (the web app shows it with a QR code; the mobile app should open the same URL or accept the token). It also works as a password reset for a client who already has a password.
+- `GET /client-invites/:token` (no session) returns `{ clientName, email, gymName, gymCountry }`; `POST /client-invites/:token/accept` with `{ password }` sets the password once, ends the client's open sessions and returns `{ accepted: true }`. The client then signs in normally with the email and that password. An unknown, used, expired or inactive-gym token answers `404` with the same message. Both calls are rate limited (`429`).
+
+- A gym owner applies with `POST /signup-requests` (no session): owner name, email, phone, password, gym name, country, city, address, number of locations, optional notes. No account exists yet; the password is stored hashed. The response is `201 { data: { received: true } }`. A pending request or an account with the same email returns `409`. A rejected owner can apply again.
+- The platform owner lists requests (`GET /signup-requests`, newest first, each with `status` `pending`, `approved` or `rejected`, `reviewNote`, `reviewedAt` and, once approved, the new `gymId`; never the password). `POST /signup-requests/:id/approve` creates the gym (country timezone, default timetable and one `Main` location, contact email and phone from the request) and a `gym_admin` account with the email and password the owner chose, in one transaction. `POST /signup-requests/:id/reject` takes `{ note }` (optional text, up to 500 characters). A request can only be reviewed once (`409` afterwards). Nobody is emailed; the owner just signs in after approval.
+- Rate limits per client IP, answered with `429 { message, code: "RATE_LIMITED" }` and standard `RateLimit-*` headers: `POST /api/auth/sign-in/*` allows 10 wrong attempts per 15 minutes (a successful sign-in does not count) and `POST /signup-requests` allows 5 per hour. Show the message and let the user retry later.

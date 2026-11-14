@@ -1,7 +1,8 @@
 import type { MembershipPlan as PlanRow } from '@prisma/client';
 import { NotFoundError } from '@/errors';
+import { priceOfferService } from '@/services/price-offers';
 import type { TenantContext } from '@/tenant/context';
-import type { MembershipPlan } from '@gym/shared/types';
+import type { MembershipPlan, PlanOffer } from '@gym/shared/types';
 import type {
   MembershipPlanFormValues,
   PriceGridValues,
@@ -14,7 +15,10 @@ const TERMS = {
   yearly: { days: 365, label: '12 Months' },
 } as const;
 
-export const toPlanDto = (row: PlanRow): MembershipPlan => ({
+export const toPlanDto = (
+  row: PlanRow,
+  offer: PlanOffer | null = null
+): MembershipPlan => ({
   id: row.id,
   gymId: row.gymId,
   name: row.name,
@@ -24,6 +28,7 @@ export const toPlanDto = (row: PlanRow): MembershipPlan => ({
   gender: row.gender,
   weeklyVisits: row.weeklyVisits,
   price: row.price.toNumber(),
+  offer,
   isActive: row.isActive,
   createdAt: row.createdAt.toISOString(),
   updatedAt: row.updatedAt.toISOString(),
@@ -64,7 +69,8 @@ export const membershipPlanService = {
         { durationDays: 'asc' },
       ],
     });
-    return rows.map(toPlanDto);
+    const offers = await priceOfferService.offersByPlan(ctx);
+    return rows.map((row) => toPlanDto(row, offers.get(row.id) ?? null));
   },
 
   async create(
@@ -112,7 +118,8 @@ export const membershipPlanService = {
     if (!row) {
       throw new NotFoundError('Membership plan not found.');
     }
-    return toPlanDto(row);
+    const offers = await priceOfferService.offersByPlan(ctx);
+    return toPlanDto(row, offers.get(id) ?? null);
   },
 
   // Saves the standard price table of one gender: a plan per (weekly visits, term) cell.

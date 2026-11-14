@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { ok, parseBody, withTenant } from '@/http/withTenant';
 import { clientService } from '@/services/clients';
+import { clientInviteService } from '@/services/client-invites';
 import {
   clientStatusSchema,
   createClientSchema,
@@ -43,4 +44,12 @@ clientsRouter.patch(
     const { isActive } = parseBody(req, clientStatusSchema);
     return ok(await clientService.setActive(ctx, params.id, isActive));
   })
+);
+
+// Returns the one-time link token once; give it to the client (also works as a password reset).
+clientsRouter.post(
+  '/:id/invite',
+  withTenant(['gym_admin'], async (ctx, _req, params) =>
+    ok(await clientInviteService.issue(ctx, params.id), 201)
+  )
 );

@@ -1,4 +1,5 @@
 import { getCurrency, getLanguage, intlLocales } from '@/i18n';
+import type { CurrencyCode, MoneyTotal } from '@gym/shared/types';
 
 // The locale of the current language, for dates and numbers.
 export const currentLocale = (): string => intlLocales[getLanguage()];
@@ -13,9 +14,12 @@ export const formatAmount = (amount: number): string =>
     amount
   );
 
-// The currency follows the gym's country (ALL, EUR or GBP); stored prices are not converted.
-export const formatMoney = (amount: number): string => {
-  const currency = getCurrency();
+// Amounts show in the gym's currency (ALL, EUR or GBP), whatever the language; stored prices are never converted.
+// Pass `currency` where the amount belongs to another gym (the platform owner's lists).
+export const formatMoney = (
+  amount: number,
+  currency: CurrencyCode = getCurrency()
+): string => {
   if (currency === 'ALL') return `${formatAmount(amount)} ALL`;
   return new Intl.NumberFormat(currentLocale(), {
     style: 'currency',
@@ -24,6 +28,14 @@ export const formatMoney = (amount: number): string => {
     maximumFractionDigits: 2,
   }).format(amount);
 };
+
+// Totals of several currencies side by side, never added together; a dash when there is none.
+export const formatMoneyTotals = (totals: MoneyTotal[]): string =>
+  totals.length > 0
+    ? totals
+        .map((total) => formatMoney(total.amount, total.currency))
+        .join(' + ')
+    : '—';
 
 // YYYY-MM-DD from the API, shown as "5 Nov 2026".
 export const formatDay = (date: string): string =>

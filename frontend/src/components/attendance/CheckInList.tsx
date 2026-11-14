@@ -22,6 +22,8 @@ interface CheckInListProps {
     clientName: string;
     checkedInAt: string;
     locationName?: string | null;
+    lockerNumber?: string | null;
+    checkedOutAt?: string | null;
   }[];
   // Show which gym each member trained at; useful when the owner has several.
   showLocation?: boolean;
@@ -50,8 +52,16 @@ export const CheckInList: React.FC<CheckInListProps> = ({
               </span>
             ) : null}
           </p>
-          <p className="shrink-0 text-xs tabular-nums text-bone/50">
+          <p className="shrink-0 text-right text-xs tabular-nums text-bone/50">
             {when(item.checkedInAt)}
+            {item.lockerNumber ? (
+              <span className="block text-bone/40">
+                {t('Locker {{number}}', { number: item.lockerNumber })}
+              </span>
+            ) : null}
+            {item.checkedOutAt ? (
+              <span className="block text-bone/40">{t('Checked out')}</span>
+            ) : null}
           </p>
         </li>
       ))}

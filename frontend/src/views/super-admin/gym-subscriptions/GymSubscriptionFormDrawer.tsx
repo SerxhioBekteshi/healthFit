@@ -4,7 +4,7 @@ import { useForm, type Resolver } from 'react-hook-form';
 import { Drawer } from '@/components/ui/Drawer';
 import { FormField, fieldInputClass } from '@/components/common/FormField';
 import { t } from '@/i18n';
-import type { Gym, GymSubscription } from '@gym/shared/types';
+import type { CurrencyCode, Gym, GymSubscription } from '@gym/shared/types';
 import { subscriptionCycleLabels } from '@/utils/constants/labels';
 import {
   createGymSubscriptionSchema,
@@ -41,6 +41,7 @@ export const GymSubscriptionFormDrawer: React.FC<
     register,
     handleSubmit,
     reset,
+    watch,
     formState: { errors },
   } = useForm<CreateGymSubscriptionValues>({
     // The edit form omits gym and start date, so its resolver is widened to the create shape.
@@ -70,6 +71,12 @@ export const GymSubscriptionFormDrawer: React.FC<
       );
     }
   }, [subscription, availableGyms, isOpen, reset]);
+
+  // The price is in the currency of the gym being billed.
+  const selectedGymId = watch('gymId');
+  const currency: CurrencyCode | null = isEditing
+    ? subscription.currency
+    : (availableGyms.find((gym) => gym.id === selectedGymId)?.currency ?? null);
 
   return (
     <Drawer
@@ -141,7 +148,9 @@ export const GymSubscriptionFormDrawer: React.FC<
           </FormField>
           <FormField
             id="price"
-            label={t('Price')}
+            label={
+              currency ? t('Price ({{currency}})', { currency }) : t('Price')
+            }
             error={errors.price?.message}
           >
             <input

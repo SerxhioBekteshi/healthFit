@@ -1,5 +1,5 @@
 import { randomBytes } from 'node:crypto';
-import type { PaymentMethod } from '@prisma/client';
+import type { Currency, PaymentMethod } from '@prisma/client';
 import type { CardSummary } from '@gym/shared/types';
 
 const BRAND_LABELS: Record<CardSummary['brand'], string> = {
@@ -20,6 +20,8 @@ export type ProviderStatus = 'succeeded' | 'pending' | 'failed';
 
 export interface PaymentIntent {
   amount: number;
+  // The gym's currency; the provider charges in it, nothing is converted.
+  currency: Currency;
   clientId: string;
   description: string;
   metadata: Record<string, string>;

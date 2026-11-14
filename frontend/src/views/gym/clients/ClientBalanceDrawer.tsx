@@ -6,6 +6,7 @@ import { Alert } from '@/components/ui/Alert';
 import { Card } from '@/components/ui/Card';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { useBalance } from '@/hooks/balance';
+import { usePaymentSettings } from '@/hooks/payment-settings';
 import { t } from '@/i18n';
 import type { Client } from '@gym/shared/types';
 import type { DepositValues } from '@gym/shared/validation/balance';
@@ -22,6 +23,12 @@ export const ClientBalanceDrawer: React.FC<ClientBalanceDrawerProps> = ({
   const { balance, transactions, isLoading, error, pagination, deposit } =
     useBalance(client?.id, client !== null);
   const [success, setSuccess] = useState<string | null>(null);
+  const { settings } = usePaymentSettings();
+  // Top-ups follow the gym's payment settings: credit must be in use, and cash or card accepted.
+  const depositMethods: DepositValues['paymentMethod'][] = [
+    ...(settings.acceptCash ? (['cash'] as const) : []),
+    ...(settings.acceptCard ? (['card'] as const) : []),
+  ];
 
   const onDeposit = async (values: DepositValues): Promise<void> => {
     if (!client) return;
@@ -51,13 +58,28 @@ export const ClientBalanceDrawer: React.FC<ClientBalanceDrawerProps> = ({
           </p>
         </div>
 
-        <DepositForm
-          methods={['cash', 'card']}
-          isPending={deposit.isPending}
-          serverError={deposit.error?.message ?? null}
-          successMessage={success}
-          onSubmit={onDeposit}
-        />
+        {!settings.acceptBalance ? (
+          <Alert tone="warning">
+            {t(
+              'Your gym does not use balance credit. Turn it on in the payment settings to add funds.'
+            )}
+          </Alert>
+        ) : depositMethods.length === 0 ? (
+          <Alert tone="warning">
+            {t(
+              'Cash and card are both off, so funds cannot be added. Turn one on in the payment settings.'
+            )}
+          </Alert>
+        ) : (
+          <DepositForm
+            key={depositMethods.join()}
+            methods={depositMethods}
+            isPending={deposit.isPending}
+            serverError={deposit.error?.message ?? null}
+            successMessage={success}
+            onSubmit={onDeposit}
+          />
+        )}
 
         <div>
           <h4 className="mb-3 text-base font-semibold text-bone">

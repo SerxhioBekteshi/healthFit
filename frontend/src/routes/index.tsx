@@ -3,10 +3,11 @@ import { Navigate, Outlet, createBrowserRouter } from 'react-router-dom';
 import { PageSkeleton } from '@/components/ui/PageSkeleton';
 import { useSession } from '@/hooks/session';
 import { AuthShell } from '@/layouts/AuthShell';
-import { t } from '@/i18n';
 import { roleHomePath } from '@/utils/constants/navigation';
 import { LandingPage } from '@/views/landing/LandingPage';
 import { LoginPage } from '@/views/auth/LoginPage';
+import { AcceptInvitePage } from '@/views/auth/AcceptInvitePage';
+import { SignUpPage } from '@/views/auth/SignUpPage';
 import type { UserRole } from '@gym/shared/types';
 
 const HomeRoute: React.FC = () => {
@@ -14,7 +15,7 @@ const HomeRoute: React.FC = () => {
   return (
     <LandingPage
       ctaHref={user ? roleHomePath[user.role] : '/login'}
-      ctaLabel={user ? t('Open your dashboard') : t('Enter the platform')}
+      ctaLabel={user ? 'Open your dashboard' : 'Enter the platform'}
     />
   );
 };
@@ -28,6 +29,17 @@ const LoginRoute: React.FC = () => {
     return <Navigate to={roleHomePath[user.role]} replace />;
   }
   return <LoginPage />;
+};
+
+const SignUpRoute: React.FC = () => {
+  const { user, isLoading } = useSession();
+  if (isLoading) {
+    return <PageSkeleton />;
+  }
+  if (user) {
+    return <Navigate to={roleHomePath[user.role]} replace />;
+  }
+  return <SignUpPage />;
 };
 
 const shell = (role: UserRole): React.FC => {
@@ -53,6 +65,8 @@ export const router = createBrowserRouter([
     children: [
       { path: '/', Component: HomeRoute },
       { path: '/login', Component: LoginRoute },
+      { path: '/sign-up', Component: SignUpRoute },
+      { path: '/invite/:token', Component: AcceptInvitePage },
       {
         Component: shell('gym_admin'),
         children: [
@@ -111,6 +125,34 @@ export const router = createBrowserRouter([
             ...page(
               () => import('@/views/gym/gym-locations/GymLocationsPage'),
               'GymLocationsPage'
+            ),
+          },
+          {
+            path: '/payment-settings',
+            ...page(
+              () => import('@/views/gym/payment-settings/PaymentSettingsPage'),
+              'PaymentSettingsPage'
+            ),
+          },
+          {
+            path: '/access-settings',
+            ...page(
+              () => import('@/views/gym/access-settings/AccessSettingsPage'),
+              'AccessSettingsPage'
+            ),
+          },
+          {
+            path: '/member-cards',
+            ...page(
+              () => import('@/views/gym/member-cards/MemberCardsPage'),
+              'MemberCardsPage'
+            ),
+          },
+          {
+            path: '/lockers',
+            ...page(
+              () => import('@/views/gym/lockers/LockersPage'),
+              'LockersPage'
             ),
           },
           {
@@ -234,6 +276,14 @@ export const router = createBrowserRouter([
             ...page(
               () => import('@/views/super-admin/BillingsPage'),
               'BillingsPage'
+            ),
+          },
+          {
+            path: '/super-admin/signup-requests',
+            ...page(
+              () =>
+                import('@/views/super-admin/signup-requests/SignupRequestsPage'),
+              'SignupRequestsPage'
             ),
           },
         ],

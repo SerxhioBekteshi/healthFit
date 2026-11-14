@@ -1,5 +1,6 @@
 import type {
   Exercise as ExerciseRow,
+  Prisma,
   WorkoutDay as DayRow,
   WorkoutProgram as ProgramRow,
 } from '@prisma/client';
@@ -8,6 +9,8 @@ import { uploadService } from '@/services/uploads';
 import type { TenantContext } from '@/tenant/context';
 import type { WorkoutProgram } from '@gym/shared/types';
 import type { WorkoutProgramInput } from '@gym/shared/validation/workout-programs';
+import { DEFAULT_PROGRAMS } from './defaults';
+import { describeExercise } from './guides';
 
 type ProgramWithDays = ProgramRow & {
   days: (DayRow & { exercises: ExerciseRow[] })[];
@@ -101,6 +104,51 @@ const requireProgram = async (
 };
 
 export const workoutProgramService = {
+  // Called when a gym is created so members find programs from day one; the owner edits or deletes them.
+  async createDefaults(
+    db: Pick<
+      Prisma.TransactionClient,
+      'workoutProgram' | 'workoutDay' | 'exercise'
+    >,
+    gymId: string
+  ): Promise<void> {
+    for (const program of DEFAULT_PROGRAMS) {
+      const created = await db.workoutProgram.create({
+        data: {
+          gymId,
+          name: program.name,
+          level: program.level,
+          description: program.description,
+          sessionsPerWeek: program.days.length,
+        },
+      });
+      for (const [dayIndex, day] of program.days.entries()) {
+        const createdDay = await db.workoutDay.create({
+          data: {
+            gymId,
+            programId: created.id,
+            dayNumber: dayIndex + 1,
+            focus: day.focus,
+          },
+        });
+        await db.exercise.createMany({
+          data: day.exercises.map((exercise, position) => ({
+            gymId,
+            dayId: createdDay.id,
+            position,
+            name: exercise.name,
+            icon: exercise.icon,
+            sets: exercise.sets,
+            reps: exercise.reps,
+            weight: (exercise.weight ?? 0).toFixed(2),
+            restSeconds: exercise.rest ?? 60,
+            notes: describeExercise(exercise.name, exercise.tip),
+          })),
+        });
+      }
+    }
+  },
+
   async list(ctx: TenantContext): Promise<WorkoutProgram[]> {
     const rows = await ctx.db.workoutProgram.findMany({
       include: withDays,

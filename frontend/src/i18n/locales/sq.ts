@@ -21,28 +21,19 @@ export const sq: Record<string, string> = {
     'Klasa përsëritet çdo javë në ditët që zgjedh.',
   'A client with this email already exists.':
     'Ekziston tashmë një klient me këtë email.',
-  'A dashboard that shows what needs you today':
-    'Një panel që tregon çfarë kërkon vëmendjen tënde sot',
   'A note can have at most 160 characters.':
     'Një shënim mund të ketë maksimumi 160 karaktere.',
-  'A personal QR code is the whole front desk. Membership, opening hours and holidays are checked in a heartbeat.':
-    'Një kod personal QR zëvendëson gjithë recepsionin. Anëtarësia, orari i hapjes dhe pushimet kontrollohen në një çast.',
-  'A personal QR for instant check-in':
-    'Një QR personal për hyrje të menjëhershme',
   'A program needs one training day per weekly session.':
     'Një program ka nevojë për një ditë stërvitjeje për çdo seancë javore.',
   'A week has 7 days.': 'Një javë ka 7 ditë.',
-  'A weight plate': 'Një disk pesha',
   'Abs & core, Aerobics, Personal training...':
     'Bark & bërthamë, Aerobikë, Stërvitje personale...',
   'Abs, Aerobics, Zumba...': 'Bark, Aerobikë, Zumba...',
-  Access: 'Qasje',
   Account: 'Llogaria',
   'Across all gyms': 'Në të gjitha palestrat',
   Actions: 'Veprime',
   Activate: 'Aktivizo',
   Active: 'Aktiv',
-  'Active members': 'Anëtarë aktivë',
   'Active memberships': 'Anëtarësi aktive',
   'Active subscriptions': 'Abonime aktive',
   'Add Class': 'Shto klasë',
@@ -94,7 +85,6 @@ export const sq: Record<string, string> = {
   'Another plan you buy now starts on {{date}}, right after your last one ends.':
     'Një plan tjetër që blen tani fillon më {{date}}, menjëherë pasi të përfundojë i fundit.',
   Any: 'Çdo',
-  Arrive: 'Mbërri',
   'As printed on the card': 'Siç është shtypur në kartë',
   'Assign Membership': 'Cakto anëtarësi',
   'Assign a plan to one of your clients.':
@@ -111,27 +101,15 @@ export const sq: Record<string, string> = {
   'Authentication required.': 'Kërkohet autentikim.',
   'Available balance': 'Bilanci i disponueshëm',
   Balance: 'Bilanci',
-  'Balance deposit': 'Depozitë në bilanc',
-  'Balance {{amount}}': 'Bilanci {{amount}}',
-  'Balance, clear as glass.': 'Bilanci, i pastër si xhami.',
-  'Balances are built from an immutable ledger. Payments are confirmed by the server, never trusted to the screen.':
-    'Bilancet ndërtohen nga një libër kontabël i pandryshueshëm. Pagesat konfirmohen nga serveri, jo nga ekrani.',
   'Bank Transfer': 'Transfertë bankare',
   'Bank transfer (already received)': 'Transfertë bankare (e marrë tashmë)',
-  'Barbell Bench Press': 'Shtytje me shtangë në stol',
-  'Basic Yearly': 'Bazë vjetore',
-  Begin: 'Fillo',
   Beginner: 'Fillestar',
-  'Beginner to advanced plans, written by your coaches and always in the member’s pocket.':
-    'Plane nga fillestar deri te i avancuar, shkruar nga trajnerët e tu dhe gjithmonë në xhepin e anëtarit.',
   'Bench press': 'Shtytje në stol',
   'Biceps curl': 'Përkulje për biceps',
   Billing: 'Faturimi',
   Billings: 'Faturimet',
   'Block sign-in and check-in. Memberships are not changed.':
     'Blloko hyrjen në llogari dhe regjistrimin e hyrjes. Anëtarësitë nuk ndryshohen.',
-  'Built for everyone': 'E ndërtuar për të gjithë',
-  'Built on four': 'Ndërtuar mbi katër',
   'Business Hours': 'Orari i punës',
   'Business hours are required.': 'Orari i punës është i detyrueshëm.',
   Buy: 'Bli',
@@ -156,9 +134,6 @@ export const sq: Record<string, string> = {
   'Change password': 'Ndrysho fjalëkalimin',
   'Change {{label}}': 'Ndrysho {{label}}',
   'Charged now.': 'Tarifohet tani.',
-  'Check in': 'Regjistro hyrjen',
-  'Check in a member': 'Regjistro hyrjen e një anëtari',
-  'Check members in at the desk.': 'Regjistro hyrjen e anëtarëve në recepsion.',
   'Check the card number.': 'Kontrollo numrin e kartës.',
   'Check-in code': 'Kodi i hyrjes',
   'Check-in failed.': 'Regjistrimi i hyrjes dështoi.',
@@ -169,17 +144,13 @@ export const sq: Record<string, string> = {
   'Check-ins are blocked on these dates.':
     'Hyrjet janë të bllokuara në këto data.',
   'Check-ins today': 'Hyrje sot',
-  'Checked in': 'Hyri',
   'Checked in at {{time}}': 'Hyri në {{time}}',
   'Checked in at {{time}} - {{location}}': 'Hyri në {{time}} - {{location}}',
   'Checked in recently': 'Hyri së fundmi',
   'Checked in your browser. Only the card brand and last 4 digits are sent; this demo does not charge a real card.':
     'Kontrollohet në shfletuesin tënd. Dërgohen vetëm marka e kartës dhe 4 shifrat e fundit; ky demo nuk tarifon kartë reale.',
-  'Checking in': 'Duke regjistruar hyrjen',
   'Checking in at': 'Hyrja regjistrohet në',
-  'Chest and triceps': 'Gjoks dhe triceps',
   'Choose a membership': 'Zgjidh një anëtarësi',
-  'Choose a role': 'Zgjidh një rol',
   'Choose an image to upload.': 'Zgjidh një imazh për ta ngarkuar.',
   'Choose one of the gym locations.': 'Zgjidh një nga lokacionet e palestrës.',
   'Choose the country.': 'Zgjidh shtetin.',
@@ -281,7 +252,6 @@ export const sq: Record<string, string> = {
   'Dark theme': 'Tema e errët',
   Dashboard: 'Paneli',
   Date: 'Data',
-  'Day {{number}}': 'Dita {{number}}',
   'Day {{n}}': 'Dita {{n}}',
   Days: 'Ditë',
   Deactivate: 'Çaktivizo',
@@ -356,26 +326,17 @@ export const sq: Record<string, string> = {
   'Enter a valid timezone.': 'Shkruaj një zonë kohore të vlefshme.',
   'Enter the card details.': 'Shkruaj të dhënat e kartës.',
   'Enter the name on the card.': 'Shkruaj emrin në kartë.',
-  'Enter the platform': 'Hyr në platformë',
   'Enter the {{length}}-digit code from your bank to confirm this card payment.':
     'Shkruaj kodin {{length}}-shifror nga banka jote për të konfirmuar këtë pagesë me kartë.',
   'Enter your password': 'Shkruaj fjalëkalimin',
-  'Every cent accounted for.': 'Çdo qindarkë e llogaritur.',
-  'Every gym lives in its own secure space. Data never crosses a boundary, and that is enforced on the server rather than only in the interface.':
-    'Çdo palestër ka hapësirën e vet të sigurt. Të dhënat nuk kalojnë kurrë kufijtë, dhe kjo zbatohet në server, jo vetëm në ndërfaqe.',
   'Every gym,': 'Çdo palestër,',
-  'Example check-in QR code': 'Shembull i kodit QR të hyrjes',
   'Exercise (e.g. Barbell Bench Press)':
     'Ushtrimi (p.sh. Shtytje me shtangë në stol)',
   'Exercise name is required.': 'Emri i ushtrimit është i detyrueshëm.',
   'Expand sidebar': 'Zgjero menunë anësore',
-  Experience: 'Përvoja',
   Expires: 'Skadon',
-  Explore: 'Eksploro',
   Extras: 'Shtesa',
   'Failed to update password.': 'Fjalëkalimi nuk u përditësua.',
-  'Fast on a phone at the front desk, calm on a laptop in the office, and clear enough to need no manual.':
-    'I shpejtë në telefon në recepsion, i qetë në laptop në zyrë dhe aq i qartë sa nuk ka nevojë për manual.',
   'Fill in client details and save your changes.':
     'Plotëso të dhënat e klientit dhe ruaj ndryshimet.',
   'Fill in gym admin details and save your changes.':
@@ -392,15 +353,12 @@ export const sq: Record<string, string> = {
   'Finished {{n}} days ago': 'Përfundoi {{n}} ditë më parë',
   'Focus (e.g. Chest & Triceps)': 'Fokusi (p.sh. Gjoks & Triceps)',
   For: 'Për',
-  'Four moments, one flow': 'Katër çaste, një rrjedhë',
   From: 'Nga',
   'From date': 'Nga data',
   'Full Name': 'Emri i plotë',
   'Full name is required.': 'Emri i plotë është i detyrueshëm.',
   'Funds added to the balance.': 'Paratë u shtuan në bilanc.',
   'Funds added.': 'Paratë u shtuan.',
-  'GET /balance': 'GET /balance',
-  'GET /memberships/history': 'GET /memberships/history',
   Gender: 'Gjinia',
   Germany: 'Gjermania',
   'Good afternoon,': 'Mirëdita,',
@@ -423,7 +381,6 @@ export const sq: Record<string, string> = {
   'Gym not found.': 'Palestra nuk u gjet.',
   'Gym photo {{n}}': 'Foto e palestrës {{n}}',
   'Gym status updated.': 'Statusi i palestrës u përditësua.',
-  'Gym teams': 'Ekipet e palestrave',
   'Gym updated.': 'Palestra u përditësua.',
   'Gym:': 'Palestra:',
   Gyms: 'Palestrat',
@@ -439,19 +396,12 @@ export const sq: Record<string, string> = {
   'Image uploaded.': 'Imazhi u ngarkua.',
   'In the gym now': 'Në palestër tani',
   Inactive: 'Joaktiv',
-  'Incline Dumbbell Press': 'Shtytje me tola në stol të pjerrët',
-  'Initial Password': 'Fjalëkalimi fillestar',
   'Inside now': 'Brenda tani',
   Instructor: 'Instruktori',
-  'Interface previews use illustrative data':
-    'Pamjet e ndërfaqes përdorin të dhëna ilustruese',
-  'Interface previews use illustrative data.':
-    'Pamjet e ndërfaqes përdorin të dhëna ilustruese.',
   Intermediate: 'Mesatar',
   'Invalid card.': 'Kartë e pavlefshme.',
   'Invalid email or password.': 'Email ose fjalëkalim i pavlefshëm.',
   'Invalid image.': 'Imazh i pavlefshëm.',
-  'Isolated by design.': 'E izoluar me qëllim.',
   Italy: 'Italia',
   'Its admins and members are blocked until you activate the gym again. Nothing is deleted.':
     'Administratorët dhe anëtarët e saj janë të bllokuar derisa ta aktivizosh sërish palestrën. Asgjë nuk fshihet.',
@@ -467,10 +417,8 @@ export const sq: Record<string, string> = {
   'Latest check-ins': 'Hyrjet e fundit',
   'Latitude must be between -90 and 90.':
     'Gjerësia gjeografike duhet të jetë mes -90 dhe 90.',
-  'Launch a new gym in minutes': 'Hap një palestër të re për pak minuta',
   'Leave a price empty to take it off the list.':
     'Lëre një çmim bosh për ta hequr nga lista.',
-  'Ledger-backed balances': 'Bilance të mbështetura nga libri kontabël',
   'Leg press': 'Shtytje këmbësh',
   'Let this client sign in and check in again.':
     'Lejo këtë klient të hyjë sërish në llogari dhe të regjistrojë hyrjen.',
@@ -479,12 +427,6 @@ export const sq: Record<string, string> = {
   'Light theme': 'Tema e çelët',
   'Lines shown under the price list for every member, for example opening hours or classes included.':
     'Rreshta që shfaqen nën listën e çmimeve për çdo anëtar, për shembull orari i hapjes ose klasat e përfshira.',
-  Live: 'Drejtpërdrejt',
-  'Live occupancy': 'Zënia drejtpërdrejt',
-  'Live occupancy before you leave home':
-    'Zënia drejtpërdrejt para se të dalësh nga shtëpia',
-  'Live occupancy, expiring memberships, revenue and stock in one calm dashboard.':
-    'Zënia drejtpërdrejt, anëtarësitë që skadojnë, të ardhurat dhe stoku në një panel të qetë.',
   Loading: 'Duke ngarkuar',
   Location: 'Lokacioni',
   'Location is required.': 'Lokacioni është i detyrueshëm.',
@@ -496,15 +438,12 @@ export const sq: Record<string, string> = {
   'Low balance': 'Bilanc i ulët',
   Lunge: 'Hap përpara',
   'MM/YY': 'MM/YY',
-  'Made for the floor.': 'Bërë për sallën.',
   'Made on the spot and payable only by cash at the gym.':
     'Përgatitet në vend dhe paguhet vetëm me para në dorë në palestër.',
   'Made to order cash only': 'Sipas porosisë, vetëm para në dorë',
   'Made to order · cash only': 'Sipas porosisë · vetëm para në dorë',
   Main: 'Kryesore',
   Manage: 'Menaxho',
-  Manifesto: 'Manifesti',
-  'Many gyms. One calm view.': 'Shumë palestra. Një pamje e qetë.',
   Map: 'Harta',
   'Map style': 'Stili i hartës',
   'Max amount': 'Shuma maksimale',
@@ -519,8 +458,6 @@ export const sq: Record<string, string> = {
     'Anëtarët nuk do ta shohin më në listën e çmimeve.',
   'Members, memberships, check-ins and billing — one calm platform for every gym you run.':
     'Anëtarë, anëtarësi, hyrje dhe faturim — një platformë e qetë për çdo palestër që drejton.',
-  'Members, plans and renewals in a few taps':
-    'Anëtarë, plane dhe rinovime me pak prekje',
   Membership: 'Anëtarësia',
   'Membership assigned to {{name}}.': 'Anëtarësia iu caktua {{name}}.',
   'Membership assigned.': 'Anëtarësia u caktua.',
@@ -533,10 +470,6 @@ export const sq: Record<string, string> = {
   'Membership renewed.': 'Anëtarësia u rinovua.',
   'Membership saved.': 'Anëtarësia u ruajt.',
   'Membership subscribed.': 'U abonove në anëtarësi.',
-  'Membership, balance and history in one place':
-    'Anëtarësia, bilanci dhe historiku në një vend',
-  'Membership: 4x per week': 'Anëtarësia: 4x në javë',
-  Memberships: 'Anëtarësitë',
   'Memberships and check-ins over time.':
     'Anëtarësitë dhe hyrjet me kalimin e kohës.',
   Men: 'Meshkuj',
@@ -544,13 +477,9 @@ export const sq: Record<string, string> = {
   Merchandise: 'Mallra',
   Method: 'Metoda',
   'Min amount': 'Shuma minimale',
-  Mobile: 'Celulari',
   'Mon-Fri 06:00-22:00': 'Hën-Pre 06:00-22:00',
   Monthly: 'Mujor',
-  'Most gyms run on spreadsheets, paper cards and goodwill. We believe the place where people change their lives deserves software as considered as the equipment on the floor — quiet, precise, and impossible to get wrong.':
-    "Shumica e palestrave funksionojnë me fletë llogaritjeje, karta letre dhe mirëbesim. Besojmë se vendi ku njerëzit ndryshojnë jetën e tyre meriton një softuer po aq i menduar sa pajisjet në sallë — i qetë, i saktë, i pamundur për t'u gabuar.",
   Movement: 'Lëvizja',
-  'Multi-gym': 'Shumë palestra',
   'Multi-tenant · Role-based · Secure':
     'Shumë qiramarrës · Sipas roleve · I sigurt',
   My: 'Zona ime:',
@@ -629,10 +558,6 @@ export const sq: Record<string, string> = {
   'Nothing matches "{{search}}".': 'Asgjë nuk përputhet me "{{search}}".',
   Now: 'Tani',
   'On the timetable': 'Në orar',
-  'One membership, one scan, one beautifully calm app. Made for the people who train and the teams who run the floor.':
-    'Një anëtarësi, një skanim, një aplikacion bukur i qetë. Bërë për ata që stërviten dhe për ekipet që drejtojnë sallën.',
-  'One platform': 'Një platformë',
-  'One scan.': 'Një skanim.',
   Online: 'Në linjë',
   'Only JPEG, PNG or WebP images are allowed.':
     'Lejohen vetëm imazhe JPEG, PNG ose WebP.',
@@ -648,19 +573,12 @@ export const sq: Record<string, string> = {
   'Open map': 'Hap hartën',
   'Open menu': 'Hap menunë',
   'Open to members': 'E hapur për anëtarët',
-  'Open your dashboard': 'Hap panelin tënd',
-  'Opening hours and closures that enforce themselves':
-    'Orare hapjeje dhe mbyllje që zbatohen vetë',
-  'Opening hours, holidays and closures are understood per gym and per timezone before anyone walks through the door.':
-    'Orari i hapjes, pushimet dhe mbylljet kuptohen për çdo palestër dhe zonë kohore para se dikush të hyjë nga dera.',
   Opens: 'Hapet',
   Operations: 'Operacionet',
   Our: 'Rrjeti ynë:',
   Overdue: 'Me vonesë',
   'Overdue subscriptions': 'Abonime me vonesë',
-  'Overhead Press': 'Shtytje mbi kokë',
   Overview: 'Përmbledhje',
-  'POST /uploads': 'POST /uploads',
   'Page {{n}}': 'Faqja {{n}}',
   Pagination: 'Faqosja',
   'Paid in cash at the counter, so the membership is paid right away. If the client already has a membership running, this one is queued and starts the day after the last one ends. Members who pay by card or from their balance subscribe in their own app.':
@@ -680,10 +598,6 @@ export const sq: Record<string, string> = {
   'Paste or scan the member code': 'Ngjit ose skano kodin e anëtarit',
   'Paste the share link from Google Maps. Without it members get a link built from the pin.':
     'Ngjit lidhjen e ndarjes nga Google Maps. Pa të, anëtarët marrin një lidhje të ndërtuar nga pini.',
-  'Pause a gym without touching its data':
-    'Pezullo një palestër pa prekur të dhënat e saj',
-  Paused: 'Pezulluar',
-  Pay: 'Paguaj',
   Payment: 'Pagesa',
   'Payment Method': 'Mënyra e pagesës',
   'Payment confirmed.': 'Pagesa u konfirmua.',
@@ -716,7 +630,6 @@ export const sq: Record<string, string> = {
   Plank: 'Planka',
   Platform: 'Platforma',
   'Platform owner': 'Pronari i platformës',
-  'Platform owners': 'Pronarët e platformës',
   'Platform revenue': 'Të ardhurat e platformës',
   'Please confirm the new password.': 'Konfirmo fjalëkalimin e ri.',
   'Please enter a valid email address': 'Shkruaj një adresë emaili të vlefshme',
@@ -732,9 +645,6 @@ export const sq: Record<string, string> = {
   'Price list saved.': 'Lista e çmimeve u ruajt.',
   'Price must be a number.': 'Çmimi duhet të jetë numër.',
   'Prices for': 'Çmimet për',
-  Primary: 'Kryesore',
-  Principles: 'Parimet',
-  'Pro Monthly': 'Pro mujor',
   Product: 'Produkti',
   'Product created.': 'Produkti u krijua.',
   'Product name is required.': 'Emri i produktit është i detyrueshëm.',
@@ -751,7 +661,6 @@ export const sq: Record<string, string> = {
   'Program level': 'Niveli i programit',
   'Program name is required.': 'Emri i programit është i detyrueshëm.',
   'Program updated.': 'Programi u përditësua.',
-  'Programs that fit.': 'Programe që të përshtaten.',
   'Protein shake': 'Shake me proteina',
   'Published to gyms': 'Publikuar te palestrat',
   'Pull-up': 'Ngritje në hekur',
@@ -759,11 +668,8 @@ export const sq: Record<string, string> = {
   'Purchase failed.': 'Blerja dështoi.',
   'Purchase from the gym using your balance.':
     'Bli nga palestra duke përdorur bilancin.',
-  'Push day': 'Dita e shtytjes',
   'Push-up': 'Shtytje në dysheme',
-  'QR check-in': 'Hyrje me QR',
   Reactivate: 'Riaktivizo',
-  'Ready when': 'Gati kur',
   Reason: 'Arsyeja',
   'Reason is required.': 'Arsyeja është e detyrueshme.',
   'Record Payment': 'Regjistro pagesën',
@@ -784,18 +690,14 @@ export const sq: Record<string, string> = {
   Reopen: 'Rihap',
   Reps: 'Përsëritje',
   'Reps must be at least 1.': 'Përsëritjet duhet të jenë të paktën 1.',
-  'Respects the clock.': 'Respekton orarin.',
   Rest: 'Pushim',
   'Rest (sec)': 'Pushim (sek)',
-  'Rest between sets · {{time}}': 'Pushim mes serive · {{time}}',
   'Rest cannot be negative.': 'Pushimi nuk mund të jetë negativ.',
   'Revenue all time': 'Të ardhurat gjithsej',
   'Revenue this month': 'Të ardhurat këtë muaj',
   'Review member profile information.':
     'Shqyrto të dhënat e profilit të anëtarit.',
   'Rows per page': 'Rreshta për faqe',
-  Run: 'Drejto',
-  'Run the floor without the friction.': 'Drejto sallën pa vështirësi.',
   'Run the gym.': 'Drejto palestrën.',
   Running: 'Vrapim',
   'Running from': 'Aktive nga',
@@ -808,10 +710,7 @@ export const sq: Record<string, string> = {
   'Save {{n}} changes': 'Ruaj {{n}} ndryshime',
   Saved: 'U ruajt',
   Saving: 'Duke ruajtur',
-  "Scan the QR on the member's phone or paste their code.":
-    'Skano QR në telefonin e anëtarit ose ngjit kodin e tij.',
   'Scanner element not ready.': 'Elementi i skanerit nuk është gati.',
-  Scroll: 'Zbrit',
   Search: 'Kërko',
   'Search by name, location or admin email':
     'Kërko sipas emrit, lokacionit ose emailit të administratorit',
@@ -824,7 +723,6 @@ export const sq: Record<string, string> = {
   'Search staff': 'Kërko staf',
   'Search this table': 'Kërko në këtë tabelë',
   'Seated row': 'Tërheqje e ulur',
-  'See how it works': 'Shiko si funksionon',
   'Select a client to charge their balance.':
     'Zgjidh një klient për të ngarkuar bilancin e tij.',
   'Select a client.': 'Zgjidh një klient.',
@@ -861,8 +759,6 @@ export const sq: Record<string, string> = {
     'Vendos vëllimin javor dhe planifiko çdo ditë stërvitjeje.',
   Sets: 'Seri',
   'Sets must be at least 1.': 'Seritë duhet të jenë të paktën 1.',
-  'Sets the language, currency and timezone members and staff start with.':
-    'Përcakton gjuhën, monedhën dhe zonën kohore me të cilat nisin anëtarët dhe stafi.',
   'Shakes and smoothies are made at the counter and paid in cash.':
     'Shake-et dhe smoothie-t bëhen në banak dhe paguhen me para në dorë.',
   'Shakes and smoothies can only be paid in cash.':
@@ -878,8 +774,6 @@ export const sq: Record<string, string> = {
     'Shfaq anëtarësitë që kanë qenë aktive në çdo kohë gjatë kësaj periudhe.',
   'Sign in': 'Hyr',
   'Sign in to continue.': 'Hyr për të vazhduar.',
-  'Sign in to your gym, or ask your platform owner to open one for you.':
-    'Hyr në palestrën tënde, ose kërkoji pronarit të platformës të të hapë një.',
   'Sign out': 'Dil',
   'Signed in.': 'U identifikove.',
   'Signing in': 'Duke hyrë',
@@ -891,8 +785,6 @@ export const sq: Record<string, string> = {
     'Shpenzoji për anëtarësi dhe produkte në palestrën tënde.',
   Squat: 'Squat',
   Staff: 'Stafi',
-  'Staff can only record cash payments.':
-    'Stafi mund të regjistrojë vetëm pagesa me para në dorë.',
   'Staff member': 'Anëtar stafi',
   'Staff member created.': 'Anëtari i stafit u krijua.',
   'Staff member not found or inactive.':
@@ -921,13 +813,9 @@ export const sq: Record<string, string> = {
   'Stock cannot be negative.': 'Stoku nuk mund të jetë negativ.',
   'Stock must be a number.': 'Stoku duhet të jetë numër.',
   'Stock must be a whole number.': 'Stoku duhet të jetë numër i plotë.',
-  'Stock, sales and balances that always add up':
-    'Stok, shitje dhe bilance që përputhen gjithmonë',
   'Stop camera': 'Ndalo kamerën',
   Street: 'Rruga',
   'Street, City': 'Rruga, Qyteti',
-  'Strict separation between every location':
-    'Ndarje e rreptë mes çdo lokacioni',
   Subdomain: 'Nëndomeni',
   'Subdomain can only contain lowercase letters, numbers, and hyphens.':
     'Nëndomeni mund të përmbajë vetëm shkronja të vogla, numra dhe vizëza.',
@@ -946,7 +834,6 @@ export const sq: Record<string, string> = {
   'Subscription status updated.': 'Statusi i abonimit u përditësua.',
   'Subscription updated.': 'Abonimi u përditësua.',
   Subscriptions: 'Abonimet',
-  'Subscriptions and payments per gym': 'Abonimet dhe pagesat për çdo palestër',
   Supplement: 'Suplement',
   'Switch to dark theme': 'Kalo te tema e errët',
   'Switch to light theme': 'Kalo te tema e çelët',
@@ -960,15 +847,12 @@ export const sq: Record<string, string> = {
   'The client': 'Klienti',
   'The code has expired. Start the payment again.':
     'Kodi ka skaduar. Nise pagesën sërish.',
-  'The floor at a glance.': 'Salla me një shikim.',
   'The image must be 5 MB or smaller.':
     'Imazhi duhet të jetë 5 MB ose më i vogël.',
   'The link is too long.': 'Lidhja është shumë e gjatë.',
   'The minimum amount must not exceed the maximum.':
     'Shuma minimale nuk mund të kalojë atë maksimale.',
   'The minimum is above the maximum.': 'Minimumi është mbi maksimumin.',
-  'The operating system for modern gyms':
-    'Sistemi operativ për palestrat moderne',
   'The request conflicts with existing data.':
     'Kërkesa bie ndesh me të dhënat ekzistuese.',
   'The requested resource could not be found.': 'Burimi i kërkuar nuk u gjet.',
@@ -979,7 +863,6 @@ export const sq: Record<string, string> = {
     'Data e fillimit nuk duhet të jetë pas datës së mbarimit.',
   'The subscription changed while recording the payment. Please retry.':
     'Abonimi ndryshoi gjatë regjistrimit të pagesës. Provo përsëri.',
-  'The {{brand}} heart mark': 'Simboli i zemrës {{brand}}',
   'They can no longer be assigned to classes. Classes they already teach keep them as the instructor.':
     'Nuk mund të caktohen më në klasa. Klasat që japin tashmë i mbajnë si instruktor.',
   'This card has expired.': 'Kjo kartë ka skaduar.',
@@ -1004,26 +887,20 @@ export const sq: Record<string, string> = {
   To: 'Deri',
   'To date': 'Deri më datën',
   Today: 'Sot',
-  'Today on the floor': 'Sot në sallë',
   "Today's classes": 'Klasat e sotme',
   'Too many prices.': 'Shumë çmime.',
   'Too many wrong codes. Start the payment again.':
     'Shumë kode të gabuara. Nise pagesën sërish.',
   'Top up': 'Mbush bilancin',
-  'Top up, buy a shake, renew a plan. Every cent lands in an auditable ledger — never a mystery number.':
-    'Mbush bilancin, bli një shake, rinovo një plan. Çdo qindarkë shkon në një libër kontabël të auditueshëm — kurrë një numër i panjohur.',
   'Total gyms': 'Gjithsej palestra',
   'Total members': 'Gjithsej anëtarë',
   'Total {{amount}}. Choose how to pay.':
     'Totali {{amount}}. Zgjidh mënyrën e pagesës.',
-  Train: 'Stërvitu',
-  'Train like': 'Stërvitu sikur',
   'Trainers and instructors you can assign to classes.':
     "Trajnerë dhe instruktorë që mund t'i caktosh në klasa.",
   'Training days': 'Ditët e stërvitjes',
   'Transaction history': 'Historiku i transaksioneve',
   Trialing: 'Në provë',
-  'Triceps Pushdown': 'Shtytje poshtë për triceps',
   'Triceps pushdown': 'Shtytje poshtë për triceps',
   'Try a different search or filter.': 'Provo një kërkim ose filtër tjetër.',
   'Try again': 'Provo përsëri',
@@ -1090,7 +967,6 @@ export const sq: Record<string, string> = {
   'Weight (kg)': 'Pesha (kg)',
   'Weight cannot be negative.': 'Pesha nuk mund të jetë negative.',
   'Welcome back': 'Mirë se u ktheve',
-  'Welcome back, {{name}}': 'Mirë se u ktheve, {{name}}',
   'Welcome,': 'Mirë se vjen,',
   'Welcome, {{name}}.': 'Mirë se vjen, {{name}}.',
   'Welcome.': 'Mirë se vjen.',
@@ -1100,8 +976,6 @@ export const sq: Record<string, string> = {
   Workout: 'Stërvitja',
   'Workout program not found.': 'Programi i stërvitjes nuk u gjet.',
   'Workout programs': 'Programet e stërvitjes',
-  'Workout programs from your own gym':
-    'Programe stërvitjeje nga palestra jote',
   Workouts: 'Stërvitjet',
   Yearly: 'Vjetor',
   'You already have a membership waiting for payment confirmation.':
@@ -1122,7 +996,6 @@ export const sq: Record<string, string> = {
     'Palestra jote nuk ka publikuar ende asnjë klasë.',
   'Your gym has not set your gender yet. Ask them to update your profile.':
     'Palestra jote nuk e ka vendosur ende gjininë tënde. Kërkoji të përditësojë profilin tënd.',
-  'Your gym, in your pocket.': 'Palestra jote, në xhep.',
   'Your membership works at every gym below. Train wherever suits you; the gym records the visit when you check in.':
     'Anëtarësia jote vlen në çdo palestër më poshtë. Stërvitu ku të të përshtatet; palestra e regjistron vizitën kur kryen hyrjen.',
   'Your membership, balance and gym activity.':
@@ -1133,26 +1006,16 @@ export const sq: Record<string, string> = {
   admins: 'administratorët',
   attendance: 'prania',
   balance: 'bilanci',
-  'bg-signal/10 text-signal ring-signal/20':
-    'bg-signal/10 text-signal ring-signal/20',
-  'border border-signal/30 bg-signal/10 text-signal hover:bg-signal/20':
-    'border border-signal/30 bg-signal/10 text-signal hover:bg-signal/20',
-  'border-signal/25 bg-signal/10 text-signal':
-    'border-signal/25 bg-signal/10 text-signal',
   'checked in': 'hyri',
   clients: 'klientët',
   closures: 'mbylljet',
   configuration: 'konfigurimi',
-  considered: 'i menduar',
   'cover photo': 'foto kopertine',
   'e.g. Daily pass': 'p.sh. Biletë ditore',
-  floor: 'sallë',
   gyms: 'palestrat',
   history: 'historiku',
-  'it matters.': 'ka rëndësi.',
   membership: 'anëtarësia',
   memberships: 'anëtarësitë',
-  'on the floor.': 'në sallë.',
   'one view': 'një pamje',
   'payment failed': 'pagesa dështoi',
   'payment paid': 'pagesa e kryer',
@@ -1165,13 +1028,10 @@ export const sq: Record<string, string> = {
   photo: 'foto',
   products: 'produktet',
   programs: 'programet',
-  'quiet convictions.': 'bindje të qeta.',
-  'quiet, precise,': 'i qetë, i saktë,',
   'save {{amount}}': 'kurse {{amount}}',
   shop: 'dyqani',
   staff: 'stafi',
   subscriptions: 'abonimet',
-  'text-signal': 'text-signal',
   timetable: 'orari',
   today: 'sot',
   unlimited: 'pa limit',
@@ -1179,27 +1039,17 @@ export const sq: Record<string, string> = {
   'valid {{n}} days': 'e vlefshme {{n}} ditë',
   'with {{name}}': 'me {{name}}',
   workouts: 'stërvitjet',
-  'wrong.': 'gabuar.',
-  'you are.': 'je ti.',
   'your gym': 'palestra jote',
   '{{active}} active / {{inactive}} inactive':
     '{{active}} aktive / {{inactive}} joaktive',
   '{{amount}} overdue': '{{amount}} me vonesë',
-  '{{brand}} home': 'Ballina e {{brand}}',
   '{{change}}% vs last week': '{{change}}% krahasuar me javën e kaluar',
-  '{{days}} day streak': 'Seri {{days}} ditësh',
-  '{{descriptor}}. Quietly precise software for the places where people get stronger.':
-    '{{descriptor}}. Softuer i qetë dhe i saktë për vendet ku njerëzit forcohen.',
-  '{{done}} of {{total}} complete': '{{done}} nga {{total}} të plotësuara',
-  '{{expiring}} memberships expire this week · {{low}} product low on stock':
-    '{{expiring}} anëtarësi skadojnë këtë javë · {{low}} produkt me stok të ulët',
   '{{frequency}}, {{term}}': '{{frequency}}, {{term}}',
   '{{gym}} will stop being billed on {{plan}}. You can reactivate it later.':
     '{{gym}} nuk do të faturohet më për {{plan}}. Mund ta riaktivizosh më vonë.',
   '{{gym}} — {{price}} due {{date}}': '{{gym}} — {{price}} afati {{date}}',
   '{{left}} of {{total}} visits left':
     '{{left}} nga {{total}} vizita të mbetura',
-  '{{method}} · {{date}}': '{{method}} · {{date}}',
   '{{name}} will lose access with {{plan}}. This cannot be undone.':
     '{{name}} do ta humbasë qasjen me {{plan}}. Ky veprim nuk mund të zhbëhet.',
   '{{name}} will not be able to sign in or check in. Their memberships stay as they are, and you can enable the account again.':
@@ -1228,15 +1078,352 @@ export const sq: Record<string, string> = {
   '{{n}}s rest': '{{n}}s pushim',
   '{{n}}x per week': '{{n}}x në javë',
   '{{pastDue}} gym(s) past due': '{{pastDue}} palestra me vonesë',
-  '{{sessions}} sessions / week': '{{sessions}} seanca / javë',
   '{{shown}} of {{all}}': '{{shown}} nga {{all}}',
   '{{stock}} in stock': '{{stock}} në stok',
   '{{term}}, {{frequency}}, price in {{currency}}':
     '{{term}}, {{frequency}}, çmimi në {{currency}}',
-  '{{total}} gyms': '{{total}} palestra',
   '{{trialing}} trialing': '{{trialing}} në provë',
+  Applicant: 'Aplikuesi',
+  Approve: 'Aprovo',
+  'Approve {{gym}}?': 'Të aprovohet {{gym}}?',
+  Approved: 'Aprovuar',
+  'Check the details before you decide.':
+    'Kontrolloni të dhënat para se të vendosni.',
+  City: 'Qyteti',
+  'City is required.': 'Qyteti është i detyrueshëm.',
+  'Contact us for more than 50 locations.':
+    'Na kontaktoni për më shumë se 50 lokacione.',
+  'Enter a whole number.': 'Futni një numër të plotë.',
+  'Enter how many locations you have.': 'Futni sa lokacione keni.',
+  'Gym owners who register from the landing page show up here.':
+    'Pronarët e palestrave që regjistrohen nga faqja kryesore shfaqen këtu.',
+  'Keep it under 1000 characters.': 'Mbajeni nën 1000 karaktere.',
+  'Keep it under 500 characters.': 'Mbajeni nën 500 karaktere.',
+  Locations: 'Lokacionet',
+  'No requests yet': 'Ende nuk ka kërkesa',
+  'Number of locations': 'Numri i lokacioneve',
+  'Own a gym?': 'Keni një palestër?',
+  'Owners who asked to join the platform. Check them, then approve or reject.':
+    'Pronarët që kërkuan të bashkohen me platformën. Kontrolloni dhe pastaj aprovoni ose refuzoni.',
+  'Reason (optional)': 'Arsyeja (opsionale)',
+  'Register your gym': 'Regjistroni palestrën tuaj',
+  Reject: 'Refuzo',
+  'Reject this request?': 'Të refuzohet kjo kërkesë?',
+  Rejected: 'Refuzuar',
+  'Request approved. The gym and its admin were created.':
+    'Kërkesa u aprovua. Palestra dhe administratori i saj u krijuan.',
+  'Request details': 'Detajet e kërkesës',
+  'Request rejected.': 'Kërkesa u refuzua.',
+  Requests: 'Kërkesat',
+  Reviewed: 'Shqyrtuar',
+  'Search by name, email or gym': 'Kërko sipas emrit, email-it ose palestrës',
+  'Signup request not found.': 'Kërkesa e regjistrimit nuk u gjet.',
+  Submitted: 'Dërguar',
+  'This creates the gym and an admin account for {{name}} ({{email}}). They can sign in right away with the password they chose.':
+    'Kjo krijon palestrën dhe një llogari administratori për {{name}} ({{email}}). Mund të hyjë menjëherë me fjalëkalimin që zgjodhi.',
+  'This request was already reviewed.': 'Kjo kërkesë është shqyrtuar tashmë.',
+  'Too many attempts. Please try again later.':
+    'Shumë përpjekje. Provoni përsëri më vonë.',
+  'You need at least 1 location.': 'Duhet të keni të paktën 1 lokacion.',
+  'from gym owners': 'nga pronarët e palestrave',
+  '{{name}} will not get an account for {{gym}}.':
+    '{{name}} nuk do të marrë llogari për {{gym}}.',
+  'A one-time link so this client can set a new password.':
+    'Një lidhje njëpërdorimshe që ky klient të vendosë një fjalëkalim të ri.',
+  'A one-time link so this client can set a password and sign in.':
+    'Një lidhje njëpërdorimshe që ky klient të vendosë një fjalëkalim dhe të hyjë.',
+  'Ask your gym for a new one.': 'Kërkojini palestrës një të re.',
+  'At least 8 characters, with a number and an uppercase letter.':
+    'Të paktën 8 karaktere, me një numër dhe një shkronjë të madhe.',
+  'Expires {{date}}. Creating a new link cancels this one, and anyone with it can set the password, so share it only with the client.':
+    'Skadon më {{date}}. Krijimi i një lidhjeje të re e anulon këtë, dhe kushdo që e ka mund të vendosë fjalëkalimin, prandaj ndajeni vetëm me klientin.',
+  'Initial Password (optional)': 'Fjalëkalimi fillestar (opsional)',
+  'Invite link': 'Lidhja e ftesës',
+  'Invite link for {{name}}': 'Lidhja e ftesës për {{name}}',
+  'Invite pending': 'Ftesa në pritje',
+  'Leave it empty to get an invite link instead, so the client chooses their own password.':
+    'Lëreni bosh për të marrë një lidhje ftese, që klienti të zgjedhë vetë fjalëkalimin.',
+  'Password set. You can sign in now.':
+    'Fjalëkalimi u vendos. Tani mund të hyni.',
+  'Reset password link': 'Lidhja për rivendosjen e fjalëkalimit',
+  'Send this link or let them scan the QR code. They choose their own password, then sign in. It works once.':
+    'Dërgojani këtë lidhje ose lëreni të skanojë kodin QR. Ai zgjedh vetë fjalëkalimin dhe pastaj hyn. Funksionon vetëm një herë.',
+  'Set password': 'Vendos fjalëkalimin',
+  'Sign in with {{email}} and the password you just chose.':
+    'Hyni me {{email}} dhe fjalëkalimin që sapo zgjodhët.',
+  'This client has no login account.': 'Ky klient nuk ka llogari hyrjeje.',
+  'This invite link is invalid or has expired.':
+    'Kjo lidhje ftese është e pavlefshme ose ka skaduar.',
+  'This link does not work': 'Kjo lidhje nuk funksionon',
+  'You are all set': 'Gjithçka gati',
+  '{{gym}} invited you. Choose a password to finish.':
+    '{{gym}} ju ftoi. Zgjidhni një fjalëkalim për ta përfunduar.',
+  'Card payments are not accepted by this gym.':
+    'Pagesat me kartë nuk pranohen nga kjo palestër.',
+  'Card top-ups are off. Add funds at the gym counter.':
+    'Plotësimet me kartë janë të fikura. Shtoni fonde në sportelin e palestrës.',
+  'Cash and card are both off, so funds cannot be added. Turn one on in the payment settings.':
+    'Paratë e gatshme dhe karta janë të fikura, ndaj nuk mund të shtohen fonde. Ndezni një nga to te cilësimet e pagesave.',
+  'Cash payments are not accepted by this gym.':
+    'Pagesat me para në dorë nuk pranohen nga kjo palestër.',
+  'Charged to the card now, so the membership is paid right away. If the client already has a membership running, this one is queued.':
+    'Ngarkohet tani në kartë, ndaj abonimi paguhet menjëherë. Nëse klienti ka tashmë një abonim në vazhdim, ky vihet në radhë.',
+  'Choose how your members can pay at your gym.':
+    'Zgjidhni si mund të paguajnë anëtarët tuaj në palestër.',
+  'Credit on the account': 'Kredi në llogari',
+  'Keep at least one payment method on.':
+    'Mbani të ndezur të paktën një mënyrë pagese.',
+  'Members keep credit at your gym and pay memberships and products from it. Turning it off also stops top-ups.':
+    'Anëtarët mbajnë kredi në palestrën tuaj dhe paguajnë abonime e produkte me të. Fikja e saj ndalon edhe plotësimet.',
+  'Members pay online with a Visa or Mastercard, and staff can take a card at the counter.':
+    'Anëtarët paguajnë online me Visa ose Mastercard, dhe stafi mund të marrë kartë në sportel.',
+  'Paying from the balance is not accepted by this gym.':
+    'Pagesa nga bilanci nuk pranohet nga kjo palestër.',
+  'Payment settings': 'Cilësimet e pagesave',
+  'Payment settings saved.': 'Cilësimet e pagesave u ruajtën.',
+  'Staff take cash at the counter. Shakes and smoothies are cash only, so they cannot be sold without it.':
+    'Stafi merr para në dorë në sportel. Shejket dhe smoothie-t janë vetëm me para në dorë, ndaj nuk shiten pa to.',
+  'Taken from the client balance now. They need enough credit; if the client already has a membership running, this one is queued.':
+    'Merret tani nga bilanci i klientit. Duhet të ketë kredi të mjaftueshme; nëse klienti ka tashmë një abonim në vazhdim, ky vihet në radhë.',
+  'This gym does not use balance credit.':
+    'Kjo palestër nuk përdor kredi në llogari.',
+  'Your gym does not take online payments right now. Please pay at the gym counter.':
+    'Palestra juaj nuk merr pagesa online tani. Ju lutemi paguani në sportelin e palestrës.',
+  'Your gym does not take payments from the balance. Pay at the counter.':
+    'Palestra juaj nuk merr pagesa nga bilanci. Paguani në sportel.',
+  'Your gym does not use balance credit.':
+    'Palestra juaj nuk përdor kredi në llogari.',
+  'Your gym does not use balance credit. Turn it on in the payment settings to add funds.':
+    'Palestra juaj nuk përdor kredi në llogari. Ndizni atë te cilësimet e pagesave për të shtuar fonde.',
+  'Albanian lek (ALL)': 'Leku shqiptar (ALL)',
+  Currency: 'Monedha',
+  'Currency:': 'Monedha:',
+  'Euro (EUR)': 'Euro (EUR)',
+  'Pound sterling (GBP)': 'Paund sterlinë (GBP)',
+  'Sets the starting language and timezone, and the currency members pay in.':
+    'Cakton gjuhën dhe zonën kohore fillestare, si dhe monedhën me të cilën paguajnë anëtarët.',
+  'The country cannot be changed once the gym has prices or payments.':
+    'Shteti nuk mund të ndryshohet pasi palestra ka çmime ose pagesa.',
+  '+ Add a plan': '+ Shto një plan',
+  'A limited-time price for the plans you choose. It replaces the regular price while it is valid.':
+    'Një çmim i përkohshëm për planet që zgjidh. Ai zëvendëson çmimin e rregullt për sa kohë është i vlefshëm.',
+  'A lower price for some plans during a period, for example New Year or a summer price list. Members see the offer next to the regular price.':
+    'Një çmim më i ulët për disa plane gjatë një periudhe, për shembull Viti i Ri ose një listë çmimesh verore. Anëtarët e shohin ofertën pranë çmimit të rregullt.',
+  'A plan can only be in an offer once.':
+    'Një plan mund të jetë vetëm një herë në një ofertë.',
+  'Add a plan': 'Shto një plan',
+  'Add all plans': 'Shto të gjitha planet',
+  'Add at least one plan to the offer.': 'Shto të paktën një plan në ofertë.',
+  'Add the plans this offer applies to.':
+    'Shto planet për të cilat vlen oferta.',
+  'Adds every visible plan with the discount taken off its regular price. Change any price after.':
+    'Shton çdo plan të dukshëm me uljen e hequr nga çmimi i rregullt. Pastaj ndrysho çdo çmim.',
+  'Create offer': 'Krijo ofertën',
+  'Delete offer': 'Fshi ofertën',
+  'Delete {{name}}': 'Fshi {{name}}',
+  'Discount (%)': 'Zbritje (%)',
+  'Edit Offer': 'Ndrysho ofertën',
+  Ended: 'Përfunduar',
+  'Members who already bought at the offer price keep it. New purchases pay the regular price.':
+    'Anëtarët që kanë blerë tashmë me çmimin e ofertës e ruajnë atë. Blerjet e reja paguajnë çmimin e rregullt.',
+  'New Offer': 'Ofertë e re',
+  "New Year's Eve": 'Nata e Vitit të Ri',
+  'New offer': 'Ofertë e re',
+  'No offers yet. Create one for a holiday or a season.':
+    'Ende pa oferta. Krijo një për një festë ose një stinë.',
+  'Offer created.': 'Oferta u krijua.',
+  'Offer deleted.': 'Oferta u fshi.',
+  'Offer name': 'Emri i ofertës',
+  'Offer name is required.': 'Emri i ofertës është i detyrueshëm.',
+  'Offer name is too long.': 'Emri i ofertës është shumë i gjatë.',
+  'Offer not found.': 'Oferta nuk u gjet.',
+  'Offer price ({{currency}})': 'Çmimi i ofertës ({{currency}})',
+  'Offer updated.': 'Oferta u përditësua.',
+  Pause: 'Nërprit',
+  Paused: 'Nërprerë',
+  'Plan no longer available': 'Plani nuk është më i disponueshëm',
+  'Plans in this offer': 'Planet në këtë ofertë',
+  'Price must be greater than 0.': 'Çmimi duhet të jetë më i madh se 0.',
+  'Regular price {{price}}': 'Çmimi i rregullt {{price}}',
+  'Remove from offer': 'Hiq nga oferta',
+  Resume: 'Vazhdo',
+  Scheduled: 'Planifikuar',
+  'Select a plan.': 'Zgjidh një plan.',
+  'Special offers': 'Oferta speciale',
+  'The offer price must be lower than the regular price.':
+    'Çmimi i ofertës duhet të jetë më i ulët se çmimi i rregullt.',
+  'This day is included.': 'Kjo ditë përfshihet.',
+  'Too many plans in one offer.': 'Shumë plane në një ofertë.',
+  'Update offer': 'Përditëso ofertën',
+  'Valid from': 'E vlefshme nga',
+  'Valid until': 'E vlefshme deri më',
+  'until {{date}}': 'deri më {{date}}',
+  '{{from}} to {{to}}': '{{from}} deri më {{to}}',
+  '{{name}}, until {{date}}': '{{name}}, deri më {{date}}',
+  '{{name}}: {{price}} instead of {{regular}}, until {{date}}.':
+    '{{name}}: {{price}} në vend të {{regular}}, deri më {{date}}.',
+  'Special offer': 'Ofertë speciale',
+  'Valid {{from}} to {{to}}': 'E vlefshme nga {{from}} deri më {{to}}',
+  'A locker in use cannot be removed.':
+    'Një dollap në përdorim nuk mund të hiqet.',
+  'Access settings': 'Cilësimet e hyrjes',
+  'Access settings saved.': 'Cilësimet e hyrjes u ruajtën.',
+  'Add Lockers': 'Shto dollapë',
+  'Add a row of numbered lockers, for example 1 to 60. Numbers that already exist are kept.':
+    'Shto një rresht dollapësh të numëruar, p.sh. nga 1 në 60. Numrat që ekzistojnë mbahen.',
+  'Add lockers': 'Shto dollapë',
+  'Add the lockers of your changing room.':
+    'Shto dollapët e dhomës së zhveshjes.',
+  'All gyms': 'Të gjitha palestrat',
+  'Back in service': 'Përsëri në punë',
+  Block: 'Blloko',
+  'Block card': 'Blloko kartën',
+  'Block card {{number}}?': 'Të bllokohet karta {{number}}?',
+  Blocked: 'E bllokuar',
+  'Card issued.': 'Karta u lëshua.',
+  'Card not found.': 'Karta nuk u gjet.',
+  'Card updated.': 'Karta u përditësua.',
+  Cards: 'Kartat',
+  'Cards & lockers': 'Kartat dhe dollapët',
+  'Cards members tap at the door to check in and out.':
+    'Kartat që anëtarët i afrojnë te dera për të hyrë e dalë.',
+  'Check in / out': 'Hyrje / dalje',
+  'Check in or out a member': 'Hyrja ose dalja e një anëtari',
+  'Check members in and out at the desk.':
+    'Regjistro hyrjet dhe daljet e anëtarëve në recepsion.',
+  'Check out': 'Dil',
+  'Checked out': 'Doli',
+  'Checked out at {{time}}': 'Doli në {{time}}',
+  'Checked out at {{time}} - locker {{locker}} is free':
+    'Doli në {{time}} - dollapi {{locker}} është i lërë',
+  'Choose how members get in and keep their things.':
+    'Zgjidh si hyjnë anëtarët dhe ku i mbajnë gjërat.',
+  'Could not give the locker.': 'Dollapi nuk mund të jepej.',
+  'Each member can get a card that is tapped at the door to check in and out. A member has one active card at a time.':
+    'Çdo anëtar mund të ketë një kartë që e afron te dera për të hyrë e dalë. Një anëtar ka vetëm një kartë aktive në të njëjtën kohë.',
+  'Enter the first locker number.': 'Shkruaj numrin e dollapit të parë.',
+  'Enter the last locker number.': 'Shkruaj numrin e dollapit të fundit.',
+  'Enter the locker number.': 'Shkruaj numrin e dollapit.',
+  'Enter the member code or card number.':
+    'Shkruaj kodin e anëtarit ose numrin e kartës.',
+  'For a member who is inside: enter their code and the locker number.':
+    'Për një anëtar që është brenda: shkruaj kodin e tij dhe numrin e dollapit.',
+  'For example M for M1, M2 in the men changing room.':
+    'P.sh. M për M1, M2 te dhoma e zhveshjes së meshkujve.',
+  Free: 'I lërë',
+  'Free my locker': 'Liro dollapin tim',
+  'From number': 'Nga numri',
+  'Give a locker': 'Jep një dollap',
+  'Give locker': 'Jep dollapin',
+  'Gym location not found.': 'Vendndodhja e palestrës nuk u gjet.',
+  'In use': 'Në përdorim',
+  'Issue Card': 'Lësho kartë',
+  'Issue a card to a member so they can tap in.':
+    'Lësho një kartë për një anëtar që të mund të hyjë.',
+  'Issue card': 'Lësho kartën',
+  'Issue cards on the Cards page and add lockers on the Lockers page.':
+    'Lësho kartat te faqja Kartat dhe shto dollapët te faqja Dollapët.',
+  Issued: 'Lëshuar',
+  'Lock a locker with your card and its number shows here.':
+    'Mbylle një dollap me kartën tënde dhe numri i tij shfaqet këtu.',
+  'Lock lockers with the card': 'Mbyll dollapët me kartë',
+  Locker: 'Dollapi',
+  'Locker freed.': 'Dollapi u lirua.',
+  'Locker not found.': 'Dollapi nuk u gjet.',
+  'Locker number': 'Numri i dollapit',
+  'Locker numbers are whole numbers.':
+    'Numrat e dollapëve janë numra të plotë.',
+  'Locker numbers cannot be negative.':
+    'Numrat e dollapëve nuk mund të jenë negativë.',
+  'Locker removed.': 'Dollapi u hoq.',
+  'Locker saved.': 'Dollapi u ruajt.',
+  'Locker updated.': 'Dollapi u përditësua.',
+  'Locker {{number}}': 'Dollapi {{number}}',
+  Lockers: 'Dollapët',
+  'Lockers added.': 'Dollapët u shtuan.',
+  'Lockers are locked with a key or padlock.':
+    'Dollapët mbyllen me çelës ose dryn.',
+  'Lockers are locked with the member card.':
+    'Dollapët mbyllen me kartën e anëtarit.',
+  'Lockers are not used at this gym.': 'Kjo palestrër nuk përdor dollapë.',
+  'Lockers are turned off, so members cannot take one.':
+    'Dollapët janë të fikur, ndaj anëtarët nuk mund të marrin asnjë.',
+  'Lockers here are locked with a card: scan the member card.':
+    'Dollapët këtu mbyllen me kartë: skano kartën e anëtarit.',
+  'Lockers here are locked with your card. Tap it at the locker.':
+    'Dollapët këtu mbyllen me kartën tënde. Afroje te dollapi.',
+  'Locking lockers with a card needs cards and lockers turned on.':
+    'Mbyllja e dollapëve me kartë kërkon kartat dhe dollapët të ndezur.',
+  'Member cards': 'Kartat e anëtarëve',
+  'Member cards are not used at this gym.': 'Kjo palestrër nuk përdor karta.',
+  'Member cards are turned off.': 'Kartat e anëtarëve janë të fikura.',
+  'Member code or card': 'Kodi i anëtarit ose karta',
+  'Members can leave their things in a locker during a visit. A locker is free again when the member checks out.':
+    'Anëtarët mund t’i lënë gjërat në një dollap gjatë vizitës. Dollapi bëhet përsëri i lërë kur anëtari del.',
+  'My card': 'Karta ime',
+  'My locker': 'Dollapi im',
+  'No card yet': 'Ende pa kartë',
+  'No cards issued yet': 'Ende nuk është lëshuar asnjë kartë',
+  'No locker is in use.': 'Asnjë dollap nuk është në përdorim.',
+  'No lockers yet': 'Ende pa dollapë',
+  'None yet': 'Ende asnjë',
+  'Open access settings': 'Hap cilësimet e hyrjes',
+  'Out of service': 'Jashtë shërbimit',
+  'Prefix (optional)': 'Parashtesa (opsionale)',
+  'Remove locker': 'Hiq dollapin',
+  'Remove locker {{number}}': 'Hiq dollapin {{number}}',
+  'Remove locker {{number}}?': 'Të hiqet dollapi {{number}}?',
+  'Scan recorded.': 'Skanimi u regjistrua.',
+  "Scan the QR on the member's phone, tap their card or paste their code. The same scan checks them out when they are inside.":
+    'Skano QR në telefonin e anëtarit, afro kartën ose ngjit kodin. I njëjti skanim e nxjerr jashtë kur është brenda.',
+  Scanning: 'Duke skanuar',
+  'Search cards': 'Kërko karta',
+  'Search lockers': 'Kërko dollapë',
+  'Select a gym location.': 'Zgjidh një vendndodhje të palestrës.',
+  'Select a member.': 'Zgjidh një anëtar.',
+  'Select a member...': 'Zgjidh një anëtar...',
+  'Select the member to check out.': 'Zgjidh anëtarin që del.',
+  'Tap a card or paste the member code':
+    'Afro kartën ose ngjit kodin e anëtarit',
+  'Tap the card on the reader or type its number. The member can check in and out with it.':
+    'Afro kartën te lexuesi ose shkruaj numrin. Anëtari mund të hyjë e dalë me të.',
+  'Tap the member card, then enter the locker it locks.':
+    'Afro kartën e anëtarit, pastaj shkruaj dollapin që mbyll.',
+  'That card number is already in use.':
+    'Ky numër karte është përdorur tashmë.',
+  'That locker is already in use.': 'Ky dollap është tashmë në përdorim.',
+  'That locker number is too high.': 'Ky numër dollapi është shumë i lartë.',
+  'The card number can only have letters, numbers and dashes.':
+    'Numri i kartës mund të ketë vetëm shkronja, numra dhe vija.',
+  'The card number is too long.': 'Numri i kartës është shumë i gjatë.',
+  'The card number is too short.': 'Numri i kartës është shumë i shkurtër.',
+  'The card stops working at once, for example when it is lost. You can issue a new one.':
+    'Karta ndalon së punuari menjëherë, p.sh. kur humbet. Mund të lëshosh një të re.',
+  'The last number must be the same or after the first.':
+    'Numri i fundit duhet të jetë i njëjtë ose pas të parit.',
+  'The locker is deleted from the list.': 'Dollapi fshihet nga lista.',
+  'The locker is locked and opened with the member card, so the card number is sent when a locker is taken. Turn it off for lockers with a key or padlock, where the member notes the locker number.':
+    'Dollapi mbyllet e hapet me kartën e anëtarit, ndaj numri i kartës dërgohet kur merret një dollap. Fike për dollapë me çelës ose dryn, ku anëtari shënon numrin e dollapit.',
+  'The member is not checked in.': 'Anëtari nuk ka hyrë.',
+  'The prefix can only have letters and numbers.':
+    'Parashtesa mund të ketë vetëm shkronja dhe numra.',
+  'The prefix is too long.': 'Parashtesa është shumë e gjatë.',
+  'This card is no longer active.': 'Kjo kartë nuk është më aktive.',
+  'This client is not checked in.': 'Ky klient nuk ka hyrë.',
+  'This locker is out of service.': 'Ky dollap është jashtë shërbimit.',
+  'This member already has an active card. Block it first.':
+    'Ky anëtar ka tashmë një kartë aktive. Blloko së pari atë.',
+  'This replaces the member card {{number}}.':
+    'Kjo zëvendëson kartën e anëtarit {{number}}.',
+  'To number': 'Deri në numrin',
+  Unblock: 'Zhblloko',
+  'Which locker are you using?': 'Cilin dollap po përdor?',
+  'You are checked in': 'Ke hyrë',
+  'You are checked out.': 'Ke dalë.',
+  '{{name}} has locker {{locker}}.': '{{name}} ka dollapin {{locker}}.',
+  '{{name}} since {{time}}': '{{name}} që nga {{time}}',
+  '{{used}} of {{total}} lockers in use':
+    '{{used}} nga {{total}} dollapë në përdorim',
   '{{visits}}, {{valid}}': '{{visits}}, {{valid}}',
-  '© {{year}} {{brand}}. All rights reserved.':
-    '© {{year}} {{brand}}. Të gjitha të drejtat e rezervuara.',
   '← Back to home': '← Kthehu te ballina',
 };

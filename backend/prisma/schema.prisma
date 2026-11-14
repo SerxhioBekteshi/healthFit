@@ -45,13 +45,20 @@ enum Gender {
   female
 }
 
-// Where a gym operates; sets the default language and currency of its admin and members.
+// Where a gym operates; sets the default language of its admin and members.
 enum Country {
   AL
   GB
   IT
   DE
   GR
+}
+
+// The money of a gym, fixed by its country when it opens; amounts are never converted.
+enum Currency {
+  ALL
+  EUR
+  GBP
 }
 
 enum PaymentMethod {
@@ -100,29 +107,44 @@ enum GymSubscriptionStatus {
   cancelled
 }
 
+enum SignupRequestStatus {
+  pending
+  approved
+  rejected
+}
+
 // ---------------------------------------------------------------------------
 // Platform level (not tenant scoped)
 // ---------------------------------------------------------------------------
 
 model Gym {
-  id            String   @id @default(cuid())
-  name          String
-  location      String   @default("")
-  country       Country  @default(AL)
-  address       String   @default("")
-  contactEmail  String   @default("")
-  contactPhone  String   @default("")
-  logoUrl       String   @default("")
-  subdomain     String?  @unique
-  customDomain  String?  @unique
-  businessHours String   @default("")
+  id             String   @id @default(cuid())
+  name           String
+  location       String   @default("")
+  country        Country  @default(AL)
+  currency       Currency @default(ALL)
+  address        String   @default("")
+  contactEmail   String   @default("")
+  contactPhone   String   @default("")
+  logoUrl        String   @default("")
+  subdomain      String?  @unique
+  customDomain   String?  @unique
+  businessHours  String   @default("")
   // Local opening window (HH:MM) in `timezone`; used for check-in validation.
-  opensAt       String   @default("06:00")
-  closesAt      String   @default("22:00")
-  timezone      String   @default("Europe/Tirane")
-  isActive      Boolean  @default(true)
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  opensAt        String   @default("06:00")
+  closesAt       String   @default("22:00")
+  timezone       String   @default("Europe/Tirane")
+  // How members may pay; the owner turns each off in the payment settings (at least one stays on).
+  acceptCard     Boolean  @default(true)
+  acceptBalance  Boolean  @default(true)
+  acceptCash     Boolean  @default(true)
+  // Access: members can be issued a card; lockers can be offered and locked with that card.
+  cardsEnabled   Boolean  @default(false)
+  lockersEnabled Boolean  @default(false)
+  lockersUseCard Boolean  @default(false)
+  isActive       Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
   users                User[]
   clients              Client[]
@@ -138,10 +160,41 @@ model Gym {
   subscriptionPayments GymSubscriptionPayment[]
   photos               GymPhoto[]
   priceListNotes       PriceListNote[]
+  priceOffers          PriceOffer[]
+  priceOfferItems      PriceOfferItem[]
   paymentChallenges    PaymentChallenge[]
   staffMembers         StaffMember[]
   gymClasses           GymClass[]
   locations            GymLocation[]
+  clientInvites        ClientInvite[]
+  memberCards          MemberCard[]
+  lockers              Locker[]
+}
+
+// A gym owner's application to join the platform. The super admin approves it (which creates the
+// gym and its admin account) or rejects it. Not tenant scoped; passwordHash is never returned.
+model SignupRequest {
+  id             String              @id @default(cuid())
+  ownerName      String
+  email          String
+  phone          String              @default("")
+  passwordHash   String
+  gymName        String
+  country        Country
+  location       String
+  address        String              @default("")
+  locationsCount Int                 @default(1)
+  notes          String              @default("")
+  status         SignupRequestStatus @default(pending)
+  reviewNote     String              @default("")
+  reviewedAt     DateTime?
+  // The gym created when the request was approved.
+  gymId          String?
+  createdAt      DateTime            @default(now())
+  updatedAt      DateTime            @updatedAt
+
+  @@index([status, createdAt])
+  @@index([email])
 }
 
 // Platform subscription: Super Admin -> Gym. Never merge with Membership.
@@ -273,9 +326,28 @@ model Client {
   attendances         Attendance[]
   balanceTransactions BalanceTransaction[]
   productSales        ProductSale[]
+  invites             ClientInvite[]
+  memberCards         MemberCard[]
 
   @@unique([gymId, email])
   @@index([gymId])
+}
+
+// A one-time link the gym admin gives a client to set their own password. Only the SHA-256 of the
+// token is stored, so a database leak does not expose working links.
+model ClientInvite {
+  id        String    @id @default(cuid())
+  gymId     String
+  clientId  String
+  tokenHash String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  gym    Gym    @relation(fields: [gymId], references: [id], onDelete: Cascade)
+  client Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
+  @@index([gymId, clientId])
 }
 
 // A place where the gym's members train. One gym (the tenant) can have several; memberships,
@@ -297,7 +369,44 @@ model GymLocation {
 
   gym         Gym          @relation(fields: [gymId], references: [id], onDelete: Cascade)
   attendances Attendance[]
+  lockers     Locker[]
 
+  @@index([gymId])
+}
+
+// The card (fob or tag) a member taps to check in and out. Its number is what the reader sends.
+// A member has one active card; issuing a new one retires the old, which stays so it cannot be reused.
+model MemberCard {
+  id            String    @id @default(cuid())
+  gymId         String
+  clientId      String
+  number        String
+  isActive      Boolean   @default(true)
+  issuedAt      DateTime  @default(now())
+  deactivatedAt DateTime?
+
+  gym    Gym    @relation(fields: [gymId], references: [id], onDelete: Cascade)
+  client Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
+  @@unique([gymId, number])
+  @@index([gymId, clientId])
+}
+
+// A locker in one location's changing room. It is taken while a visit that holds it is open.
+model Locker {
+  id         String   @id @default(cuid())
+  gymId      String
+  locationId String
+  number     String
+  // Out of service lockers cannot be given out.
+  isActive   Boolean  @default(true)
+  createdAt  DateTime @default(now())
+
+  gym         Gym          @relation(fields: [gymId], references: [id], onDelete: Cascade)
+  location    GymLocation  @relation(fields: [locationId], references: [id], onDelete: Cascade)
+  attendances Attendance[]
+
+  @@unique([locationId, number])
   @@index([gymId])
 }
 
@@ -368,10 +477,44 @@ model MembershipPlan {
   createdAt    DateTime           @default(now())
   updatedAt    DateTime           @updatedAt
 
-  gym         Gym          @relation(fields: [gymId], references: [id], onDelete: Cascade)
+  gym         Gym              @relation(fields: [gymId], references: [id], onDelete: Cascade)
   memberships Membership[]
+  offerItems  PriceOfferItem[]
 
   @@index([gymId])
+}
+
+// A limited-time price for some plans, e.g. "New Year's Eve" or a seasonal price list. While it is
+// valid (inclusive gym-local dates) its item prices replace the regular price of those plans.
+model PriceOffer {
+  id        String   @id @default(cuid())
+  gymId     String
+  name      String
+  startDate DateTime
+  endDate   DateTime
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  gym   Gym              @relation(fields: [gymId], references: [id], onDelete: Cascade)
+  items PriceOfferItem[]
+
+  @@index([gymId, startDate, endDate])
+}
+
+model PriceOfferItem {
+  id      String  @id @default(cuid())
+  gymId   String
+  offerId String
+  planId  String
+  price   Decimal @db.Decimal(10, 2)
+
+  gym   Gym            @relation(fields: [gymId], references: [id], onDelete: Cascade)
+  offer PriceOffer     @relation(fields: [offerId], references: [id], onDelete: Cascade)
+  plan  MembershipPlan @relation(fields: [planId], references: [id], onDelete: Cascade)
+
+  @@unique([offerId, planId])
+  @@index([gymId, planId])
 }
 
 // Photos shown on the gym's price list; files live in the uploads directory.
@@ -400,17 +543,17 @@ model PriceListNote {
 
 // One-time-code check that must pass before a client's card payment is executed.
 model PaymentChallenge {
-  id        String                @id @default(cuid())
-  gymId     String
-  clientId  String
-  kind      PaymentChallengeKind
+  id         String               @id @default(cuid())
+  gymId      String
+  clientId   String
+  kind       PaymentChallengeKind
   // The validated payment request, replayed once the code is verified (card brand and last 4 only).
-  payload   Json
-  codeHash  String
-  attempts  Int                   @default(0)
-  expiresAt DateTime
+  payload    Json
+  codeHash   String
+  attempts   Int                  @default(0)
+  expiresAt  DateTime
   consumedAt DateTime?
-  createdAt DateTime              @default(now())
+  createdAt  DateTime             @default(now())
 
   gym Gym @relation(fields: [gymId], references: [id], onDelete: Cascade)
 
@@ -454,6 +597,8 @@ model Attendance {
   membershipId String
   // Where the member trained; null for check-ins made before locations existed.
   locationId   String?
+  // Locker the member put their things in during this visit; null when none.
+  lockerId     String?
   checkedInAt  DateTime  @default(now())
   checkedOutAt DateTime?
 
@@ -461,6 +606,7 @@ model Attendance {
   client     Client       @relation(fields: [clientId], references: [id], onDelete: Cascade)
   membership Membership   @relation(fields: [membershipId], references: [id])
   location   GymLocation? @relation(fields: [locationId], references: [id], onDelete: SetNull)
+  locker     Locker?      @relation(fields: [lockerId], references: [id], onDelete: SetNull)
 
   @@index([gymId, checkedInAt])
   @@index([gymId, clientId, checkedInAt])

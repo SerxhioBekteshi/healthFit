@@ -58,7 +58,7 @@ export const UserMenu: React.FC<UserMenuProps> = ({
         </span>
         <Icon
           name="chevron"
-          className={`h-4 w-4 text-bone/40 transition-transform ${open ? '-rotate-90' : 'rotate-90'}`}
+          className={`hidden h-4 w-4 text-bone/40 transition-transform sm:block ${open ? '-rotate-90' : 'rotate-90'}`}
         />
       </button>
 

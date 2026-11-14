@@ -4,6 +4,7 @@ import type { Product as ProductRow } from '@prisma/client';
 import { chargePayment } from '@/payments';
 import { ForbiddenError, NotFoundError, ValidationError } from '@/errors';
 import { ledger } from '@/services/ledger';
+import { paymentSettingsService } from '@/services/payment-settings';
 import { uploadService } from '@/services/uploads';
 import type { TenantContext } from '@/tenant/context';
 import { retryOnConflict } from '@/utils/transactions';
@@ -117,6 +118,7 @@ export const productService = {
     if (ctx.role === 'client' && method !== 'balance') {
       throw new ForbiddenError('Clients can only pay from their balance.');
     }
+    await paymentSettingsService.assertAccepted(ctx, method);
     const clientId =
       ctx.role === 'client' ? ctx.clientId : (input.clientId ?? null);
     if (method === 'balance' && !clientId) {
@@ -155,6 +157,7 @@ export const productService = {
     if (method !== 'balance') {
       const result = await chargePayment(method, {
         amount: product.price.toNumber(),
+        currency: await paymentSettingsService.currencyOf(ctx),
         clientId: clientId ?? '',
         description: `Purchase: ${product.name}`,
         metadata: { gymId: ctx.gymId, productId, kind: 'purchase' },

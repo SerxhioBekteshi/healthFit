@@ -6,10 +6,11 @@ import { Modal } from '@/components/ui/Modal';
 import { useBalance } from '@/hooks/balance';
 import { useMemberships } from '@/hooks/memberships';
 import { usePaymentChallenge } from '@/hooks/payment-challenges';
+import { usePaymentSettings } from '@/hooks/payment-settings';
 import { msg, t, translated } from '@/i18n';
 import { planTerms, weeklyVisitsLabel } from '@/utils/constants/labels';
 import { formatDay, formatMoney } from '@/utils/format';
-import { nextStart } from '@/utils/memberships';
+import { nextStart, planPrice } from '@/utils/memberships';
 import type {
   CardSummary,
   Membership,
@@ -72,11 +73,27 @@ export const SubscribeDialog: React.FC<SubscribeDialogProps> = ({
   const [card, setCard] = useState<CardSummary | null>(null);
   const [cardAttempted, setCardAttempted] = useState(false);
 
-  const canPayWithBalance = plan ? balance >= plan.price : false;
+  const canPayWithBalance = plan ? balance >= planPrice(plan) : false;
   const start = nextStart(memberships);
+  // The gym decides which of the two online ways are open.
+  const { settings } = usePaymentSettings();
+  const open: Record<SubscribeMethod, boolean> = {
+    balance: settings.acceptBalance,
+    card: settings.acceptCard,
+  };
   // Credit when it covers the price, otherwise card, until the client picks one.
-  const method: SubscribeMethod =
-    chosen ?? (canPayWithBalance ? 'balance' : 'card');
+  const preferred: SubscribeMethod =
+    canPayWithBalance && open.balance ? 'balance' : 'card';
+  const method: SubscribeMethod | null =
+    chosen && open[chosen]
+      ? chosen
+      : open[preferred]
+        ? preferred
+        : open.balance
+          ? 'balance'
+          : open.card
+            ? 'card'
+            : null;
 
   const close = (): void => {
     setChosen(null);
@@ -115,7 +132,7 @@ export const SubscribeDialog: React.FC<SubscribeDialogProps> = ({
   };
 
   const onConfirm = async (): Promise<void> => {
-    if (!plan) return;
+    if (!plan || !method) return;
 
     if (method === 'card') {
       if (!card) {
@@ -173,7 +190,7 @@ export const SubscribeDialog: React.FC<SubscribeDialogProps> = ({
         description={
           plan
             ? t('Total {{amount}}. Choose how to pay.', {
-                amount: formatMoney(plan.price),
+                amount: formatMoney(planPrice(plan)),
               })
             : ''
         }
@@ -185,7 +202,9 @@ export const SubscribeDialog: React.FC<SubscribeDialogProps> = ({
             </Button>
             <Button
               loading={subscribeMembership.isPending || payment.start.isPending}
-              disabled={method === 'balance' && !canPayWithBalance}
+              disabled={
+                method === null || (method === 'balance' && !canPayWithBalance)
+              }
               onClick={onConfirm}
             >
               {method === 'card' ? t('Continue') : t('Confirm')}
@@ -193,6 +212,16 @@ export const SubscribeDialog: React.FC<SubscribeDialogProps> = ({
           </>
         }
       >
+        {plan?.offer ? (
+          <p className="mb-3 rounded-lg border border-signal/30 bg-signal/10 px-3 py-2.5 text-sm text-signal">
+            {t('{{name}}: {{price}} instead of {{regular}}, until {{date}}.', {
+              name: plan.offer.name,
+              price: formatMoney(plan.offer.price),
+              regular: formatMoney(plan.price),
+              date: formatDay(plan.offer.endDate),
+            })}
+          </p>
+        ) : null}
         <p className="mb-3 rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2.5 text-sm text-bone/70">
           {start.queued
             ? t(
@@ -206,28 +235,39 @@ export const SubscribeDialog: React.FC<SubscribeDialogProps> = ({
           aria-label={t('Payment method')}
           className="space-y-2"
         >
-          {options.map((option) => {
-            const disabled = option.value === 'balance' && !canPayWithBalance;
-            const checked = method === option.value;
-            return (
-              <button
-                key={option.value}
-                type="button"
-                role="radio"
-                aria-checked={checked}
-                disabled={disabled}
-                onClick={() => setChosen(option.value)}
-                className={`w-full rounded-lg border px-4 py-3 text-left transition-colors ${
-                  checked
-                    ? 'border-signal bg-signal/10'
-                    : 'border-white/10 hover:border-white/25'
-                } ${disabled ? 'cursor-not-allowed opacity-50' : ''}`}
-              >
-                <p className="text-sm font-medium text-bone">{option.label}</p>
-                <p className="mt-0.5 text-xs text-bone/55">{option.hint}</p>
-              </button>
-            );
-          })}
+          {method === null ? (
+            <p className="rounded-lg border border-white/10 px-4 py-3 text-sm text-bone/70">
+              {t(
+                'Your gym does not take online payments right now. Please pay at the gym counter.'
+              )}
+            </p>
+          ) : null}
+          {options
+            .filter((option) => open[option.value])
+            .map((option) => {
+              const disabled = option.value === 'balance' && !canPayWithBalance;
+              const checked = method === option.value;
+              return (
+                <button
+                  key={option.value}
+                  type="button"
+                  role="radio"
+                  aria-checked={checked}
+                  disabled={disabled}
+                  onClick={() => setChosen(option.value)}
+                  className={`w-full rounded-lg border px-4 py-3 text-left transition-colors ${
+                    checked
+                      ? 'border-signal bg-signal/10'
+                      : 'border-white/10 hover:border-white/25'
+                  } ${disabled ? 'cursor-not-allowed opacity-50' : ''}`}
+                >
+                  <p className="text-sm font-medium text-bone">
+                    {option.label}
+                  </p>
+                  <p className="mt-0.5 text-xs text-bone/55">{option.hint}</p>
+                </button>
+              );
+            })}
         </div>
 
         {method === 'card' ? (

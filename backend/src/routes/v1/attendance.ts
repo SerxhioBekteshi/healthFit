@@ -1,7 +1,11 @@
 import { Router } from 'express';
 import { ok, parseBody, withTenant } from '@/http/withTenant';
 import { attendanceService } from '@/services/attendance';
-import { checkInSchema } from '@gym/shared/validation/attendance';
+import {
+  checkInSchema,
+  checkOutSchema,
+  scanSchema,
+} from '@gym/shared/validation/attendance';
 
 export const attendanceRouter = Router();
 
@@ -44,6 +48,22 @@ attendanceRouter.post(
       await attendanceService.checkIn(ctx, clientId, new Date(), locationId),
       201
     );
+  })
+);
+
+attendanceRouter.post(
+  '/scan',
+  withTenant(['gym_admin'], async (ctx, req) => {
+    const { code, locationId } = parseBody(req, scanSchema);
+    return ok(await attendanceService.scan(ctx, code, new Date(), locationId));
+  })
+);
+
+attendanceRouter.post(
+  '/check-out',
+  withTenant(['gym_admin', 'client'], async (ctx, req) => {
+    const { clientId } = parseBody(req, checkOutSchema);
+    return ok(await attendanceService.checkOut(ctx, clientId));
   })
 );
 

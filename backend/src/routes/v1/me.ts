@@ -1,10 +1,11 @@
 import { Router } from 'express';
-import { gymCountryOf, requireUser } from '@/tenant/context';
+import { gymLocaleOf, requireUser } from '@/tenant/context';
 
 export const meRouter = Router();
 
 meRouter.get('/', async (req, res) => {
   const user = await requireUser(req);
+  const locale = await gymLocaleOf(user.gymId);
   res.json({
     data: {
       id: user.id,
@@ -12,7 +13,8 @@ meRouter.get('/', async (req, res) => {
       fullName: user.name,
       role: user.role,
       gymId: user.gymId,
-      gymCountry: await gymCountryOf(user.gymId),
+      gymCountry: locale?.country ?? null,
+      gymCurrency: locale?.currency ?? null,
     },
   });
 });

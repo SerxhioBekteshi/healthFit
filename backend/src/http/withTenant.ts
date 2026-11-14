@@ -1,9 +1,11 @@
 import type { Request, RequestHandler } from 'express';
 import type { ZodType } from 'zod';
 import {
+  publicContext,
   requirePlatform,
   requireTenant,
   type PlatformContext,
+  type PublicContext,
   type TenantContext,
   type TenantRole,
 } from '@/tenant/context';
@@ -48,6 +50,20 @@ export const withPlatform =
   async (req, res) => {
     const ctx = await requirePlatform(req);
     const result = await handler(ctx, req, req.params as Params);
+    res.status(result.status).json(result.body);
+  };
+
+// Anonymous endpoints only (sign-up request); always put a rate limit in front of them.
+export const withPublic =
+  (
+    handler: (
+      ctx: PublicContext,
+      req: Request,
+      params: Params
+    ) => Promise<ApiResult>
+  ): RequestHandler =>
+  async (req, res) => {
+    const result = await handler(publicContext(), req, req.params as Params);
     res.status(result.status).json(result.body);
   };
 

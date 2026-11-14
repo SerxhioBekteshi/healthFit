@@ -5,6 +5,7 @@ import { WeekCalendar } from '@/components/attendance/WeekCalendar';
 import { WeekTrend } from '@/components/attendance/WeekTrend';
 import { VisitBoxes } from '@/components/memberships/VisitBoxes';
 import { AnimatedNumber } from '@/components/dashboard/AnimatedNumber';
+import { AccessPanel } from '@/components/dashboard/AccessPanel';
 import { Alert } from '@/components/ui/Alert';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
@@ -207,6 +208,8 @@ export const ClientDashboardPage: React.FC = () => {
                   </div>
                 ))}
               </dl>
+
+              <AccessPanel data={data} />
             </div>
           </section>
         </div>

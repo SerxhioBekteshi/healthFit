@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { AccentText } from '@/components/landing/AccentText';
 import { MagneticLink } from '@/components/landing/MagneticLink';
 import { FadeUp } from '@/components/landing/FadeUp';
@@ -49,7 +50,11 @@ export const FinalCta: React.FC<FinalCtaProps> = ({ ctaHref, ctaLabel }) => (
       >
         <MagneticLink href={ctaHref}>{ctaLabel}</MagneticLink>
         <p className="max-w-xs text-sm leading-relaxed text-bone/55">
-          Sign in to your gym, or ask your platform owner to open one for you.
+          Sign in to your gym, or{' '}
+          <Link to="/sign-up" className="text-signal hover:underline">
+            register your gym
+          </Link>{' '}
+          and we will open it for you after a quick review.
         </p>
       </FadeUp>
     </div>

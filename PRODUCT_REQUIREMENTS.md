@@ -126,6 +126,8 @@ A gym owner can configure:
 - Products
 - Workout programs
 
+Every gym has a country (Albania, United Kingdom, Italy, Germany or Greece), chosen when it is registered. The country sets the starting language and the gym's currency: Albania uses ALL, the United Kingdom GBP, Italy, Germany and Greece EUR. All prices and payments of the gym are in that currency, and a member switching the app language never changes it. Once the gym has prices or payments its country can no longer be changed, because amounts are not converted.
+
 ## 6. Memberships
 
 Gym owners can create membership plans. Plans are separated by gender (men and women) and by weekly frequency:
@@ -136,7 +138,7 @@ Gym owners can create membership plans. Plans are separated by gender (men and w
 - 6x per week (6000 ALL)
 - Unlimited (optional)
 
-Subscription offers are longer terms of the same plan, priced by the gym owner, for example 4x per week for 3 months at 13000 ALL. Terms available:
+Subscription term discounts are the longer terms of the same plan, priced by the gym owner, for example 4x per week for 3 months at 13000 ALL. Terms available:
 
 - Monthly
 - 3 Months
@@ -149,6 +151,17 @@ The gym owner configures the standard price list in a Membership > Configuration
 
 Clients see the same price list for their own gender, with the notes and photos, on their Membership page next to their current membership, and tap any price (for example 5x per week for 6 months) to subscribe with credit or card.
 
+### Special offers
+
+On top of the standard price list the gym owner can run special offers, each with a name, a start date and an end date (both days included):
+
+- A single promotion on one plan, for example 3x per week for a month at 3500 instead of the usual 4500 for New Year's Eve, or 6x per week for a whole year at 35000 instead of 41000.
+- A promotional price list: several plans with their own offer prices, valid for a period, for example a summer list. The owner can add all plans at once with a percentage off and then adjust any price.
+
+An offer price must be lower than the regular price. While an offer is valid members see the regular price struck through next to the offer price and its end date, and a purchase is charged the offer price. An offer can be paused, resumed, edited or deleted; memberships already bought keep the price they paid. When several offers apply to the same plan, the lowest price wins.
+
+On their Membership page members see an offer that covers the whole price list instead of the standard list, headed with the offer name and its period. An offer on chosen plans shows as separate cards, like the passes and extras, with the name, the period, the regular price struck through and the offer price, each with a Subscribe button.
+
 A membership has:
 
 - Client
@@ -156,7 +169,7 @@ A membership has:
 - Weekly visit limit
 - Start date
 - End date
-- Price (in ALL)
+- Price (in the gym's currency)
 - Payment status
 - Active/inactive status
 
@@ -166,6 +179,7 @@ A client can subscribe to a plan on their own and pay with:
 - Card
 
 Cash is never a self-service option; it is only taken by gym staff at the counter.
+The gym owner decides which ways of paying the gym accepts (card, credit on the member's account, cash) in the payment settings; all are on for a new gym and at least one must stay on.
 
 Memberships can also be activated by the gym through:
 
@@ -203,7 +217,20 @@ The system should support calculating:
 - Attendance history
 - Current number of people inside the gym
 
-The system should be designed so checkout can be added later.
+### Cards and check-out
+
+The gym owner decides in the access settings whether the gym uses member cards. A card is linked to one member: staff issue it by tapping it on the reader (or typing its number), and a member has one active card at a time. Issuing a new card replaces the old one, and a lost card can be blocked at once. A blocked or unknown card is refused.
+
+At the door the same scan checks a member in, and checks them out when they are already inside; the card, the member's QR or the member code all work. Check-in keeps all the rules above. A member can also check themselves out from their dashboard.
+
+### Lockers
+
+The gym owner sets up the changing-room lockers (numbered, for each gym location) and says whether lockers are locked with the member card or with a key or padlock.
+
+- With a key or padlock the member enters the number of the locker they used (or staff do it at the desk).
+- With card lockers the locker is taken by tapping the member card, so only the card number is accepted.
+
+A locker belongs to a member until they check out, then it is free again. Staff see which lockers are free or in use and by whom, can take a locker out of service, and cannot remove one that is in use. The member sees their card and the number of their locker on their dashboard while they are in the gym.
 
 ## 8. Workout Programs
 

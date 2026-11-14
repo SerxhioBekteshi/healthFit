@@ -11,13 +11,16 @@ const baseFields = {
   gender: genderSchema,
 };
 
+const password = z
+  .string()
+  .min(8, 'Password must be at least 8 characters.')
+  .regex(/[A-Z]/, 'Password must contain an uppercase letter.')
+  .regex(/[0-9]/, 'Password must contain a number.');
+
+// An empty password creates the client without a login; the gym sends an invite link instead.
 export const createClientSchema = z.object({
   ...baseFields,
-  password: z
-    .string()
-    .min(8, 'Password must be at least 8 characters.')
-    .regex(/[A-Z]/, 'Password must contain an uppercase letter.')
-    .regex(/[0-9]/, 'Password must contain a number.'),
+  password: z.union([z.literal(''), password]),
 });
 
 export const updateClientSchema = z.object(baseFields);

@@ -6,6 +6,7 @@ import { PageHeader } from '@/components/ui/PageHeader';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { useBalance } from '@/hooks/balance';
 import { useProducts } from '@/hooks/products';
+import { usePaymentSettings } from '@/hooks/payment-settings';
 import {
   PREPARED_WARNING,
   productCategoryLabels,
@@ -19,6 +20,7 @@ type Feedback = { type: 'success' | 'error'; message: string } | null;
 export const ClientProductsPage: React.FC = () => {
   const { balance } = useBalance();
   const { products, isLoading, error, purchaseProduct } = useProducts();
+  const { settings } = usePaymentSettings();
   const [feedback, setFeedback] = useState<Feedback>(null);
 
   const onPurchase = async (productId: string): Promise<void> => {
@@ -64,6 +66,13 @@ export const ClientProductsPage: React.FC = () => {
           {feedback.message}
         </Alert>
       ) : null}
+      {settings.acceptBalance ? null : (
+        <Alert tone="warning" className="mb-5">
+          {t(
+            'Your gym does not take payments from the balance. Pay at the counter.'
+          )}
+        </Alert>
+      )}
       {error ? <Alert>{error.message}</Alert> : null}
 
       {isLoading ? (
@@ -123,7 +132,11 @@ export const ClientProductsPage: React.FC = () => {
                     <Button
                       size="sm"
                       variant={affordable ? 'primary' : 'secondary'}
-                      disabled={purchaseProduct.isPending || !affordable}
+                      disabled={
+                        purchaseProduct.isPending ||
+                        !affordable ||
+                        !settings.acceptBalance
+                      }
                       onClick={() => onPurchase(product.id)}
                     >
                       {affordable ? t('Buy') : t('Low balance')}

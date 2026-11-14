@@ -26,7 +26,8 @@ interface DepositFormProps {
   onSubmit: (values: DepositValues) => Promise<void>;
 }
 
-const DEFAULT_AMOUNT = 1000;
+// A sensible first top-up: about 10 in euro or pound, 1000 in lek.
+const defaultAmount = (): number => (getCurrency() === 'ALL' ? 1000 : 10);
 
 export const DepositForm: React.FC<DepositFormProps> = ({
   methods,
@@ -44,7 +45,7 @@ export const DepositForm: React.FC<DepositFormProps> = ({
     formState: { errors },
   } = useForm<FormValues>({
     resolver: zodResolver(depositFormSchema),
-    defaultValues: { amount: DEFAULT_AMOUNT, paymentMethod: methods[0] },
+    defaultValues: { amount: defaultAmount(), paymentMethod: methods[0] },
   });
   const [card, setCard] = useState<CardSummary | null>(null);
   const [cardAttempted, setCardAttempted] = useState(false);
@@ -60,7 +61,7 @@ export const DepositForm: React.FC<DepositFormProps> = ({
       ...values,
       card: values.paymentMethod === 'card' ? (card ?? undefined) : undefined,
     });
-    reset({ amount: DEFAULT_AMOUNT, paymentMethod: values.paymentMethod });
+    reset({ amount: defaultAmount(), paymentMethod: values.paymentMethod });
     // A fresh card form after every payment so no card data lingers.
     setCardKey((key) => key + 1);
     setCardAttempted(false);

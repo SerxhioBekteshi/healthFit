@@ -1,9 +1,9 @@
 import React from 'react';
 import { Badge } from '@/components/ui/Badge';
+import { PlanPrice } from '@/components/membership-plans/PlanPrice';
 import { isTermPlan } from '@/components/membership-plans/priceTable';
 import { t } from '@/i18n';
 import { genderLabels, planTypeLabels } from '@/utils/constants/labels';
-import { formatMoney } from '@/utils/format';
 import type { MembershipPlan } from '@gym/shared/types';
 
 interface ExtraPlansProps {
@@ -45,6 +45,9 @@ export const ExtraPlans: React.FC<ExtraPlansProps> = ({
               <p className="flex flex-wrap items-center gap-2 font-semibold text-bone">
                 {plan.name}
                 {plan.isActive ? null : <Badge>{t('Hidden')}</Badge>}
+                {plan.offer ? (
+                  <Badge tone="success">{plan.offer.name}</Badge>
+                ) : null}
               </p>
               <p className="mt-1 text-xs text-bone/50">
                 {planTypeLabels[plan.type]}
@@ -66,9 +69,7 @@ export const ExtraPlans: React.FC<ExtraPlansProps> = ({
               </p>
             </div>
             <div className="mt-5 flex items-center justify-between gap-3">
-              <p className="text-xl font-semibold tabular-nums text-bone">
-                {formatMoney(plan.price)}
-              </p>
+              <PlanPrice plan={plan} />
               {renderAction(plan)}
             </div>
           </article>

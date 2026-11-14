@@ -8,8 +8,10 @@ import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { Skeleton } from '@/components/ui/Skeleton';
+import { useAccessSettings } from '@/hooks/access-settings';
 import { useAttendance } from '@/hooks/attendance';
 import { useGymLocations } from '@/hooks/gym-locations';
+import { useLockerActions } from '@/hooks/lockers';
 import { t } from '@/i18n';
 import { formatTime } from '@/utils/format';
 import { QrScanner } from './QrScanner';
@@ -20,15 +22,27 @@ const FEEDBACK_MS = 6000;
 const DESK_LOCATION_KEY = 'desk-location';
 
 type Feedback =
-  | { type: 'success'; name: string; time: string; location: string | null }
+  | {
+      type: 'success';
+      action: 'checked_in' | 'checked_out';
+      name: string;
+      time: string;
+      location: string | null;
+      locker: string | null;
+    }
   | { type: 'error'; message: string }
   | null;
 
 export const AttendancePage: React.FC = () => {
-  const { records, stats, isLoading, error, checkIn } =
+  const { records, stats, isLoading, error, scan } =
     useAttendance(LATEST_LIMIT);
   const { activeLocations } = useGymLocations();
+  const { settings } = useAccessSettings();
+  const { assignLocker } = useLockerActions();
   const [code, setCode] = useState('');
+  const [lockerCode, setLockerCode] = useState('');
+  const [lockerNumber, setLockerNumber] = useState('');
+  const [lockerFeedback, setLockerFeedback] = useState<Feedback>(null);
   const [feedback, setFeedback] = useState<Feedback>(null);
   const [savedLocationId, setSavedLocationId] = useState(
     () => window.localStorage.getItem(DESK_LOCATION_KEY) ?? ''
@@ -60,15 +74,21 @@ export const AttendancePage: React.FC = () => {
         return;
       }
       try {
-        const record = await checkIn.mutateAsync({
-          clientId: trimmed,
+        const { action, record } = await scan.mutateAsync({
+          code: trimmed,
           locationId,
         });
         setFeedback({
           type: 'success',
+          action,
           name: record.clientName,
-          time: formatTime(record.checkedInAt),
+          time: formatTime(
+            action === 'checked_in'
+              ? record.checkedInAt
+              : (record.checkedOutAt ?? record.checkedInAt)
+          ),
           location: record.locationName,
+          locker: record.lockerNumber,
         });
         setCode('');
       } catch (submitError) {
@@ -81,7 +101,7 @@ export const AttendancePage: React.FC = () => {
         });
       }
     },
-    [checkIn, locationId]
+    [scan, locationId]
   );
 
   const onSubmit = async (
@@ -89,6 +109,36 @@ export const AttendancePage: React.FC = () => {
   ): Promise<void> => {
     event.preventDefault();
     await submitCheckIn(code);
+  };
+
+  const onLockerSubmit = async (
+    event: React.FormEvent<HTMLFormElement>
+  ): Promise<void> => {
+    event.preventDefault();
+    try {
+      const result = await assignLocker.mutateAsync({
+        code: lockerCode.trim(),
+        lockerNumber: lockerNumber.trim(),
+      });
+      setLockerFeedback({
+        type: 'success',
+        action: 'checked_in',
+        name: result.clientName,
+        time: '',
+        location: result.locationName,
+        locker: result.lockerNumber,
+      });
+      setLockerCode('');
+      setLockerNumber('');
+    } catch (lockerError) {
+      setLockerFeedback({
+        type: 'error',
+        message:
+          lockerError instanceof Error
+            ? lockerError.message
+            : t('Could not give the locker.'),
+      });
+    }
   };
 
   const onScanned = useCallback(
@@ -105,7 +155,7 @@ export const AttendancePage: React.FC = () => {
         eyebrow={t('Members')}
         title={t('Door')}
         accent={t('attendance')}
-        description={t('Check members in at the desk.')}
+        description={t('Check members in and out at the desk.')}
       />
 
       <div className="space-y-4">
@@ -141,10 +191,12 @@ export const AttendancePage: React.FC = () => {
         <div className="grid gap-4 lg:grid-cols-5">
           <Card flush className="p-5 lg:col-span-3">
             <p className="text-base font-semibold text-bone">
-              {t('Check in a member')}
+              {t('Check in or out a member')}
             </p>
             <p className="mt-1 text-sm text-bone/55">
-              {t("Scan the QR on the member's phone or paste their code.")}
+              {t(
+                "Scan the QR on the member's phone, tap their card or paste their code. The same scan checks them out when they are inside."
+              )}
             </p>
 
             {hasSeveralLocations ? (
@@ -180,11 +232,15 @@ export const AttendancePage: React.FC = () => {
                 autoComplete="off"
                 value={code}
                 onChange={(event) => setCode(event.target.value)}
-                placeholder={t('Paste or scan the member code')}
+                placeholder={
+                  settings.cardsEnabled
+                    ? t('Tap a card or paste the member code')
+                    : t('Paste or scan the member code')
+                }
                 className={`${fieldInputClass} flex-1 font-mono`}
               />
-              <Button type="submit" loading={checkIn.isPending} icon="scan">
-                {checkIn.isPending ? t('Checking in') : t('Check in')}
+              <Button type="submit" loading={scan.isPending} icon="scan">
+                {scan.isPending ? t('Scanning') : t('Check in / out')}
               </Button>
             </form>
 
@@ -199,18 +255,91 @@ export const AttendancePage: React.FC = () => {
                     {feedback.name}
                   </p>
                   <p className="text-xs text-signal">
-                    {feedback.location
-                      ? t('Checked in at {{time}} - {{location}}', {
-                          time: feedback.time,
-                          location: feedback.location,
-                        })
-                      : t('Checked in at {{time}}', { time: feedback.time })}
+                    {feedback.action === 'checked_out'
+                      ? feedback.locker
+                        ? t(
+                            'Checked out at {{time}} - locker {{locker}} is free',
+                            {
+                              time: feedback.time,
+                              locker: feedback.locker,
+                            }
+                          )
+                        : t('Checked out at {{time}}', { time: feedback.time })
+                      : feedback.location
+                        ? t('Checked in at {{time}} - {{location}}', {
+                            time: feedback.time,
+                            location: feedback.location,
+                          })
+                        : t('Checked in at {{time}}', { time: feedback.time })}
                   </p>
                 </div>
               </div>
             ) : null}
             {feedback?.type === 'error' ? (
               <Alert className="mt-4">{feedback.message}</Alert>
+            ) : null}
+
+            {settings.lockersEnabled ? (
+              <div className="mt-5 border-t border-white/10 pt-4">
+                <p className="text-sm font-semibold text-bone">
+                  {t('Give a locker')}
+                </p>
+                <p className="mt-1 text-xs text-bone/50">
+                  {settings.lockersUseCard
+                    ? t('Tap the member card, then enter the locker it locks.')
+                    : t(
+                        'For a member who is inside: enter their code and the locker number.'
+                      )}
+                </p>
+                <form
+                  onSubmit={onLockerSubmit}
+                  className="mt-3 flex flex-col gap-2 sm:flex-row"
+                >
+                  <label htmlFor="locker-member" className="sr-only">
+                    {t('Member code or card')}
+                  </label>
+                  <input
+                    id="locker-member"
+                    type="text"
+                    autoComplete="off"
+                    value={lockerCode}
+                    onChange={(event) => setLockerCode(event.target.value)}
+                    placeholder={t('Member code or card')}
+                    className={`${fieldInputClass} flex-1 font-mono`}
+                  />
+                  <label htmlFor="locker-number" className="sr-only">
+                    {t('Locker number')}
+                  </label>
+                  <input
+                    id="locker-number"
+                    type="text"
+                    autoComplete="off"
+                    value={lockerNumber}
+                    onChange={(event) => setLockerNumber(event.target.value)}
+                    placeholder={t('Locker number')}
+                    className={`${fieldInputClass} sm:w-32`}
+                  />
+                  <Button
+                    type="submit"
+                    variant="secondary"
+                    loading={assignLocker.isPending}
+                    disabled={!lockerCode.trim() || !lockerNumber.trim()}
+                  >
+                    {t('Give locker')}
+                  </Button>
+                </form>
+                {lockerFeedback?.type === 'success' ? (
+                  <Alert tone="success" className="mt-3">
+                    {t('{{name}} has locker {{locker}}.', {
+                      name: lockerFeedback.name,
+                      locker: lockerFeedback.locker ?? '',
+                    })}
+                  </Alert>
+                ) : null}
+                {lockerFeedback?.type === 'error' ? (
+                  <Alert className="mt-3">{lockerFeedback.message}</Alert>
+                ) : null}
+              </div>
             ) : null}
 
             <div className="mt-5 border-t border-white/10 pt-4">

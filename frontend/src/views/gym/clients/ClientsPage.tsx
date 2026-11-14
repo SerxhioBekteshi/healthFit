@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { CheckInCode } from '@/components/clients/CheckInCode';
+import { ClientInviteDialog } from '@/components/clients/ClientInviteDialog';
 import { ActionMenu } from '@/components/ui/ActionMenu';
 import {
   AssignMembershipDrawer,
@@ -13,12 +14,13 @@ import { FilterSelect } from '@/components/ui/FilterSelect';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { Table, type Column } from '@/components/ui/Table';
 import { useClients } from '@/hooks/clients';
+import { useIssueClientInvite } from '@/hooks/client-invites';
 import { useConfirm } from '@/hooks/confirm';
 import { useMembershipPlans } from '@/hooks/membership-plans';
 import { useMemberships } from '@/hooks/memberships';
 import { useTableController } from '@/hooks/table';
 import { t } from '@/i18n';
-import type { Client } from '@gym/shared/types';
+import type { Client, ClientInvite } from '@gym/shared/types';
 import { genderLabels } from '@/utils/constants/labels';
 import { describePeriod } from '@/utils/memberships';
 import type { CreateClientValues } from '@gym/shared/validation/clients';
@@ -46,6 +48,11 @@ export const ClientsPage: React.FC = () => {
   const { plans } = useMembershipPlans();
   const { createMembership } = useMemberships();
   const { confirm, dialog } = useConfirm();
+  const issueInvite = useIssueClientInvite();
+  const [invite, setInvite] = useState<{
+    clientName: string;
+    link: ClientInvite;
+  } | null>(null);
   const [assignDefaults, setAssignDefaults] = useState<AssignDefaults | null>(
     null
   );
@@ -102,6 +109,15 @@ export const ClientsPage: React.FC = () => {
     setIsDrawerOpen(true);
   };
 
+  const showInvite = async (client: Client): Promise<void> => {
+    try {
+      const link = await issueInvite.mutateAsync(client.id);
+      setInvite({ clientName: client.fullName, link });
+    } catch {
+      // The error toast already explains what went wrong.
+    }
+  };
+
   const onSubmit = async (values: CreateClientValues): Promise<void> => {
     try {
       if (editing) {
@@ -109,10 +125,13 @@ export const ClientsPage: React.FC = () => {
           clientId: editing.id,
           input: values,
         });
+        setIsDrawerOpen(false);
       } else {
-        await createClient.mutateAsync(values);
+        const created = await createClient.mutateAsync(values);
+        setIsDrawerOpen(false);
+        // No password given: the client sets their own through a one-time link.
+        if (!values.password) await showInvite(created);
       }
-      setIsDrawerOpen(false);
     } catch {
       // The error is shown in the drawer through serverError.
     }
@@ -168,8 +187,20 @@ export const ClientsPage: React.FC = () => {
       sortValue: (client) => (client.isActive ? 0 : 1),
       searchValue: (client) => (client.isActive ? t('Enabled') : t('Disabled')),
       cell: (client) => (
-        <Badge tone={client.isActive ? 'success' : 'neutral'}>
-          {client.isActive ? t('Enabled') : t('Disabled')}
+        <Badge
+          tone={
+            !client.hasLogin
+              ? 'warning'
+              : client.isActive
+                ? 'success'
+                : 'neutral'
+          }
+        >
+          {!client.hasLogin
+            ? t('Invite pending')
+            : client.isActive
+              ? t('Enabled')
+              : t('Disabled')}
         </Badge>
       ),
     },
@@ -202,6 +233,19 @@ export const ClientsPage: React.FC = () => {
               label: t('Edit'),
               icon: 'pencil',
               onClick: () => openDrawer(client),
+            },
+            {
+              label: client.hasLogin
+                ? t('Reset password link')
+                : t('Invite link'),
+              icon: 'key',
+              hint: client.hasLogin
+                ? t('A one-time link so this client can set a new password.')
+                : t(
+                    'A one-time link so this client can set a password and sign in.'
+                  ),
+              disabled: issueInvite.isPending,
+              onClick: () => void showInvite(client),
             },
             {
               label: client.isActive
@@ -319,6 +363,11 @@ export const ClientsPage: React.FC = () => {
         serverError={createMembership.error?.message ?? null}
         onSubmit={onAssign}
         onClose={() => setAssignDefaults(null)}
+      />
+      <ClientInviteDialog
+        invite={invite?.link ?? null}
+        clientName={invite?.clientName ?? ''}
+        onClose={() => setInvite(null)}
       />
       {dialog}
     </>

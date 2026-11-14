@@ -3,6 +3,7 @@ import type {
   AttendanceHistoryPage,
   AttendanceRecord,
   AttendanceStats,
+  ScanResult,
 } from '@gym/shared/types';
 
 export const attendanceService = {
@@ -22,4 +23,9 @@ export const attendanceService = {
       clientId,
       locationId,
     }),
+  scan: (code: string, locationId?: string) =>
+    apiClient.post<ScanResult>('/attendance/scan', { code, locationId }),
+  // Staff name the member; a member checking out passes nothing.
+  checkOut: (clientId?: string) =>
+    apiClient.post<AttendanceRecord>('/attendance/check-out', { clientId }),
 };

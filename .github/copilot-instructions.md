@@ -14,5 +14,6 @@ Design and domain rules are in `ARCHITECTURE.md`; per-folder rules are in `.gith
 - Every `useMutation` sets `meta: { success: '...' }` (errors toast automatically); no duplicate success banners.
 - Long lists are cursor-paged (`{ <items>, nextCursor }`) and loaded with `useInfiniteQuery` + `LoadMore`.
 - Any new or changed endpoint updates `mobile/API_CONTRACT.md`.
+- Every user-facing text in the signed-in app and login uses `t('English text')` from `@/i18n` and is added to the `sq`, `it`, `de`, `el` dictionaries (`npm run i18n:check` must pass); the landing page stays English only.
 - Keep changes small and focused; comment only what the code cannot say.
 - Before finishing: `npm run type-check` and `npm run lint` from the repo root.

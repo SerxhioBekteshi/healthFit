@@ -65,7 +65,9 @@ beforeEach(async () => {
   await wipe();
   gymAId = (await prisma.gym.create({ data: { name: 'Gym A' } })).id;
   gymBId = (
-    await prisma.gym.create({ data: { name: 'Gym B', isActive: false } })
+    await prisma.gym.create({
+      data: { name: 'Gym B', isActive: false, currency: 'EUR' },
+    })
   ).id;
 });
 
@@ -344,7 +346,22 @@ describe('dashboardService', () => {
       pastDue: 1,
       cancelled: 0,
     });
-    expect(summary.revenueTotal).toBe(99);
-    expect(summary.overdueAmount).toBe(99);
+    expect(summary.revenueTotal).toEqual([{ currency: 'ALL', amount: 99 }]);
+    expect(summary.revenueThisMonth).toEqual([{ currency: 'ALL', amount: 99 }]);
+    // Gym B bills in euro: its overdue amount is never added to the lek totals.
+    expect(summary.overdueAmount).toEqual([{ currency: 'EUR', amount: 99 }]);
+  });
+
+  it('carries the gym currency on subscriptions and payments', async () => {
+    const sub = await gymSubscriptionService.create(
+      platform,
+      subscriptionInput(gymBId)
+    );
+    expect(sub.currency).toBe('EUR');
+    await gymSubscriptionService.recordPayment(platform, sub.id, {
+      paymentMethod: 'card',
+    });
+    const [payment] = await gymSubscriptionService.listPayments(platform);
+    expect(payment?.currency).toBe('EUR');
   });
 });

@@ -80,6 +80,12 @@ export const LandingNav: React.FC<LandingNavProps> = ({
               </a>
             ))}
             <Link
+              to="/sign-up"
+              className="text-[0.78rem] font-medium uppercase tracking-[0.2em] text-signal transition-opacity hover:opacity-80"
+            >
+              Register your gym
+            </Link>
+            <Link
               to={ctaHref}
               className="rounded-full border border-white/20 px-5 py-2.5 text-[0.75rem] font-semibold uppercase tracking-[0.16em] text-bone transition-colors duration-300 hover:border-signal hover:bg-signal hover:text-ink"
             >
@@ -153,6 +159,13 @@ export const LandingNav: React.FC<LandingNavProps> = ({
               <MagneticLink href={ctaHref} onClick={() => setOpen(false)}>
                 {ctaLabel}
               </MagneticLink>
+              <Link
+                to="/sign-up"
+                onClick={() => setOpen(false)}
+                className="ml-6 text-sm font-medium uppercase tracking-[0.16em] text-signal"
+              >
+                Register your gym
+              </Link>
             </motion.div>
           </motion.div>
         ) : null}

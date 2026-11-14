@@ -1,12 +1,24 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { Drawer } from '@/components/ui/Drawer';
 import { FormField, fieldInputClass } from '@/components/common/FormField';
+import { CardFields } from '@/components/payments/CardFields';
+import { usePaymentSettings } from '@/hooks/payment-settings';
 import { t } from '@/i18n';
-import type { Client, MembershipPlan } from '@gym/shared/types';
-import { genderLabels, weeklyVisitsLabel } from '@/utils/constants/labels';
+import type {
+  CardSummary,
+  Client,
+  MembershipPlan,
+  PaymentSettings,
+} from '@gym/shared/types';
+import {
+  genderLabels,
+  paymentMethodLabels,
+  weeklyVisitsLabel,
+} from '@/utils/constants/labels';
 import { formatDay, formatMoney } from '@/utils/format';
+import { planPrice } from '@/utils/memberships';
 import {
   createMembershipSchema,
   type CreateMembershipValues,
@@ -34,6 +46,15 @@ interface AssignMembershipDrawerProps {
 
 const today = (): string => new Date().toISOString().slice(0, 10);
 
+type CounterMethod = CreateMembershipValues['paymentMethod'];
+
+// Which payment setting lets staff take each counter method.
+const methodSettings: Record<CounterMethod, keyof PaymentSettings> = {
+  cash: 'acceptCash',
+  card: 'acceptCard',
+  balance: 'acceptBalance',
+};
+
 // The one place where a membership is sold: assign a new one or renew an old one.
 export const AssignMembershipDrawer: React.FC<AssignMembershipDrawerProps> = ({
   isOpen,
@@ -57,6 +78,19 @@ export const AssignMembershipDrawer: React.FC<AssignMembershipDrawerProps> = ({
   });
   const renewing = defaults?.renewing ?? false;
 
+  // Only the ways of paying the gym accepts are offered.
+  const { settings } = usePaymentSettings();
+  const methods = useMemo(
+    () =>
+      (Object.keys(methodSettings) as CounterMethod[]).filter(
+        (method) => settings[methodSettings[method]]
+      ),
+    [settings]
+  );
+  const method = watch('paymentMethod');
+  const [card, setCard] = useState<CardSummary | null>(null);
+  const [cardAttempted, setCardAttempted] = useState(false);
+
   // Plans are sold per gender, so only the selected client's plans are offered.
   const clientId = watch('clientId');
   const startDate = watch('startDate');
@@ -75,10 +109,12 @@ export const AssignMembershipDrawer: React.FC<AssignMembershipDrawerProps> = ({
         clientId: defaults?.clientId ?? clients[0]?.id ?? '',
         planId: '',
         startDate: defaults?.startDate ?? today(),
-        paymentMethod: 'cash',
+        paymentMethod: methods[0] ?? 'cash',
       });
+      setCard(null);
+      setCardAttempted(false);
     }
-  }, [isOpen, clients, defaults, reset]);
+  }, [isOpen, clients, defaults, methods, reset]);
 
   useEffect(() => {
     if (isOpen) {
@@ -88,6 +124,17 @@ export const AssignMembershipDrawer: React.FC<AssignMembershipDrawerProps> = ({
       setValue('planId', preferred?.id ?? '');
     }
   }, [isOpen, clientId, eligiblePlans, defaults, setValue]);
+
+  const submit = handleSubmit(async (values) => {
+    if (values.paymentMethod === 'card' && !card) {
+      setCardAttempted(true);
+      return;
+    }
+    await onSubmit({
+      ...values,
+      card: values.paymentMethod === 'card' ? (card ?? undefined) : undefined,
+    });
+  });
 
   return (
     <Drawer
@@ -101,12 +148,12 @@ export const AssignMembershipDrawer: React.FC<AssignMembershipDrawerProps> = ({
           : t('Sell a membership to a client at the counter.')
       }
       onClose={onClose}
-      onSubmitClick={handleSubmit(onSubmit)}
+      onSubmitClick={submit}
       submitLabel={renewing ? t('Renew membership') : t('Assign membership')}
       isPending={isPending}
       serverError={serverError}
     >
-      <form className="grid gap-4" onSubmit={handleSubmit(onSubmit)}>
+      <form className="grid gap-4" onSubmit={submit}>
         <FormField
           id="membership-client"
           label={t('Client')}
@@ -143,7 +190,7 @@ export const AssignMembershipDrawer: React.FC<AssignMembershipDrawerProps> = ({
                 {plan.weeklyVisits > 0
                   ? `, ${weeklyVisitsLabel(plan.weeklyVisits)}`
                   : ''}
-                ) — {formatMoney(plan.price)}
+                ) — {formatMoney(planPrice(plan))}
               </option>
             ))}
           </select>
@@ -171,10 +218,40 @@ export const AssignMembershipDrawer: React.FC<AssignMembershipDrawerProps> = ({
           )}
         </FormField>
 
+        <FormField
+          id="membership-method"
+          label={t('Payment method')}
+          error={errors.paymentMethod?.message}
+        >
+          <select
+            id="membership-method"
+            className={fieldInputClass}
+            {...register('paymentMethod')}
+          >
+            {methods.map((value) => (
+              <option key={value} value={value}>
+                {paymentMethodLabels[value]}
+              </option>
+            ))}
+          </select>
+        </FormField>
+
+        {method === 'card' ? (
+          <CardFields compact onChange={setCard} showErrors={cardAttempted} />
+        ) : null}
+
         <p className="rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2.5 text-sm text-bone/70">
-          {t(
-            'Paid in cash at the counter, so the membership is paid right away. If the client already has a membership running, this one is queued and starts the day after the last one ends. Members who pay by card or from their balance subscribe in their own app.'
-          )}
+          {method === 'card'
+            ? t(
+                'Charged to the card now, so the membership is paid right away. If the client already has a membership running, this one is queued.'
+              )
+            : method === 'balance'
+              ? t(
+                  'Taken from the client balance now. They need enough credit; if the client already has a membership running, this one is queued.'
+                )
+              : t(
+                  'Paid in cash at the counter, so the membership is paid right away. If the client already has a membership running, this one is queued and starts the day after the last one ends. Members who pay by card or from their balance subscribe in their own app.'
+                )}
         </p>
       </form>
     </Drawer>

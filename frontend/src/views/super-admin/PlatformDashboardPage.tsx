@@ -5,7 +5,7 @@ import { PageHeader } from '@/components/ui/PageHeader';
 import { StatGridSkeleton } from '@/components/ui/Skeleton';
 import { usePlatformDashboard } from '@/hooks/dashboard';
 import { t } from '@/i18n';
-import { formatMoney } from '@/utils/format';
+import { formatMoneyTotals } from '@/utils/format';
 
 export const PlatformDashboardPage: React.FC = () => {
   const { data, isLoading, error } = usePlatformDashboard();
@@ -62,7 +62,7 @@ export const PlatformDashboardPage: React.FC = () => {
               label={t('Past due')}
               value={data.subscriptions.pastDue}
               hint={t('{{amount}} overdue', {
-                amount: formatMoney(data.overdueAmount),
+                amount: formatMoneyTotals(data.overdueAmount),
               })}
             />
             <StatCard
@@ -82,12 +82,12 @@ export const PlatformDashboardPage: React.FC = () => {
               icon="trend"
               accent
               label={t('Platform revenue')}
-              value={formatMoney(data.revenueTotal)}
+              value={formatMoneyTotals(data.revenueTotal)}
               hint={t('All time')}
             />
             <StatCard
               label={t('Revenue this month')}
-              value={formatMoney(data.revenueThisMonth)}
+              value={formatMoneyTotals(data.revenueThisMonth)}
             />
             <StatCard
               icon="dumbbell"

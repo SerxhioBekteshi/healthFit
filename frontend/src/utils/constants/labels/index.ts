@@ -7,6 +7,7 @@ import type {
   MembershipPlanType,
   MembershipStatus,
   PaymentMethod,
+  PriceOfferStatus,
 } from '@gym/shared/types';
 
 export const paymentMethodLabels = translated<PaymentMethod>({
@@ -118,3 +119,17 @@ export const subscriptionCycleLabels = translated<GymSubscriptionCycle>({
   monthly: msg('Monthly'),
   yearly: msg('Yearly'),
 });
+
+export const priceOfferStatusLabels = translated<PriceOfferStatus>({
+  active: msg('Active'),
+  scheduled: msg('Scheduled'),
+  ended: msg('Ended'),
+  paused: msg('Paused'),
+});
+
+export const priceOfferStatusTone: Record<PriceOfferStatus, BadgeTone> = {
+  active: 'success',
+  scheduled: 'info',
+  ended: 'neutral',
+  paused: 'warning',
+};

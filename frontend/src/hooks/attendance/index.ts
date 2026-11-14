@@ -73,11 +73,40 @@ export const useAttendance = (limit?: number) => {
     },
   });
 
+  const scan = useMutation({
+    meta: { success: 'Scan recorded.' },
+    mutationFn: ({ code, locationId }: { code: string; locationId?: string }) =>
+      attendanceService.scan(code, locationId),
+    onSuccess: async () => {
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['attendance'] }),
+        queryClient.invalidateQueries({ queryKey: ['memberships'] }),
+        queryClient.invalidateQueries({ queryKey: ['lockers'] }),
+      ]);
+    },
+  });
+
   return {
     records: recordsQuery.data ?? [],
     stats: statsQuery.data ?? emptyStats,
     isLoading: recordsQuery.isLoading || statsQuery.isLoading,
     error: recordsQuery.error ?? statsQuery.error,
     checkIn,
+    scan,
   };
+};
+
+// A member checking themselves out from their dashboard.
+export const useCheckOut = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    meta: { success: 'You are checked out.' },
+    mutationFn: () => attendanceService.checkOut(),
+    onSuccess: async () => {
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['attendance'] }),
+        queryClient.invalidateQueries({ queryKey: ['dashboard'] }),
+      ]);
+    },
+  });
 };

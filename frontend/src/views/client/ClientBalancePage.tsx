@@ -12,6 +12,7 @@ import { Skeleton } from '@/components/ui/Skeleton';
 import { useBalance } from '@/hooks/balance';
 import { useDebouncedValue } from '@/hooks/debounce';
 import { usePaymentChallenge } from '@/hooks/payment-challenges';
+import { usePaymentSettings } from '@/hooks/payment-settings';
 import { t } from '@/i18n';
 import { countFilters, sendableBalanceFilters } from '@/utils/filters';
 import { formatMoney } from '@/utils/format';
@@ -27,6 +28,8 @@ export const ClientBalancePage: React.FC = () => {
   const { balance, transactions, isLoading, isFiltering, error, pagination } =
     useBalance(undefined, true, applied);
   const payment = usePaymentChallenge();
+  const { settings } = usePaymentSettings();
+  const canTopUp = settings.acceptBalance && settings.acceptCard;
   const [success, setSuccess] = useState<string | null>(null);
 
   // The deposit is only charged after the one-time code is verified.
@@ -69,16 +72,22 @@ export const ClientBalancePage: React.FC = () => {
               {t('Top up')}
             </span>
             {' · '}
-            {t('Add funds with your Visa or Mastercard.')}
+            {canTopUp
+              ? t('Add funds with your Visa or Mastercard.')
+              : settings.acceptBalance
+                ? t('Card top-ups are off. Add funds at the gym counter.')
+                : t('Your gym does not use balance credit.')}
           </p>
-          <DepositForm
-            compact
-            methods={['card']}
-            isPending={payment.start.isPending}
-            serverError={payment.start.error?.message ?? null}
-            successMessage={success}
-            onSubmit={onDeposit}
-          />
+          {canTopUp ? (
+            <DepositForm
+              compact
+              methods={['card']}
+              isPending={payment.start.isPending}
+              serverError={payment.start.error?.message ?? null}
+              successMessage={success}
+              onSubmit={onDeposit}
+            />
+          ) : null}
         </Card>
 
         <Card

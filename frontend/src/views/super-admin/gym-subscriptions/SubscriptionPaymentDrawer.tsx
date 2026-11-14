@@ -63,7 +63,7 @@ export const SubscriptionPaymentDrawer: React.FC<
           <p className="text-sm text-bone/70">
             {t('This settles one {{cycle}} period at {{price}}.', {
               cycle: subscriptionCycleLabels[subscription.cycle],
-              price: formatMoney(subscription.price),
+              price: formatMoney(subscription.price, subscription.currency),
             })}{' '}
             {t('Paid through {{date}}.', {
               date: formatDay(subscription.currentPeriodEnd),

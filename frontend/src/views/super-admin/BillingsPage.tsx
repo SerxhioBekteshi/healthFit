@@ -8,7 +8,12 @@ import { useGymSubscriptions } from '@/hooks/gym-subscriptions';
 import { useTableController } from '@/hooks/table';
 import { t } from '@/i18n';
 import { paymentMethodLabels } from '@/utils/constants/labels';
-import { formatDate, formatDay, formatMoney } from '@/utils/format';
+import {
+  formatDate,
+  formatDay,
+  formatMoney,
+  formatMoneyTotals,
+} from '@/utils/format';
 import type { GymSubscriptionPayment } from '@gym/shared/types';
 
 export const BillingsPage: React.FC = () => {
@@ -50,7 +55,7 @@ export const BillingsPage: React.FC = () => {
       align: 'right',
       cell: (payment) => (
         <span className="font-semibold tabular-nums text-bone">
-          {formatMoney(payment.amount)}
+          {formatMoney(payment.amount, payment.currency)}
         </span>
       ),
     },
@@ -68,16 +73,16 @@ export const BillingsPage: React.FC = () => {
               icon="trend"
               accent
               label={t('Revenue this month')}
-              value={formatMoney(summary.revenueThisMonth)}
+              value={formatMoneyTotals(summary.revenueThisMonth)}
             />
             <StatCard
               label={t('Revenue all time')}
-              value={formatMoney(summary.revenueTotal)}
+              value={formatMoneyTotals(summary.revenueTotal)}
             />
             <StatCard
               icon="alert"
               label={t('Overdue')}
-              value={formatMoney(summary.overdueAmount)}
+              value={formatMoneyTotals(summary.overdueAmount)}
               hint={t('{{pastDue}} gym(s) past due', {
                 pastDue: summary.subscriptions.pastDue,
               })}
@@ -93,7 +98,7 @@ export const BillingsPage: React.FC = () => {
                 <li key={item.id}>
                   {t('{{gym}} — {{price}} due {{date}}', {
                     gym: item.gymName,
-                    price: formatMoney(item.price),
+                    price: formatMoney(item.price, item.currency),
                     date: formatDay(item.nextPaymentDue),
                   })}
                 </li>

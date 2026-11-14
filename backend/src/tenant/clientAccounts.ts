@@ -28,6 +28,21 @@ const rethrow = (error: unknown): never => {
   throw error;
 };
 
+// Which of these users have a password and can sign in.
+export const usersWithLogin = async (
+  userIds: (string | null)[]
+): Promise<Set<string>> => {
+  const ids = userIds.filter((id): id is string => id !== null);
+  if (ids.length === 0) {
+    return new Set();
+  }
+  const accounts = await prisma.account.findMany({
+    where: { userId: { in: ids }, providerId: 'credential' },
+    select: { userId: true },
+  });
+  return new Set(accounts.map((account) => account.userId));
+};
+
 export const createClientAccount = async (
   ctx: TenantContext,
   input: CreateClientValues
@@ -35,13 +50,24 @@ export const createClientAccount = async (
   assertGymAdmin(ctx);
   try {
     return await prisma.$transaction(async (tx) => {
-      const user = await createCredentialUser(tx, {
-        name: input.fullName,
-        email: input.email,
-        password: input.password,
-        role: 'client',
-        gymId: ctx.gymId,
-      });
+      // Without a password the user has no credential yet and cannot sign in until the invite is used.
+      const user = input.password
+        ? await createCredentialUser(tx, {
+            name: input.fullName,
+            email: input.email,
+            password: input.password,
+            role: 'client',
+            gymId: ctx.gymId,
+          })
+        : await tx.user.create({
+            data: {
+              name: input.fullName,
+              email: input.email.toLowerCase(),
+              emailVerified: true,
+              role: 'client',
+              gymId: ctx.gymId,
+            },
+          });
       return tx.client.create({
         data: {
           gymId: ctx.gymId,

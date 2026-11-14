@@ -50,6 +50,12 @@ const superAdminNavigationItems: NavigationItem[] = [
     group: msg('Platform'),
   },
   {
+    label: msg('Requests'),
+    to: '/super-admin/signup-requests',
+    icon: 'inbox',
+    group: msg('Platform'),
+  },
+  {
     label: msg('Subscriptions'),
     to: '/super-admin/gym-subscriptions',
     icon: 'card',
@@ -127,6 +133,23 @@ const gymAdminNavigationItems: NavigationItem[] = [
     to: '/closures',
     icon: 'calendar-off',
     group: msg('Operations'),
+  },
+  {
+    label: msg('Payment settings'),
+    to: '/payment-settings',
+    icon: 'card',
+    group: msg('Operations'),
+  },
+  {
+    label: msg('Cards & lockers'),
+    to: '/member-cards',
+    icon: 'key',
+    group: msg('Operations'),
+    children: [
+      { label: msg('Cards'), to: '/member-cards' },
+      { label: msg('Lockers'), to: '/lockers' },
+      { label: msg('Access settings'), to: '/access-settings' },
+    ],
   },
 ];
 

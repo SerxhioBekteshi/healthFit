@@ -5,11 +5,13 @@ import helmet from 'helmet';
 import { auth } from '@/auth/auth';
 import { env } from '@/config/env';
 import { errorHandler, notFoundHandler } from '@/http/errorHandler';
+import { loginRateLimit } from '@/http/rateLimit';
 import { v1Router } from '@/routes/v1';
 
 export const createApp = () => {
   const app = express();
 
+  app.set('trust proxy', env.trustProxy);
   app.use(helmet());
   app.use(
     cors({
@@ -37,6 +39,9 @@ export const createApp = () => {
       immutable: true,
     })
   );
+
+  // Slow down password guessing before Better Auth sees the request.
+  app.post('/api/auth/sign-in/*splat', loginRateLimit);
 
   // Better Auth parses its own body, so it must be mounted before express.json().
   app.all('/api/auth/*splat', toNodeHandler(auth));

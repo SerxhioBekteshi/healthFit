@@ -1,5 +1,13 @@
 import type { AttendanceStats } from '../attendance';
+import type { CurrencyCode } from '../gyms';
+import type { LockerAssignment } from '../lockers';
 import type { MembershipPlanType } from '../membership-plans';
+
+// Money of the platform owner's view: gyms use different currencies, so totals never mix them.
+export interface MoneyTotal {
+  currency: CurrencyCode;
+  amount: number;
+}
 
 export interface GymDashboard {
   gymName: string;
@@ -54,6 +62,12 @@ export interface ClientDashboard {
   attendance: { total: number; last7Days: number; last30Days: number };
   week: ClientWeek;
   currentlyInside: number;
+  // Number of the member's active card; null when none.
+  card: string | null;
+  // True while the member has an open visit.
+  checkedIn: boolean;
+  // Locker in use during the open visit; null when none.
+  locker: LockerAssignment | null;
 }
 
 export interface PlatformDashboard {
@@ -70,7 +84,8 @@ export interface PlatformDashboard {
     pastDue: number;
     cancelled: number;
   };
-  revenueTotal: number;
-  revenueThisMonth: number;
-  overdueAmount: number;
+  // One entry per currency that has an amount, largest first; empty when there is none.
+  revenueTotal: MoneyTotal[];
+  revenueThisMonth: MoneyTotal[];
+  overdueAmount: MoneyTotal[];
 }

@@ -175,17 +175,17 @@ export const BaseLayout: React.FC<BaseLayoutProps> = ({
         }`}
       >
         <header className="sticky top-0 z-30 flex h-16 items-center justify-between gap-3 border-b border-white/[0.07] bg-ink/80 px-3 backdrop-blur-xl sm:px-5 lg:px-6">
-          <div className="flex items-center gap-3">
+          <div className="flex min-w-0 items-center gap-3">
             <Link
               to="/"
               className="flex items-center gap-3 lg:hidden"
               aria-label={t('Home')}
             >
               <BrandMark />
-              <BrandName className="text-base" />
+              <BrandName className="hidden text-base min-[420px]:inline" />
             </Link>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
             <LanguageSwitcher />
             <ThemeToggle variant="icon" />
             <UserMenu
@@ -199,7 +199,7 @@ export const BaseLayout: React.FC<BaseLayoutProps> = ({
               type="button"
               aria-label={t('Open menu')}
               onClick={() => setMobileOpen(true)}
-              className="grid h-10 w-10 place-items-center rounded-lg border border-white/10 text-bone/80 lg:hidden"
+              className="grid h-10 w-10 shrink-0 place-items-center rounded-lg border border-white/10 text-bone/80 lg:hidden"
             >
               <Icon name="menu" className="h-5 w-5" />
             </button>

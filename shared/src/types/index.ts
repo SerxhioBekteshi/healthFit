@@ -1,7 +1,9 @@
 // Barrel only: each domain's types live in their own folder (types/<domain>/index.ts).
+export * from './access-settings';
 export * from './attendance';
 export * from './auth';
 export * from './balance';
+export * from './client-invites';
 export * from './clients';
 export * from './classes';
 export * from './dashboard';
@@ -10,11 +12,16 @@ export * from './gym-closures';
 export * from './gym-locations';
 export * from './gym-subscriptions';
 export * from './gyms';
+export * from './lockers';
+export * from './member-cards';
 export * from './membership-plans';
 export * from './memberships';
 export * from './payments';
 export * from './payment-challenges';
+export * from './payment-settings';
 export * from './price-lists';
+export * from './price-offers';
 export * from './products';
+export * from './signup-requests';
 export * from './staff-members';
 export * from './workout-programs';

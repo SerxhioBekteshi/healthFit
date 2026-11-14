@@ -1,4 +1,5 @@
 import i18next from 'i18next';
+import type { CurrencyCode } from '@gym/shared/types';
 import { de } from './locales/de';
 import { el } from './locales/el';
 import { it } from './locales/it';
@@ -88,8 +89,8 @@ export const translated = <K extends string>(
 
 export const getLanguage = (): Language => current;
 
-// Money keeps its stored number; only the symbol and format follow the gym's country.
-export type CurrencyCode = 'ALL' | 'EUR' | 'GBP';
+// Money keeps its stored number; the currency is stored on the gym and never follows the language.
+export type { CurrencyCode };
 
 let currentCurrency: CurrencyCode = 'ALL';
 

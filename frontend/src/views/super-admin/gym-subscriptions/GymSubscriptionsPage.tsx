@@ -115,7 +115,7 @@ export const GymSubscriptionsPage: React.FC = () => {
       sortValue: (subscription) => subscription.price,
       cell: (subscription) => (
         <span className="font-semibold tabular-nums text-bone">
-          {formatMoney(subscription.price)}
+          {formatMoney(subscription.price, subscription.currency)}
         </span>
       ),
     },

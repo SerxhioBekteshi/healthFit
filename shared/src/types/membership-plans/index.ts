@@ -1,4 +1,5 @@
 import type { Gender } from '../clients';
+import type { PlanOffer } from '../price-offers';
 
 export type MembershipPlanType =
   | 'monthly'
@@ -19,6 +20,8 @@ export interface MembershipPlan {
   // Check-ins allowed per week; 0 means no weekly cap.
   weeklyVisits: number;
   price: number;
+  // Limited-time price in force today, if any; it is what a purchase costs. `price` stays the regular one.
+  offer: PlanOffer | null;
   isActive: boolean;
   createdAt: string;
   updatedAt: string;

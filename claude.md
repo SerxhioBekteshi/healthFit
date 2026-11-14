@@ -74,9 +74,10 @@ Domain-first rule: one kebab-case plural domain name (`clients`, `gym-admins`, `
 
 ## Membership Plans and Pricing
 
-- Plans are per gender (`male`/`female`) and weekly frequency (`weeklyVisits`: 3x, 4x, 5x, 6x, 0 = unlimited); the term (`type`: monthly, 3, 6, 12 months) makes the offers. Prices are in ALL (Albanian lek)
+- Plans are per gender (`male`/`female`) and weekly frequency (`weeklyVisits`: 3x, 4x, 5x, 6x, 0 = unlimited); the term (`type`: monthly, 3, 6, 12 months) makes the offers. Prices are in the gym's currency (`Gym.currency`: ALL, EUR or GBP, set from its country and locked once the gym has money data; a language switch never changes it)
 - Gym admins configure them on Membership > Configuration (`PriceMatrixEditor`, with extras, notes and photos); clients see the same prices (`PriceMatrix`) on their Membership page with the uploaded photos and subscribe by tapping a price (`SubscribeDialog`) with credit or card (cash is gym staff only); only active plans of their own gender show
 - Check-in enforces `Membership.weeklyVisits` per local week. Full rules: `ARCHITECTURE.md` ("Membership plans and pricing")
+- Special offers (`price-offers` domain, `PriceOffersSection` on Membership > Configuration): a named, dated lower price for one plan or a whole seasonal list. The server picks the lowest valid offer per plan (`plan.offer`) and `placeMembership` charges and records it; the offer price must stay below the regular price
 - Memberships queue: `placeMembership` starts every new membership (self-service, staff assign, renew) the day after the client's last paid one ends, so a client can hold several (for example 4x for 1 month, then another, then a 4x 6-month offer). `upcoming` is the derived status of a paid membership that has not started; only the `active` one allows check-in. The client Membership page shows the queue (`MembershipQueue`) with each start and end date
 - Changing any of this touches: `shared` (types/schemas), backend plan/membership/attendance services + tests, seed, `PriceMatrix`/`PriceMatrixEditor`, `mobile/API_CONTRACT.md`, and these docs
 

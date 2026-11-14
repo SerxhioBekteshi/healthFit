@@ -47,6 +47,7 @@ const toDto = (row: SubscriptionWithGym): GymSubscription => ({
   planName: row.planName,
   cycle: row.cycle,
   price: row.price.toNumber(),
+  currency: row.gym.currency,
   status: effectiveSubscriptionStatus(row),
   startDate: formatDateOnly(row.startDate),
   currentPeriodEnd: formatDateOnly(row.currentPeriodEnd),
@@ -62,6 +63,7 @@ const toPaymentDto = (row: PaymentWithRefs): GymSubscriptionPayment => ({
   gymName: row.gym.name,
   planName: row.subscription.planName,
   amount: row.amount.toNumber(),
+  currency: row.gym.currency,
   paymentMethod: row.paymentMethod as GymSubscriptionPayment['paymentMethod'],
   paidAt: row.paidAt.toISOString(),
   providerReference: row.providerReference,
@@ -173,6 +175,7 @@ export const gymSubscriptionService = {
     } else {
       const result = await chargePayment(input.paymentMethod, {
         amount: subscription.price.toNumber(),
+        currency: subscription.gym.currency,
         clientId: subscription.gymId,
         description: `Gym subscription: ${subscription.planName}`,
         metadata: { subscriptionId: id, gymId: subscription.gymId },

@@ -4,14 +4,17 @@ import {
   type PriceCell,
 } from '@/components/membership-plans/priceTable';
 import { getCurrency, t } from '@/i18n';
-import { formatAmount, formatMoney } from '@/utils/format';
-import type { MembershipPlan } from '@gym/shared/types';
+import { formatAmount, formatDay, formatMoney } from '@/utils/format';
+import { planPrice } from '@/utils/memberships';
+import type { MembershipPlan, PlanOffer } from '@gym/shared/types';
 
 interface PriceMatrixProps {
   plans: MembershipPlan[];
   // Makes every price a button, e.g. to subscribe.
   onSelect?: (plan: MembershipPlan) => void;
   disabled?: boolean;
+  // Set when the whole list is one special offer: its name and period replace the standard heading.
+  offer?: PlanOffer;
 }
 
 export const FrequencyHeading: React.FC<{ weeklyVisits: number }> = ({
@@ -28,15 +31,37 @@ export const FrequencyHeading: React.FC<{ weeklyVisits: number }> = ({
   </>
 );
 
-const PriceBody: React.FC<{ cell: PriceCell }> = ({ cell }) => (
+const PriceBody: React.FC<{ cell: PriceCell; showOfferName: boolean }> = ({
+  cell,
+  showOfferName,
+}) => (
   <>
-    <span className="block font-display text-xl font-normal tabular-nums text-bone sm:text-2xl">
-      {formatAmount(cell.plan.price)}
+    {cell.plan.offer ? (
+      <span className="block text-xs tabular-nums text-bone/40 line-through">
+        {formatAmount(cell.plan.price)}
+      </span>
+    ) : null}
+    <span
+      className={`block font-display text-xl font-normal tabular-nums sm:text-2xl ${
+        cell.plan.offer ? 'text-signal' : 'text-bone'
+      }`}
+    >
+      {formatAmount(planPrice(cell.plan))}
       <span className="ml-1 font-sans text-[0.62rem] font-semibold tracking-wider text-bone/45">
         {getCurrency()}
       </span>
     </span>
-    {cell.saving > 0 ? (
+    {cell.plan.offer && showOfferName ? (
+      <span
+        className="mx-auto mt-0.5 block max-w-[8rem] truncate text-[0.68rem] font-medium text-signal"
+        title={t('{{name}}, until {{date}}', {
+          name: cell.plan.offer.name,
+          date: formatDay(cell.plan.offer.endDate),
+        })}
+      >
+        {cell.plan.offer.name}
+      </span>
+    ) : !cell.plan.offer && cell.saving > 0 ? (
       <span className="mt-0.5 block text-[0.68rem] font-medium text-signal">
         {t('save {{amount}}', { amount: formatMoney(cell.saving) })}
       </span>
@@ -49,6 +74,7 @@ export const PriceMatrix: React.FC<PriceMatrixProps> = ({
   plans,
   onSelect,
   disabled = false,
+  offer,
 }) => {
   const { columns, rows } = buildPriceTable(plans);
 
@@ -60,11 +86,19 @@ export const PriceMatrix: React.FC<PriceMatrixProps> = ({
     <div className="overflow-hidden rounded-lg border border-white/10 bg-panel shadow-sm">
       <div className="border-b border-white/[0.08] px-5 py-5">
         <p className="text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-signal">
-          {t('Standard subscriptions')}
+          {offer ? t('Special offer') : t('Standard subscriptions')}
         </p>
         <p className="mt-1 font-display text-3xl font-normal text-bone">
-          {t('Price list')}
+          {offer ? offer.name : t('Price list')}
         </p>
+        {offer ? (
+          <p className="mt-2 text-sm text-bone/55">
+            {t('Valid {{from}} to {{to}}', {
+              from: formatDay(offer.startDate),
+              to: formatDay(offer.endDate),
+            })}
+          </p>
+        ) : null}
         {onSelect ? (
           <p className="mt-2 text-sm text-bone/55">
             {t(
@@ -121,16 +155,16 @@ export const PriceMatrix: React.FC<PriceMatrixProps> = ({
                                   ? t('{{n}} per week', { n: weeklyVisits })
                                   : t('unlimited'),
                               term: row.term.label,
-                              price: formatMoney(cell.plan.price),
+                              price: formatMoney(planPrice(cell.plan)),
                             }
                           )}
                           className="w-full rounded-md px-2 py-3 transition-colors duration-200 hover:bg-signal/[0.06] focus-visible:outline focus-visible:outline-2 focus-visible:outline-signal disabled:cursor-not-allowed disabled:opacity-50"
                         >
-                          <PriceBody cell={cell} />
+                          <PriceBody cell={cell} showOfferName={!offer} />
                         </button>
                       ) : (
                         <div className="px-2 py-3">
-                          <PriceBody cell={cell} />
+                          <PriceBody cell={cell} showOfferName={!offer} />
                         </div>
                       )}
                     </td>

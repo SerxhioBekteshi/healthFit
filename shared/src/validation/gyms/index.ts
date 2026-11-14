@@ -30,6 +30,28 @@ const timeOfDay = z
 
 export const COUNTRY_CODES = ['AL', 'GB', 'IT', 'DE', 'GR'] as const;
 
+// The currency of a gym follows its country: lek in Albania, pound in the UK, euro elsewhere.
+export const COUNTRY_CURRENCIES: Record<
+  (typeof COUNTRY_CODES)[number],
+  'ALL' | 'EUR' | 'GBP'
+> = {
+  AL: 'ALL',
+  GB: 'GBP',
+  IT: 'EUR',
+  DE: 'EUR',
+  GR: 'EUR',
+};
+
+// Timezone a gym starts with in each country.
+export const COUNTRY_TIMEZONES: Record<(typeof COUNTRY_CODES)[number], string> =
+  {
+    AL: 'Europe/Tirane',
+    GB: 'Europe/London',
+    IT: 'Europe/Rome',
+    DE: 'Europe/Berlin',
+    GR: 'Europe/Athens',
+  };
+
 export const gymFormSchema = z
   .object({
     name: z.string().trim().min(1, 'Gym name is required.'),

@@ -2,7 +2,9 @@ import type { Attendance as AttendanceRow } from '@prisma/client';
 import { ForbiddenError, NotFoundError, ValidationError } from '@/errors';
 import { gymClosureService } from '@/services/gym-closures';
 import { gymLocationService } from '@/services/gym-locations';
+import { memberCardService } from '@/services/member-cards';
 import { membershipService } from '@/services/memberships';
+import { openVisitWhere } from '@/services/attendance/open';
 import type { TenantContext } from '@/tenant/context';
 import {
   addDays,
@@ -17,6 +19,7 @@ import type {
   AttendanceHistoryPage,
   AttendanceRecord,
   ClientWeek,
+  ScanResult,
 } from '@gym/shared/types';
 
 // Members do not always check out, so open check-ins older than this no longer count as inside.
@@ -32,11 +35,13 @@ const DUPLICATE_SCAN_MS = 60 * 1000;
 type AttendanceWithClient = AttendanceRow & {
   client: { fullName: string };
   location: { name: string } | null;
+  locker: { number: string } | null;
 };
 
 const withClientAndLocation = {
   client: { select: { fullName: true } },
   location: { select: { name: true } },
+  locker: { select: { number: true } },
 } as const;
 
 const toDto = (row: AttendanceWithClient): AttendanceRecord => ({
@@ -49,6 +54,7 @@ const toDto = (row: AttendanceWithClient): AttendanceRecord => ({
   locationName: row.location?.name ?? null,
   checkedInAt: row.checkedInAt.toISOString(),
   checkedOutAt: row.checkedOutAt?.toISOString() ?? null,
+  lockerNumber: row.locker?.number ?? null,
 });
 
 const requireGym = async (ctx: TenantContext) => {
@@ -230,6 +236,75 @@ export const attendanceService = {
       )
     );
     return toDto(row);
+  },
+
+  async checkOut(
+    ctx: TenantContext,
+    requestedClientId: string | undefined,
+    now: Date = new Date()
+  ): Promise<AttendanceRecord> {
+    const clientId = ctx.role === 'client' ? ctx.clientId : requestedClientId;
+    if (!clientId) {
+      throw ctx.role === 'client'
+        ? new ForbiddenError()
+        : new ValidationError('Select the member to check out.');
+    }
+    const client = await ctx.db.client.findFirst({ where: { id: clientId } });
+    if (!client) {
+      throw new NotFoundError('No client found for that code in this gym.');
+    }
+
+    const visit = await ctx.db.attendance.findFirst({
+      where: openVisitWhere(clientId, now),
+      orderBy: { checkedInAt: 'desc' },
+    });
+    const closed = visit
+      ? await ctx.db.attendance.updateMany({
+          where: { id: visit.id, checkedOutAt: null },
+          data: { checkedOutAt: now },
+        })
+      : null;
+    if (!visit || !closed || closed.count === 0) {
+      throw new ValidationError('This client is not checked in.');
+    }
+    const row = await ctx.db.attendance.findFirstOrThrow({
+      where: { id: visit.id },
+      include: withClientAndLocation,
+    });
+    return toDto(row);
+  },
+
+  // One scan at the door: checks the member in, or out when they are already inside.
+  async scan(
+    ctx: TenantContext,
+    code: string,
+    now: Date = new Date(),
+    requestedLocationId?: string
+  ): Promise<ScanResult> {
+    const { client } = await memberCardService.resolveClient(ctx, code);
+    const visit = await ctx.db.attendance.findFirst({
+      where: openVisitWhere(client.id, now),
+      orderBy: { checkedInAt: 'desc' },
+    });
+    if (visit) {
+      // A second tap right after checking in is a double scan, not a check-out.
+      if (now.getTime() - visit.checkedInAt.getTime() < DUPLICATE_SCAN_MS) {
+        throw new ValidationError('This client just checked in.');
+      }
+      return {
+        action: 'checked_out',
+        record: await attendanceService.checkOut(ctx, client.id, now),
+      };
+    }
+    return {
+      action: 'checked_in',
+      record: await attendanceService.checkIn(
+        ctx,
+        client.id,
+        now,
+        requestedLocationId
+      ),
+    };
   },
 
   async stats(

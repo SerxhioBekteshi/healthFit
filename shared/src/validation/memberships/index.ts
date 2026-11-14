@@ -2,22 +2,39 @@ import { z } from 'zod';
 import { isoDateSchema } from '../common';
 import { cardSummarySchema } from '../payments';
 
-// Members pay by card or balance in their own app, so staff only ever record cash.
-const staffPaymentSchema = z.literal('cash', {
-  error: 'Staff can only record cash payments.',
+// Staff record a payment taken at the counter. Which methods are allowed depends on the gym's payment settings.
+const staffPaymentSchema = z.enum(['cash', 'card', 'balance'], {
+  error: 'Select a valid payment method.',
 });
 
-export const createMembershipSchema = z.object({
-  clientId: z.string().min(1, 'Client is required.'),
-  planId: z.string().min(1, 'Plan is required.'),
-  startDate: isoDateSchema,
-  paymentMethod: staffPaymentSchema,
-});
+const needsCardSummary = {
+  message: 'Enter the card details.',
+  path: ['card'],
+};
 
-export const renewMembershipSchema = z.object({
-  startDate: isoDateSchema,
-  paymentMethod: staffPaymentSchema,
-});
+export const createMembershipSchema = z
+  .object({
+    clientId: z.string().min(1, 'Client is required.'),
+    planId: z.string().min(1, 'Plan is required.'),
+    startDate: isoDateSchema,
+    paymentMethod: staffPaymentSchema,
+    card: cardSummarySchema.optional(),
+  })
+  .refine(
+    (input) => input.paymentMethod !== 'card' || input.card !== undefined,
+    needsCardSummary
+  );
+
+export const renewMembershipSchema = z
+  .object({
+    startDate: isoDateSchema,
+    paymentMethod: staffPaymentSchema,
+    card: cardSummarySchema.optional(),
+  })
+  .refine(
+    (input) => input.paymentMethod !== 'card' || input.card !== undefined,
+    needsCardSummary
+  );
 
 // A client subscribing on their own: credit or card. Cash is only taken by gym staff.
 export const subscribeMembershipSchema = z

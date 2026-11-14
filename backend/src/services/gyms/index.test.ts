@@ -4,7 +4,8 @@ import type { PlatformContext } from '@/tenant/context';
 import { gymService } from '@/services/gyms';
 import { gymAdminService } from '@/services/gym-admins';
 import { DEFAULT_CLASSES } from '@/services/classes/defaults';
-import { ConflictError, NotFoundError } from '@/errors';
+import { DEFAULT_PROGRAMS } from '@/services/workout-programs/defaults';
+import { ConflictError, NotFoundError, ValidationError } from '@/errors';
 import type { GymFormValues } from '@gym/shared/validation/gyms';
 
 const prisma = new PrismaClient();
@@ -53,6 +54,46 @@ afterAll(async () => {
 });
 
 describe('gymService', () => {
+  it('gives every new gym the standard workout programs', async () => {
+    const first = await gymService.create(ctx, gymInput({ name: 'One' }));
+    const second = await gymService.create(ctx, gymInput({ name: 'Two' }));
+
+    for (const gym of [first, second]) {
+      const programs = await prisma.workoutProgram.findMany({
+        where: { gymId: gym.id },
+        include: { days: { include: { exercises: true } } },
+        orderBy: { createdAt: 'asc' },
+      });
+      expect(programs.map((program) => program.name)).toEqual(
+        DEFAULT_PROGRAMS.map((program) => program.name)
+      );
+      expect(programs.map((program) => program.level)).toEqual([
+        'beginner',
+        'intermediate',
+        'advanced',
+      ]);
+      for (const program of programs) {
+        expect(program.days).toHaveLength(program.sessionsPerWeek);
+        expect(
+          program.days.every(
+            (day) => day.exercises.length > 0 && day.gymId === gym.id
+          )
+        ).toBe(true);
+      }
+      const squat = programs[0].days
+        .flatMap((day) => day.exercises)
+        .find((exercise) => exercise.name === 'Goblet Squat');
+      expect(squat?.notes).toContain('Position:');
+      expect(squat?.notes).toContain('Tip: Hold the weight at your chest');
+    }
+
+    // The owner can change them without touching another gym.
+    await prisma.workoutProgram.deleteMany({ where: { gymId: first.id } });
+    expect(
+      await prisma.workoutProgram.count({ where: { gymId: second.id } })
+    ).toBe(DEFAULT_PROGRAMS.length);
+  });
+
   it('stores the country the gym operates in', async () => {
     const created = await gymService.create(ctx, gymInput({ country: 'IT' }));
     expect(created.country).toBe('IT');
@@ -62,6 +103,58 @@ describe('gymService', () => {
       gymInput({ country: 'GR' })
     );
     expect(moved.country).toBe('GR');
+  });
+
+  it('sets the currency from the country and never from the client', async () => {
+    const albania = await gymService.create(ctx, gymInput({ country: 'AL' }));
+    const germany = await gymService.create(
+      ctx,
+      gymInput({ name: 'DE', country: 'DE', timezone: 'Europe/Berlin' })
+    );
+    const britain = await gymService.create(
+      ctx,
+      gymInput({ name: 'GB', country: 'GB', timezone: 'Europe/London' })
+    );
+    expect(albania.currency).toBe('ALL');
+    expect(germany.currency).toBe('EUR');
+    expect(britain.currency).toBe('GBP');
+    expect(germany.countryLocked).toBe(false);
+
+    const moved = await gymService.update(
+      ctx,
+      albania.id,
+      gymInput({ country: 'IT', timezone: 'Europe/Rome' })
+    );
+    expect(moved.currency).toBe('EUR');
+  });
+
+  it('locks the country once the gym holds prices or money', async () => {
+    const gym = await gymService.create(ctx, gymInput({ country: 'AL' }));
+    await prisma.membershipPlan.create({
+      data: {
+        gymId: gym.id,
+        name: 'Monthly',
+        type: 'monthly',
+        durationDays: 30,
+        price: '3000.00',
+      },
+    });
+
+    expect((await gymService.list(ctx))[0]?.countryLocked).toBe(true);
+    await expect(
+      gymService.update(ctx, gym.id, gymInput({ country: 'DE' }))
+    ).rejects.toBeInstanceOf(ValidationError);
+
+    // Other details stay editable while the country is unchanged.
+    const renamed = await gymService.update(
+      ctx,
+      gym.id,
+      gymInput({ name: 'Renamed' })
+    );
+    expect(renamed.name).toBe('Renamed');
+    expect(renamed.currency).toBe('ALL');
+    expect(renamed.countryLocked).toBe(true);
+    await prisma.membershipPlan.deleteMany({ where: { gymId: gym.id } });
   });
 
   it('gives every new gym the default class timetable', async () => {

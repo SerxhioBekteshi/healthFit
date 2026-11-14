@@ -67,6 +67,12 @@ export const GymsPage: React.FC = () => {
       searchValue: (gym) => countryNames[gym.country],
       cell: (gym) => countryNames[gym.country],
     },
+    {
+      key: 'currency',
+      header: t('Currency'),
+      sortValue: (gym) => gym.currency,
+      cell: (gym) => gym.currency,
+    },
     { key: 'hours', header: t('Hours'), cell: (gym) => gym.businessHours },
     {
       key: 'admins',

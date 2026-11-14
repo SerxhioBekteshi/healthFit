@@ -53,13 +53,15 @@ const frontend = collect(
   sourceFiles(join('frontend', 'src'), [join('i18n', 'locales')]),
   [
     new RegExp(String.raw`(?<![\w.])(?:t|msg)\(\s*${STRING}`, 'g'),
-    new RegExp(String.raw`success:\s*${STRING}`, 'g'),
+    new RegExp(String.raw`meta:\s*\{\s*success:\s*${STRING}`, 'g'),
   ]
 );
 
 // Validation messages of the shared schemas, shown through FormField.
 const looksLikeMessage = (text: string): boolean =>
-  /^[A-Z]/.test(text) && (text.includes(' ') || text.endsWith('.'));
+  /^[A-Z]/.test(text) &&
+  !/^(GET|POST|PUT|PATCH|DELETE) \//.test(text) &&
+  (text.includes(' ') || text.endsWith('.'));
 const shared = collect(
   sourceFiles(join('shared', 'src', 'validation')),
   [new RegExp(String.raw`(?<!from\s)${STRING}`, 'g')],
@@ -101,6 +103,39 @@ const placeholders = (text: string): string =>
     .join(',');
 
 const languages: Record<string, Record<string, string>> = { sq, it, de, el };
+// `--all` lists every missing text instead of the first 20.
+const shown = process.argv.includes('--all') ? Infinity : 20;
+const languageNames: Record<string, string> = {
+  sq: 'Albanian',
+  it: 'Italian',
+  de: 'German',
+  el: 'Greek',
+};
+
+const quote = (text: string): string =>
+  `'${text.replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/\n/g, '\\n')}'`;
+
+// Rewrites each dictionary without the texts the app no longer uses (run prettier afterwards).
+if (process.argv.includes('--prune')) {
+  for (const [code, dictionary] of Object.entries(languages)) {
+    const kept = Object.entries(dictionary).filter(([key]) =>
+      keys.includes(key)
+    );
+    const body = kept
+      .map(([key, value]) => `  ${quote(key)}: ${quote(value)},`)
+      .join('\n');
+    writeFileSync(
+      join(root, 'frontend', 'src', 'i18n', 'locales', `${code}.ts`),
+      `// ${languageNames[code]}. Keys are the English texts used in the app; every key must be translated (npm run i18n:check).\nexport const ${code}: Record<string, string> = {\n${body}\n};\n`,
+      'utf8'
+    );
+    console.log(
+      `${code}: removed ${Object.keys(dictionary).length - kept.length} unused`
+    );
+  }
+  process.exit(0);
+}
+
 let failed = false;
 
 for (const [code, dictionary] of Object.entries(languages)) {
@@ -114,8 +149,9 @@ for (const [code, dictionary] of Object.entries(languages)) {
     `${code}: ${keys.length - missing.length}/${keys.length} translated` +
       (unused.length > 0 ? `, ${unused.length} unused` : '')
   );
-  for (const key of missing.slice(0, 20)) console.log(`  missing: ${key}`);
-  if (missing.length > 20) console.log(`  ... and ${missing.length - 20} more`);
+  for (const key of missing.slice(0, shown)) console.log(`  missing: ${key}`);
+  if (missing.length > shown)
+    console.log(`  ... and ${missing.length - shown} more`);
   for (const key of broken) console.log(`  placeholders differ: ${key}`);
   for (const key of unused.slice(0, 10)) console.log(`  unused: ${key}`);
   if (missing.length > 0 || broken.length > 0) failed = true;

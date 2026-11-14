@@ -3,6 +3,7 @@ import type { BalanceTransaction as TransactionRow } from '@prisma/client';
 import { chargePayment, cardMetadata, withCard } from '@/payments';
 import { ForbiddenError, NotFoundError, ValidationError } from '@/errors';
 import { ledger } from '@/services/ledger';
+import { paymentSettingsService } from '@/services/payment-settings';
 import type { TenantContext } from '@/tenant/context';
 import {
   addDays,
@@ -144,6 +145,9 @@ export const balanceService = {
     // Set only by the payment challenge flow once the one-time code was checked.
     options: { verified?: boolean } = {}
   ): Promise<BalanceTransaction> {
+    // The gym decides whether balance credit and this way of paying are in use.
+    await paymentSettingsService.assertBalanceInUse(ctx);
+    await paymentSettingsService.assertAccepted(ctx, input.paymentMethod);
     // Cash is only ever taken at the counter by gym staff.
     if (ctx.role === 'client' && input.paymentMethod === 'cash') {
       throw new ForbiddenError('Cash deposits are made at the gym counter.');
@@ -166,6 +170,7 @@ export const balanceService = {
 
     const result = await chargePayment(input.paymentMethod, {
       amount: amount.toNumber(),
+      currency: await paymentSettingsService.currencyOf(ctx),
       clientId,
       description,
       metadata: {

@@ -9,6 +9,14 @@ export interface AttendanceRecord {
   locationName: string | null;
   checkedInAt: string;
   checkedOutAt: string | null;
+  // Locker the member used during the visit; null when none.
+  lockerNumber: string | null;
+}
+
+export interface ScanResult {
+  // A scan checks a member in, or out when they are already inside.
+  action: 'checked_in' | 'checked_out';
+  record: AttendanceRecord;
 }
 
 export interface AttendanceHistoryPage {

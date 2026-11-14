@@ -9,6 +9,8 @@ import type {
 import { chargePayment, cardMetadata, withCard } from '@/payments';
 import { ForbiddenError, NotFoundError, ValidationError } from '@/errors';
 import { ledger } from '@/services/ledger';
+import { paymentSettingsService } from '@/services/payment-settings';
+import { priceOfferService } from '@/services/price-offers';
 import type { TenantContext } from '@/tenant/context';
 import type { TenantDb } from '@/tenant/scopedDb';
 import {
@@ -130,17 +132,21 @@ const placeMembership = async (
   input: PlacementInput
 ): Promise<MembershipRow> => {
   const { client, plan, method } = input;
+  await paymentSettingsService.assertAccepted(ctx, method);
   const description = withCard(input.description, input.card);
   if (client.gender && client.gender !== plan.gender) {
     throw new ValidationError(`This plan is for ${plan.gender} members only.`);
   }
   const requestedStart = parseDateOnly(input.startDate);
+  // An offer valid today replaces the regular price; the member pays and the membership records it.
+  const price = await priceOfferService.priceFor(ctx, plan);
   let providerReference = '';
   let settled = method === 'balance';
 
   if (method !== 'balance') {
     const result = await chargePayment(method, {
-      amount: plan.price.toNumber(),
+      amount: price.toNumber(),
+      currency: await paymentSettingsService.currencyOf(ctx),
       clientId: client.id,
       description,
       metadata: {
@@ -165,12 +171,12 @@ const placeMembership = async (
 
         if (method === 'balance') {
           const balance = await ledger.balance(tx, client.id);
-          if (balance.lessThan(plan.price)) {
+          if (balance.lessThan(price)) {
             throw new ValidationError(
               'Client balance is insufficient to cover this membership.'
             );
           }
-          amount = plan.price.negated();
+          amount = price.negated();
           reference = `BAL-${randomBytes(4).toString('hex').toUpperCase()}`;
         }
 
@@ -188,7 +194,7 @@ const placeMembership = async (
             weeklyVisits: plan.weeklyVisits,
             startDate: start,
             endDate: end,
-            price: plan.price,
+            price,
             paymentMethod: method,
             paymentStatus: settled ? 'paid' : 'pending',
             paymentReference: reference,
@@ -290,6 +296,7 @@ export const membershipService = {
       startDate: input.startDate,
       method: input.paymentMethod,
       description: `Membership: ${plan.name}`,
+      card: input.card,
     });
     return toDto(row);
   },
@@ -368,6 +375,7 @@ export const membershipService = {
       startDate: input.startDate,
       method: input.paymentMethod,
       description: `Renewal: ${plan.name}`,
+      card: input.card,
     });
     return toDto(row);
   },

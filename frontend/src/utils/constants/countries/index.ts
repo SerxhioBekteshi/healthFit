@@ -1,19 +1,19 @@
-import type { CountryCode } from '@gym/shared/types';
-import { msg, translated, type CurrencyCode, type Language } from '@/i18n';
+import type { CountryCode, CurrencyCode } from '@gym/shared/types';
+import { COUNTRY_TIMEZONES } from '@gym/shared/validation/gyms';
+import { msg, translated, type Language } from '@/i18n';
 
 interface CountryConfig {
   language: Language;
-  currency: CurrencyCode;
   // Starting timezone when a gym is created in the country.
   timezone: string;
 }
 
 export const countryConfig: Record<CountryCode, CountryConfig> = {
-  AL: { language: 'sq', currency: 'ALL', timezone: 'Europe/Tirane' },
-  GB: { language: 'en', currency: 'GBP', timezone: 'Europe/London' },
-  IT: { language: 'it', currency: 'EUR', timezone: 'Europe/Rome' },
-  DE: { language: 'de', currency: 'EUR', timezone: 'Europe/Berlin' },
-  GR: { language: 'el', currency: 'EUR', timezone: 'Europe/Athens' },
+  AL: { language: 'sq', timezone: COUNTRY_TIMEZONES.AL },
+  GB: { language: 'en', timezone: COUNTRY_TIMEZONES.GB },
+  IT: { language: 'it', timezone: COUNTRY_TIMEZONES.IT },
+  DE: { language: 'de', timezone: COUNTRY_TIMEZONES.DE },
+  GR: { language: 'el', timezone: COUNTRY_TIMEZONES.GR },
 };
 
 export const countryNames = translated<CountryCode>({
@@ -22,4 +22,10 @@ export const countryNames = translated<CountryCode>({
   IT: msg('Italy'),
   DE: msg('Germany'),
   GR: msg('Greece'),
+});
+
+export const currencyNames = translated<CurrencyCode>({
+  ALL: msg('Albanian lek (ALL)'),
+  EUR: msg('Euro (EUR)'),
+  GBP: msg('Pound sterling (GBP)'),
 });

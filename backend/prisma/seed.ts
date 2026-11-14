@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto';
 import {
   PrismaClient,
   type Client,
@@ -9,7 +10,8 @@ import {
   type UserRole,
 } from '@prisma/client';
 import { hashPassword } from 'better-auth/crypto';
-import { describeExercise } from './exercise-guides';
+import { describeExercise } from '../src/services/workout-programs/guides';
+import { workoutProgramService } from '../src/services/workout-programs';
 import { DEFAULT_CLASSES } from '../src/services/classes/defaults';
 
 const prisma = new PrismaClient();
@@ -62,6 +64,7 @@ const createUser = async (
 };
 
 const clearAll = async (): Promise<void> => {
+  await prisma.signupRequest.deleteMany();
   await prisma.gymClass.deleteMany();
   await prisma.staffMember.deleteMany();
   await prisma.exercise.deleteMany();
@@ -71,13 +74,17 @@ const clearAll = async (): Promise<void> => {
   await prisma.product.deleteMany();
   await prisma.balanceTransaction.deleteMany();
   await prisma.attendance.deleteMany();
+  await prisma.locker.deleteMany();
+  await prisma.memberCard.deleteMany();
   await prisma.gymLocation.deleteMany();
   await prisma.membership.deleteMany();
+  await prisma.priceOffer.deleteMany();
   await prisma.membershipPlan.deleteMany();
   await prisma.priceListNote.deleteMany();
   await prisma.paymentChallenge.deleteMany();
   await prisma.gymPhoto.deleteMany();
   await prisma.gymClosure.deleteMany();
+  await prisma.clientInvite.deleteMany();
   await prisma.client.deleteMany();
   await prisma.gymSubscriptionPayment.deleteMany();
   await prisma.gymSubscription.deleteMany();
@@ -187,6 +194,52 @@ const createPlans = async (gymId: string): Promise<PlanSet> => {
     male: result.male as GenderPlans,
     female: result.female as GenderPlans,
   };
+};
+
+// A running and a scheduled offer, to show the offer price next to the regular one.
+const createDemoOffers = async (
+  gymId: string,
+  plans: PlanSet
+): Promise<void> => {
+  const day = (offsetDays: number): Date =>
+    new Date(`${instant(offsetDays).toISOString().slice(0, 10)}T00:00:00.000Z`);
+  const offers = [
+    {
+      name: "New Year's Eve",
+      start: -5,
+      end: 25,
+      items: [
+        { plan: plans.male.monthly, price: '4000.00' },
+        { plan: plans.female.monthly, price: '4000.00' },
+      ],
+    },
+    {
+      name: 'Spring price list',
+      start: 40,
+      end: 100,
+      items: [
+        { plan: plans.male.yearly, price: '30000.00' },
+        { plan: plans.female.yearly, price: '30000.00' },
+      ],
+    },
+  ];
+  for (const offer of offers) {
+    await prisma.priceOffer.create({
+      data: {
+        gymId,
+        name: offer.name,
+        startDate: day(offer.start),
+        endDate: day(offer.end),
+        items: {
+          create: offer.items.map((item) => ({
+            gymId,
+            planId: item.plan.id,
+            price: item.price,
+          })),
+        },
+      },
+    });
+  }
 };
 
 let referenceCounter = 0;
@@ -469,6 +522,40 @@ const createAlphaStaff = async (gymId: string): Promise<void> => {
   }
 };
 
+// Created by the gym without a password: no login until the invite link is used.
+const DEMO_INVITE_TOKEN = 'demo-invite-ilir-alpha';
+
+const createInvitedClient = async (gym: Gym): Promise<void> => {
+  const email = 'ilir@alpha.test';
+  const user = await prisma.user.create({
+    data: {
+      name: 'Ilir Invited',
+      email,
+      emailVerified: true,
+      role: 'client',
+      gymId: gym.id,
+    },
+  });
+  const client = await prisma.client.create({
+    data: {
+      gymId: gym.id,
+      userId: user.id,
+      fullName: 'Ilir Invited',
+      email,
+      phone: '+355691112233',
+      gender: 'male',
+    },
+  });
+  await prisma.clientInvite.create({
+    data: {
+      gymId: gym.id,
+      clientId: client.id,
+      tokenHash: createHash('sha256').update(DEMO_INVITE_TOKEN).digest('hex'),
+      expiresAt: instant(7),
+    },
+  });
+};
+
 const seedAlpha = async () => {
   const gym = await prisma.gym.create({
     data: {
@@ -482,6 +569,8 @@ const seedAlpha = async () => {
       opensAt: '00:00',
       closesAt: '23:59',
       timezone: 'Europe/Tirane',
+      cardsEnabled: true,
+      lockersEnabled: true,
     },
   });
   await createUser(
@@ -494,6 +583,7 @@ const seedAlpha = async () => {
 
   const plans = await createPlans(gym.id);
   await createPriceListNotes(gym.id);
+  await createDemoOffers(gym.id, plans);
   await createDefaultClasses(gym.id);
   await createAlphaStaff(gym.id);
   const locations = await createLocations(gym, [
@@ -514,6 +604,18 @@ const seedAlpha = async () => {
     },
   ]);
 
+  // Changing-room lockers (locked with a key) at the first location.
+  await prisma.locker.createMany({
+    data: Array.from({ length: 20 }, (_, index) => ({
+      gymId: gym.id,
+      locationId: locations[0],
+      number: String(index + 1),
+    })),
+  });
+  const locker7 = await prisma.locker.findFirstOrThrow({
+    where: { gymId: gym.id, number: '7' },
+  });
+
   // Main demo client: active monthly membership, balance, history. No check-in today.
   const alex = await createClient(gym, 'alpha', 'Alex Demo', 'client', {
     note: 'Main demo client: active membership, balance, history',
@@ -524,6 +626,9 @@ const seedAlpha = async () => {
   });
   await deposit(gym, alex, '6000.00', 'cash', -9);
   await visits(gym, alex, alexMembership, [1, 2, 4, 5, 7, 8], locations);
+  await prisma.memberCard.create({
+    data: { gymId: gym.id, clientId: alex.id, number: 'ALEX-1001' },
+  });
 
   // Visit pack with 7 of 10 visits left.
   const ana = await createClient(gym, 'alpha', 'Ana Prifti', 'ana', {
@@ -558,8 +663,12 @@ const seedAlpha = async () => {
       clientId: jon.id,
       membershipId: jonMembership.id,
       locationId: locations[0],
+      lockerId: locker7.id,
       checkedInAt: minutesAgo(40),
     },
+  });
+  await prisma.memberCard.create({
+    data: { gymId: gym.id, clientId: jon.id, number: 'JON-2002' },
   });
 
   // Expired membership: cannot check in until renewed.
@@ -594,6 +703,7 @@ const seedAlpha = async () => {
     note: 'Deactivated client account',
     gender: 'female',
   });
+  await createInvitedClient(gym);
 
   const water = await prisma.product.create({
     data: {
@@ -647,252 +757,8 @@ const seedAlpha = async () => {
   await sellProduct(gym, shake.id, '4.50', 'cash', alex, -2);
   await sellProduct(gym, shake.id, '4.50', 'cash', ana, -1);
 
-  await createProgram(
-    gym.id,
-    'Full Body Starter',
-    'beginner',
-    'Three full-body sessions focused on the basics.',
-    [
-      {
-        focus: 'Full Body A',
-        exercises: [
-          {
-            name: 'Goblet Squat',
-            notes: 'Hold the weight at your chest and keep your heels down.',
-            icon: 'squat',
-            sets: 3,
-            reps: 10,
-            weight: 12,
-            rest: 90,
-          },
-          {
-            name: 'Dumbbell Bench Press',
-            notes: 'Lower slowly until the elbows reach chest level.',
-            icon: 'bench-press',
-            sets: 3,
-            reps: 10,
-            weight: 10,
-            rest: 90,
-          },
-          {
-            name: 'Seated Row',
-            notes: 'Pull to the belly and squeeze your shoulder blades.',
-            icon: 'row',
-            sets: 3,
-            reps: 12,
-          },
-          {
-            name: 'Plank',
-            icon: 'plank',
-            sets: 3,
-            reps: 30,
-            rest: 45,
-            notes: '30 second hold',
-          },
-        ],
-      },
-      {
-        focus: 'Full Body B',
-        exercises: [
-          {
-            name: 'Romanian Deadlift',
-            notes: 'Hinge at the hips and keep the bar close to your legs.',
-            icon: 'deadlift',
-            sets: 3,
-            reps: 10,
-            weight: 30,
-            rest: 90,
-          },
-          {
-            name: 'Lat Pulldown',
-            notes: 'Pull the bar to the upper chest, do not lean back.',
-            icon: 'lat-pulldown',
-            sets: 3,
-            reps: 12,
-          },
-          {
-            name: 'Shoulder Press',
-            notes: 'Do not arch your lower back.',
-            icon: 'overhead-press',
-            sets: 3,
-            reps: 10,
-            weight: 8,
-          },
-        ],
-      },
-      {
-        focus: 'Full Body C',
-        exercises: [
-          {
-            name: 'Leg Press',
-            notes: 'Do not lock your knees at the top.',
-            icon: 'leg-press',
-            sets: 3,
-            reps: 12,
-            rest: 90,
-          },
-          {
-            name: 'Push-ups',
-            notes: 'Keep your body in one straight line.',
-            icon: 'push-up',
-            sets: 3,
-            reps: 10,
-          },
-          {
-            name: 'Bike',
-            icon: 'cardio',
-            sets: 1,
-            reps: 10,
-            rest: 0,
-            notes: '10 minutes easy',
-          },
-        ],
-      },
-    ]
-  );
-  await createProgram(
-    gym.id,
-    'Push / Pull / Legs',
-    'intermediate',
-    'Classic split for regular lifters.',
-    [
-      {
-        focus: 'Push',
-        exercises: [
-          {
-            name: 'Barbell Bench Press',
-            notes: 'Warm up with two light sets first.',
-            icon: 'bench-press',
-            sets: 4,
-            reps: 8,
-            weight: 60,
-            rest: 120,
-          },
-          {
-            name: 'Overhead Press',
-            notes: 'Squeeze your glutes to protect your lower back.',
-            icon: 'overhead-press',
-            sets: 3,
-            reps: 8,
-            weight: 35,
-            rest: 90,
-          },
-          {
-            name: 'Triceps Pushdown',
-            notes: 'Keep your elbows pinned to your sides.',
-            icon: 'triceps',
-            sets: 3,
-            reps: 12,
-          },
-        ],
-      },
-      {
-        focus: 'Pull',
-        exercises: [
-          {
-            name: 'Deadlift',
-            notes: 'Brace your core and push the floor away.',
-            icon: 'deadlift',
-            sets: 3,
-            reps: 5,
-            weight: 90,
-            rest: 150,
-          },
-          {
-            name: 'Pull-ups',
-            notes: 'Use a band for help if you cannot reach 8 reps.',
-            icon: 'pull-up',
-            sets: 4,
-            reps: 8,
-          },
-          {
-            name: 'Barbell Curl',
-            notes: 'No swinging: keep your upper arms still.',
-            icon: 'curl',
-            sets: 3,
-            reps: 10,
-            weight: 20,
-          },
-        ],
-      },
-      {
-        focus: 'Legs',
-        exercises: [
-          {
-            name: 'Back Squat',
-            notes: 'Go down until your thighs are parallel to the floor.',
-            icon: 'squat',
-            sets: 4,
-            reps: 8,
-            weight: 80,
-            rest: 120,
-          },
-          { name: 'Leg Curl', icon: 'machine', sets: 3, reps: 12 },
-          { name: 'Calf Raise', icon: 'legs', sets: 4, reps: 15 },
-        ],
-      },
-    ]
-  );
-  await createProgram(
-    gym.id,
-    'Upper / Lower Power',
-    'advanced',
-    'Heavy four-day strength block.',
-    [
-      {
-        focus: 'Upper A',
-        exercises: [
-          {
-            name: 'Bench Press',
-            icon: 'bench-press',
-            sets: 5,
-            reps: 5,
-            weight: 85,
-            rest: 150,
-          },
-        ],
-      },
-      {
-        focus: 'Lower A',
-        exercises: [
-          {
-            name: 'Back Squat',
-            icon: 'squat',
-            sets: 5,
-            reps: 5,
-            weight: 110,
-            rest: 180,
-          },
-        ],
-      },
-      {
-        focus: 'Upper B',
-        exercises: [
-          {
-            name: 'Weighted Pull-up',
-            icon: 'pull-up',
-            sets: 4,
-            reps: 6,
-            weight: 10,
-            rest: 120,
-          },
-        ],
-      },
-      {
-        focus: 'Lower B',
-        exercises: [
-          {
-            name: 'Deadlift',
-            icon: 'deadlift',
-            sets: 4,
-            reps: 4,
-            weight: 140,
-            rest: 180,
-          },
-        ],
-      },
-    ]
-  );
+  // The standard programs every new gym starts with.
+  await workoutProgramService.createDefaults(prisma, gym.id);
 
   await prisma.gymClosure.createMany({
     data: [
@@ -966,6 +832,7 @@ const seedBeta = async () => {
     'Gym admin of Beta Fitness'
   );
   await createDefaultClasses(gym.id);
+  await workoutProgramService.createDefaults(prisma, gym.id);
   const locations = await createLocations(gym, [
     {
       name: 'Beta Fitness',
@@ -1100,6 +967,7 @@ const seedGamma = async () => {
     'Admin of a DEACTIVATED gym: API calls are blocked'
   );
   await createDefaultClasses(gym.id);
+  await workoutProgramService.createDefaults(prisma, gym.id);
   await createLocations(gym, [
     {
       name: 'Gamma Studio',
@@ -1131,6 +999,41 @@ const seedGamma = async () => {
   });
 };
 
+// Applications from gym owners waiting for the super admin (sign in as owner@platform.test > Requests).
+const seedSignupRequests = async (): Promise<void> => {
+  const passwordHash = await hashPassword(DEV_PASSWORD);
+  await prisma.signupRequest.createMany({
+    data: [
+      {
+        ownerName: 'Marco Rossi',
+        email: 'marco@fitroma.test',
+        phone: '+39 06 1234 5678',
+        passwordHash,
+        gymName: 'FitRoma',
+        country: 'IT',
+        location: 'Rome',
+        address: 'Via del Corso 12, Rome',
+        locationsCount: 2,
+        notes: 'Two gyms in Rome, about 600 members. Website: fitroma.test',
+      },
+      {
+        ownerName: 'Nikos Papas',
+        email: 'nikos@athensgym.test',
+        phone: '+30 21 0123 4567',
+        passwordHash,
+        gymName: 'Athens Strength Club',
+        country: 'GR',
+        location: 'Athens',
+        address: 'Ermou 45, Athens',
+        locationsCount: 1,
+        status: 'rejected',
+        reviewNote: 'Could not verify the business.',
+        reviewedAt: instant(-3),
+      },
+    ],
+  });
+};
+
 const main = async (): Promise<void> => {
   await clearAll();
 
@@ -1145,11 +1048,15 @@ const main = async (): Promise<void> => {
   await seedAlpha();
   await seedBeta();
   await seedGamma();
+  await seedSignupRequests();
 
   console.log(
     `\nDemo data ready. Every account uses the password: ${DEV_PASSWORD}\n`
   );
   console.table(accounts);
+  console.log(
+    `Invite link for ilir@alpha.test (no password yet): http://localhost:5173/invite/${DEMO_INVITE_TOKEN}\n`
+  );
 };
 
 main()

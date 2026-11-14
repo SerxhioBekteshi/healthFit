@@ -1,8 +1,12 @@
-import type { Membership } from '@gym/shared/types';
+import type { Membership, MembershipPlan } from '@gym/shared/types';
 import { formatDay } from '@/utils/format';
 import { t } from '@/i18n';
 
 const DAY_MS = 86_400_000;
+
+// What a member pays for the plan today: the offer price while an offer is valid.
+export const planPrice = (plan: MembershipPlan): number =>
+  plan.offer?.price ?? plan.price;
 
 // "Starts 5 Nov 2026, ends 5 Dec 2026 (queued after the current membership)."
 export const describePeriod = (membership: Membership): string => {

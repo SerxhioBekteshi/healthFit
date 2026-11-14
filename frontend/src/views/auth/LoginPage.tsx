@@ -11,8 +11,8 @@ import { Button } from '@/components/ui/Button';
 import { LanguageSwitcher } from '@/components/common/LanguageSwitcher';
 import { ThemeToggle } from '@/components/common/ThemeToggle';
 import { t } from '@/i18n';
+import { fetchSession } from '@/hooks/session';
 import { authClient } from '@/services/auth';
-import { meService } from '@/services/me';
 import { loginSchema, type LoginFormValues } from '@gym/shared/validation/auth';
 import { roleHomePath } from '@/utils/constants/navigation';
 
@@ -34,12 +34,16 @@ export const LoginPage: React.FC = () => {
     mutationFn: async (values: LoginFormValues) => {
       const result = await authClient.signIn.email(values);
       if (result.error) {
-        throw new Error(t('Invalid email or password.'));
+        throw new Error(
+          result.error.status === 429
+            ? t('Too many attempts. Please try again later.')
+            : t('Invalid email or password.')
+        );
       }
       queryClient.removeQueries({ queryKey: ['me'] });
       return queryClient.fetchQuery({
         queryKey: ['me'],
-        queryFn: meService.get,
+        queryFn: fetchSession,
       });
     },
     onSuccess: (user) => {
@@ -138,6 +142,16 @@ export const LoginPage: React.FC = () => {
               {loginMutation.isPending ? t('Signing in') : t('Sign in')}
             </Button>
           </form>
+
+          <p className="mt-6 text-center text-sm text-bone/55">
+            {t('Own a gym?')}{' '}
+            <Link
+              to="/sign-up"
+              className="font-medium text-signal hover:underline"
+            >
+              {t('Register your gym')}
+            </Link>
+          </p>
 
           <p className="mt-8 text-center text-xs text-bone/40">
             <Link to="/" className="transition hover:text-bone">

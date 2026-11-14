@@ -1,7 +1,9 @@
 import { Prisma } from '@prisma/client';
 import { attendanceService } from '@/services/attendance';
+import { openVisitWhere } from '@/services/attendance/open';
 import { effectiveSubscriptionStatus } from '@/services/gym-subscriptions';
 import { ledger } from '@/services/ledger';
+import { memberCardService } from '@/services/member-cards';
 import { membershipService } from '@/services/memberships';
 import { NotFoundError } from '@/errors';
 import type { PlatformContext, TenantContext } from '@/tenant/context';
@@ -15,7 +17,9 @@ import {
 } from '@/utils/dates';
 import type {
   ClientDashboard,
+  CurrencyCode,
   GymDashboard,
+  MoneyTotal,
   PlatformDashboard,
 } from '@gym/shared/types';
 
@@ -162,7 +166,7 @@ export const dashboardService = {
     const gym = await ctx.db.gym.findFirst({ where: { id: ctx.gymId } });
     const localToday = localParts(new Date(), gym?.timezone ?? 'UTC').date;
 
-    const [active, balance, myAttendance, currentlyInside, week] =
+    const [active, balance, myAttendance, currentlyInside, week, card, visit] =
       await Promise.all([
         membershipService.findActiveForClient(
           ctx.db,
@@ -173,6 +177,18 @@ export const dashboardService = {
         attendanceService.myStats(ctx),
         attendanceService.occupancy(ctx),
         attendanceService.myWeek(ctx),
+        gym?.cardsEnabled
+          ? memberCardService.activeNumber(ctx.db, clientId)
+          : null,
+        ctx.db.attendance.findFirst({
+          where: openVisitWhere(clientId, new Date()),
+          include: {
+            locker: {
+              select: { number: true, location: { select: { name: true } } },
+            },
+          },
+          orderBy: { checkedInAt: 'desc' },
+        }),
       ]);
 
     const { visitsAllowed, visitsUsed, visitsEndDate } =
@@ -204,6 +220,15 @@ export const dashboardService = {
       attendance: myAttendance,
       week,
       currentlyInside,
+      card,
+      checkedIn: visit !== null,
+      locker: visit?.locker
+        ? {
+            lockerNumber: visit.locker.number,
+            locationName: visit.locker.location.name,
+            clientName: client.fullName,
+          }
+        : null,
     };
   },
 
@@ -222,6 +247,7 @@ export const dashboardService = {
       checkInsLast24h,
       totalPrograms,
       subscriptions,
+      gymCurrencies,
       revenueTotal,
       revenueThisMonth,
     ] = await Promise.all([
@@ -238,20 +264,48 @@ export const dashboardService = {
       ctx.db.attendance.count({ where: { checkedInAt: { gte: dayAgo } } }),
       ctx.db.workoutProgram.count(),
       ctx.db.gymSubscription.findMany(),
-      ctx.db.gymSubscriptionPayment.aggregate({ _sum: { amount: true } }),
-      ctx.db.gymSubscriptionPayment.aggregate({
+      ctx.db.gym.findMany({ select: { id: true, currency: true } }),
+      ctx.db.gymSubscriptionPayment.groupBy({
+        by: ['gymId'],
+        _sum: { amount: true },
+      }),
+      ctx.db.gymSubscriptionPayment.groupBy({
+        by: ['gymId'],
         where: { paidAt: { gte: monthStart } },
         _sum: { amount: true },
       }),
     ]);
 
+    // Gyms use different currencies, so money is added up per currency and never mixed.
+    const currencyOf = new Map(
+      gymCurrencies.map((gym) => [gym.id, gym.currency])
+    );
+    const totalsByCurrency = (
+      rows: { gymId: string; amount: Prisma.Decimal | null }[]
+    ): MoneyTotal[] => {
+      const totals = new Map<CurrencyCode, number>();
+      for (const row of rows) {
+        const currency = currencyOf.get(row.gymId);
+        if (currency) {
+          totals.set(currency, (totals.get(currency) ?? 0) + sum(row.amount));
+        }
+      }
+      return [...totals]
+        .filter(([, amount]) => amount > 0)
+        .map(([currency, amount]) => ({ currency, amount }))
+        .sort((a, b) => b.amount - a.amount);
+    };
+
     const counts = { trialing: 0, active: 0, past_due: 0, cancelled: 0 };
-    let overdueAmount = new Prisma.Decimal(0);
+    const overdueRows: { gymId: string; amount: Prisma.Decimal }[] = [];
     for (const subscription of subscriptions) {
       const status = effectiveSubscriptionStatus(subscription);
       counts[status] += 1;
       if (status === 'past_due') {
-        overdueAmount = overdueAmount.plus(subscription.price);
+        overdueRows.push({
+          gymId: subscription.gymId,
+          amount: subscription.price,
+        });
       }
     }
 
@@ -269,9 +323,19 @@ export const dashboardService = {
         pastDue: counts.past_due,
         cancelled: counts.cancelled,
       },
-      revenueTotal: sum(revenueTotal._sum.amount),
-      revenueThisMonth: sum(revenueThisMonth._sum.amount),
-      overdueAmount: overdueAmount.toNumber(),
+      revenueTotal: totalsByCurrency(
+        revenueTotal.map((row) => ({
+          gymId: row.gymId,
+          amount: row._sum.amount,
+        }))
+      ),
+      revenueThisMonth: totalsByCurrency(
+        revenueThisMonth.map((row) => ({
+          gymId: row.gymId,
+          amount: row._sum.amount,
+        }))
+      ),
+      overdueAmount: totalsByCurrency(overdueRows),
     };
   },
 };

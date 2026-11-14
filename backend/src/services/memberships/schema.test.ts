@@ -5,14 +5,36 @@ import {
 } from '@gym/shared/validation/memberships';
 
 const base = { clientId: 'c1', planId: 'p1', startDate: '2026-11-04' };
+const card = { brand: 'visa', last4: '4242' };
 
 describe('staff membership schemas', () => {
-  it('accept only cash, because members pay other ways in their own app', () => {
+  it('accept cash, card (with its summary) and balance at the counter', () => {
+    for (const paymentMethod of ['cash', 'balance']) {
+      expect(
+        createMembershipSchema.safeParse({ ...base, paymentMethod }).success
+      ).toBe(true);
+      expect(
+        renewMembershipSchema.safeParse({
+          startDate: base.startDate,
+          paymentMethod,
+        }).success
+      ).toBe(true);
+    }
     expect(
-      createMembershipSchema.safeParse({ ...base, paymentMethod: 'cash' })
-        .success
+      createMembershipSchema.safeParse({
+        ...base,
+        paymentMethod: 'card',
+        card,
+      }).success
     ).toBe(true);
-    for (const method of ['card', 'balance', 'bank_transfer', 'online']) {
+    expect(
+      createMembershipSchema.safeParse({ ...base, paymentMethod: 'card' })
+        .success
+    ).toBe(false);
+  });
+
+  it('refuse methods that are not a counter payment', () => {
+    for (const method of ['bank_transfer', 'online']) {
       expect(
         createMembershipSchema.safeParse({ ...base, paymentMethod: method })
           .success

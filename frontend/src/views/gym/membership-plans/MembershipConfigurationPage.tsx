@@ -10,30 +10,14 @@ import { useMembershipPlans } from '@/hooks/membership-plans';
 import { usePriceList } from '@/hooks/price-lists';
 import { t } from '@/i18n';
 import { genderLabels, genders } from '@/utils/constants/labels';
+import { PriceOffersSection } from '@/views/gym/price-offers/PriceOffersSection';
 import type { Gender, MembershipPlan } from '@gym/shared/types';
 import type { MembershipPlanFormValues } from '@gym/shared/validation/membership-plans';
 import { ExtraPlanFormDrawer } from './ExtraPlanFormDrawer';
 import { PriceListNotesEditor } from './PriceListNotesEditor';
 import { PriceListPhotosManager } from './PriceListPhotosManager';
 import { PriceMatrixEditor } from './PriceMatrixEditor';
-
-const Section: React.FC<{
-  title: string;
-  hint: string;
-  action?: React.ReactNode;
-  children: React.ReactNode;
-}> = ({ title, hint, action, children }) => (
-  <section className="mb-10">
-    <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
-      <div>
-        <h2 className="text-lg font-semibold text-bone">{title}</h2>
-        <p className="mt-0.5 text-sm text-bone/50">{hint}</p>
-      </div>
-      {action}
-    </div>
-    {children}
-  </section>
-);
+import { Section } from './Section';
 
 export const MembershipConfigurationPage: React.FC = () => {
   const {
@@ -178,6 +162,8 @@ export const MembershipConfigurationPage: React.FC = () => {
           </div>
         )}
       </Section>
+
+      <PriceOffersSection plans={plans} />
 
       <Section
         title={t('Notes')}
