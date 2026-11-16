@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import { Alert } from '@/components/ui/Alert';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
-import { PageHeader } from '@/components/ui/PageHeader';
 import { Table, type Column } from '@/components/ui/Table';
 import { useAccessSettings } from '@/hooks/access-settings';
 import { useClients } from '@/hooks/clients';
@@ -16,7 +15,8 @@ import type { MemberCard } from '@gym/shared/types';
 import type { IssueCardValues } from '@gym/shared/validation/member-cards';
 import { MemberCardFormDrawer } from './MemberCardFormDrawer';
 
-export const MemberCardsPage: React.FC = () => {
+// Member cards: issue, block and unblock. One tab of the Cards & lockers page.
+export const MemberCardsSection: React.FC = () => {
   const { cards, isLoading, error, issueCard, setCardActive } =
     useMemberCards();
   const { clients } = useClients();
@@ -117,26 +117,15 @@ export const MemberCardsPage: React.FC = () => {
 
   return (
     <>
-      <PageHeader
-        eyebrow={t('Members')}
-        title={t('Member cards')}
-        description={t('Cards members tap at the door to check in and out.')}
-        actions={
-          <Button
-            icon="plus"
-            disabled={!settings.cardsEnabled}
-            onClick={openDrawer}
-          >
-            {t('Issue card')}
-          </Button>
-        }
-      />
+      <p className="mb-4 text-sm text-bone/60">
+        {t('Cards members tap at the door to check in and out.')}
+      </p>
 
       {!settings.cardsEnabled ? (
         <Alert tone="warning" className="mb-4">
           {t('Member cards are turned off.')}{' '}
-          <Link to="/access-settings" className="underline">
-            {t('Open access settings')}
+          <Link to="/settings" className="underline">
+            {t('Open settings')}
           </Link>
         </Alert>
       ) : null}
@@ -150,6 +139,15 @@ export const MemberCardsPage: React.FC = () => {
         isLoading={isLoading}
         error={error?.message ?? null}
         searchPlaceholder={t('Search cards')}
+        action={
+          <Button
+            icon="plus"
+            disabled={!settings.cardsEnabled}
+            onClick={openDrawer}
+          >
+            {t('Issue card')}
+          </Button>
+        }
         emptyTitle={t('No cards issued yet')}
         emptyHint={t('Issue a card to a member so they can tap in.')}
       />

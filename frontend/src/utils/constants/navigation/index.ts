@@ -135,21 +135,16 @@ const gymAdminNavigationItems: NavigationItem[] = [
     group: msg('Operations'),
   },
   {
-    label: msg('Payment settings'),
-    to: '/payment-settings',
-    icon: 'card',
+    label: msg('Cards & lockers'),
+    to: '/cards-lockers',
+    icon: 'key',
     group: msg('Operations'),
   },
   {
-    label: msg('Cards & lockers'),
-    to: '/member-cards',
-    icon: 'key',
+    label: msg('Settings'),
+    to: '/settings',
+    icon: 'card',
     group: msg('Operations'),
-    children: [
-      { label: msg('Cards'), to: '/member-cards' },
-      { label: msg('Lockers'), to: '/lockers' },
-      { label: msg('Access settings'), to: '/access-settings' },
-    ],
   },
 ];
 

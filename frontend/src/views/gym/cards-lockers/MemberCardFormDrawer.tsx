@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { FormField, fieldInputClass } from '@/components/common/FormField';
+import { Button } from '@/components/ui/Button';
 import { Drawer } from '@/components/ui/Drawer';
 import { t } from '@/i18n';
 import type { Client, MemberCard } from '@gym/shared/types';
@@ -36,6 +37,7 @@ export const MemberCardFormDrawer: React.FC<MemberCardFormDrawerProps> = ({
     register,
     handleSubmit,
     reset,
+    setValue,
     watch,
     formState: { errors },
   } = useForm<IssueCardValues>({ resolver: zodResolver(issueCardSchema) });
@@ -96,13 +98,34 @@ export const MemberCardFormDrawer: React.FC<MemberCardFormDrawerProps> = ({
               : undefined
           }
         >
-          <input
-            id="cardNumber"
-            autoFocus
-            autoComplete="off"
-            className={`${fieldInputClass} font-mono uppercase`}
-            {...register('number')}
-          />
+          <div className="flex gap-2">
+            <input
+              id="cardNumber"
+              autoFocus
+              autoComplete="off"
+              className={`${fieldInputClass} flex-1 font-mono uppercase`}
+              {...register('number')}
+            />
+            {import.meta.env.DEV ? (
+              <Button
+                type="button"
+                size="sm"
+                variant="secondary"
+                title={t(
+                  'Dev only: fill a test number, as a reader would type it'
+                )}
+                onClick={() =>
+                  setValue(
+                    'number',
+                    `TEST-${Math.random().toString(36).slice(2, 6).toUpperCase()}`,
+                    { shouldValidate: true }
+                  )
+                }
+              >
+                {t('Simulate tap')}
+              </Button>
+            ) : null}
+          </div>
         </FormField>
       </form>
     </Drawer>

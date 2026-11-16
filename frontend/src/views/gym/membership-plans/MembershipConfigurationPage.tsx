@@ -7,6 +7,7 @@ import { PageHeader } from '@/components/ui/PageHeader';
 import { Segmented } from '@/components/ui/Segmented';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { useMembershipPlans } from '@/hooks/membership-plans';
+import { useGenderSettings } from '@/hooks/gender-settings';
 import { usePriceList } from '@/hooks/price-lists';
 import { t } from '@/i18n';
 import { genderLabels, genders } from '@/utils/constants/labels';
@@ -30,6 +31,7 @@ export const MembershipConfigurationPage: React.FC = () => {
     setPlanActive,
   } = useMembershipPlans();
   const { notes, saveNotes } = usePriceList();
+  const { settings: genderSettings } = useGenderSettings();
   const [gender, setGender] = useState<Gender>('male');
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [editing, setEditing] = useState<MembershipPlan | null>(null);
@@ -92,9 +94,15 @@ export const MembershipConfigurationPage: React.FC = () => {
         title={t('Standard subscriptions - {{gender}}', {
           gender: genderLabels[gender],
         })}
-        hint={t(
-          'Fill the cells you sell. Longer terms show how much members save against the monthly price.'
-        )}
+        hint={
+          genderSettings.samePricesForGenders
+            ? t(
+                'Fill the cells you sell. Saved prices apply to both men and women, since your gym keeps them the same.'
+              )
+            : t(
+                'Fill the cells you sell. Longer terms show how much members save against the monthly price.'
+              )
+        }
       >
         {isLoading ? (
           <Skeleton className="h-72" />

@@ -1,37 +1,47 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { fieldInputClass } from '@/components/common/FormField';
 import { Alert } from '@/components/ui/Alert';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
-import { PageHeader } from '@/components/ui/PageHeader';
+import { FilterSelect } from '@/components/ui/FilterSelect';
 import { Table, type Column } from '@/components/ui/Table';
-import { useAccessSettings } from '@/hooks/access-settings';
 import { useConfirm } from '@/hooks/confirm';
+import { useGenderSettings } from '@/hooks/gender-settings';
 import { useGymLocations } from '@/hooks/gym-locations';
-import { useLockers } from '@/hooks/lockers';
+import { useLockerActions, useLockers } from '@/hooks/lockers';
 import { useTableController } from '@/hooks/table';
 import { t } from '@/i18n';
+import { genderLabels, genders } from '@/utils/constants/labels';
 import { formatTime } from '@/utils/format';
-import type { Locker } from '@gym/shared/types';
+import type { Gender, Locker } from '@gym/shared/types';
 import type { LockerRangeValues } from '@gym/shared/validation/lockers';
 import { LockerRangeDrawer } from './LockerRangeDrawer';
 
-export const LockersPage: React.FC = () => {
+// Changing-room lockers: add, free, take out of service, remove. A tab of Cards & lockers.
+export const LockersSection: React.FC = () => {
   const { activeLocations } = useGymLocations();
-  const { settings } = useAccessSettings();
+  const { settings: genderSettings } = useGenderSettings();
   const { confirm, dialog } = useConfirm();
   const [locationId, setLocationId] = useState('');
+  const [genderFilter, setGenderFilter] = useState<Gender | ''>('');
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const {
-    lockers,
+    lockers: allLockers,
     isLoading,
     error,
     addLockers,
     setLockerActive,
     deleteLocker,
   } = useLockers(locationId || undefined);
+  const { releaseLocker } = useLockerActions();
 
+  const sameLockers = genderSettings.sameLockersForGenders;
+  // Mirrored lockers repeat every number in both rooms, so one room is always shown.
+  const activeGender: Gender | '' = sameLockers
+    ? genderFilter || 'male'
+    : genderFilter;
+  const lockers = activeGender
+    ? allLockers.filter((locker) => locker.gender === activeGender)
+    : allLockers;
   const hasSeveralLocations = activeLocations.length > 1;
   const defaultLocationId = locationId || activeLocations[0]?.id || '';
 
@@ -56,6 +66,12 @@ export const LockersPage: React.FC = () => {
           {locker.number}
         </span>
       ),
+    },
+    {
+      key: 'gender',
+      header: t('Changing room'),
+      sortValue: (locker) => locker.gender,
+      cell: (locker) => genderLabels[locker.gender],
     },
     ...(hasSeveralLocations
       ? [
@@ -96,6 +112,18 @@ export const LockersPage: React.FC = () => {
       align: 'right',
       cell: (locker) => (
         <>
+          {locker.occupiedBy ? (
+            <Button
+              size="sm"
+              variant="ghost"
+              loading={releaseLocker.isPending}
+              onClick={() =>
+                releaseLocker.mutate({ code: locker.occupiedBy?.clientId })
+              }
+            >
+              {t('Release')}
+            </Button>
+          ) : null}
           <Button
             size="sm"
             variant={locker.isActive ? 'warning' : 'success'}
@@ -139,15 +167,68 @@ export const LockersPage: React.FC = () => {
 
   return (
     <>
-      <PageHeader
-        eyebrow={t('Operations')}
-        title={t('Lockers')}
-        description={
-          settings.lockersUseCard
-            ? t('Lockers are locked with the member card.')
-            : t('Lockers are locked with a key or padlock.')
+      <p className="mb-4 text-sm text-bone/60">
+        {t('{{used}} of {{total}} lockers in use', {
+          used: inUse,
+          total: lockers.length,
+        })}
+      </p>
+
+      {setLockerActive.error ? (
+        <Alert className="mb-4">{setLockerActive.error.message}</Alert>
+      ) : null}
+      {deleteLocker.error ? (
+        <Alert className="mb-4">{deleteLocker.error.message}</Alert>
+      ) : null}
+      {releaseLocker.error ? (
+        <Alert className="mb-4">{releaseLocker.error.message}</Alert>
+      ) : null}
+
+      <Table
+        controller={table}
+        rowKey={(locker) => locker.id}
+        isLoading={isLoading}
+        error={error?.message ?? null}
+        searchPlaceholder={t('Search lockers')}
+        toolbar={
+          <div className="flex flex-wrap items-center gap-2">
+            <FilterSelect
+              label={t('Changing room')}
+              value={activeGender}
+              onChange={(value) => {
+                setGenderFilter(value);
+                table.setPage(0);
+              }}
+              options={[
+                ...(sameLockers
+                  ? []
+                  : [{ value: '' as const, label: t('Both changing rooms') }]),
+                ...genders.map((value) => ({
+                  value,
+                  label: genderLabels[value],
+                })),
+              ]}
+            />
+            {hasSeveralLocations ? (
+              <FilterSelect
+                label={t('Gym')}
+                value={locationId}
+                onChange={(value) => {
+                  setLocationId(value);
+                  table.setPage(0);
+                }}
+                options={[
+                  { value: '', label: t('All gyms') },
+                  ...activeLocations.map((location) => ({
+                    value: location.id,
+                    label: location.name,
+                  })),
+                ]}
+              />
+            ) : null}
+          </div>
         }
-        actions={
+        action={
           <Button
             icon="plus"
             disabled={activeLocations.length === 0}
@@ -159,53 +240,6 @@ export const LockersPage: React.FC = () => {
             {t('Add lockers')}
           </Button>
         }
-      />
-
-      {!settings.lockersEnabled ? (
-        <Alert tone="warning" className="mb-4">
-          {t('Lockers are turned off, so members cannot take one.')}{' '}
-          <Link to="/access-settings" className="underline">
-            {t('Open access settings')}
-          </Link>
-        </Alert>
-      ) : null}
-      {setLockerActive.error ? (
-        <Alert className="mb-4">{setLockerActive.error.message}</Alert>
-      ) : null}
-      {deleteLocker.error ? (
-        <Alert className="mb-4">{deleteLocker.error.message}</Alert>
-      ) : null}
-
-      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-        <p className="text-sm text-bone/60">
-          {t('{{used}} of {{total}} lockers in use', {
-            used: inUse,
-            total: lockers.length,
-          })}
-        </p>
-        {hasSeveralLocations ? (
-          <select
-            aria-label={t('Gym')}
-            value={locationId}
-            onChange={(event) => setLocationId(event.target.value)}
-            className={`${fieldInputClass} w-auto`}
-          >
-            <option value="">{t('All gyms')}</option>
-            {activeLocations.map((location) => (
-              <option key={location.id} value={location.id}>
-                {location.name}
-              </option>
-            ))}
-          </select>
-        ) : null}
-      </div>
-
-      <Table
-        controller={table}
-        rowKey={(locker) => locker.id}
-        isLoading={isLoading}
-        error={error?.message ?? null}
-        searchPlaceholder={t('Search lockers')}
         emptyTitle={t('No lockers yet')}
         emptyHint={t('Add the lockers of your changing room.')}
       />
@@ -214,6 +248,8 @@ export const LockersPage: React.FC = () => {
         isOpen={isDrawerOpen}
         locations={activeLocations}
         locationId={defaultLocationId}
+        gender={activeGender || 'male'}
+        sameForBothGenders={sameLockers}
         isPending={addLockers.isPending}
         serverError={addLockers.error ? addLockers.error.message : null}
         onSubmit={onSubmit}

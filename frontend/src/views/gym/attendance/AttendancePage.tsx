@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { CheckInList } from '@/components/attendance/CheckInList';
 import { MiniStat } from '@/components/dashboard/MiniStat';
+import { DevScanSimulator } from '@/components/common/DevScanSimulator';
 import { fieldInputClass } from '@/components/common/FormField';
 import { Alert } from '@/components/ui/Alert';
 import { Avatar } from '@/components/ui/Avatar';
@@ -10,8 +11,9 @@ import { PageHeader } from '@/components/ui/PageHeader';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { useAccessSettings } from '@/hooks/access-settings';
 import { useAttendance } from '@/hooks/attendance';
+import { useClients } from '@/hooks/clients';
 import { useGymLocations } from '@/hooks/gym-locations';
-import { useLockerActions } from '@/hooks/lockers';
+import { useMemberCards } from '@/hooks/member-cards';
 import { t } from '@/i18n';
 import { formatTime } from '@/utils/format';
 import { QrScanner } from './QrScanner';
@@ -38,11 +40,10 @@ export const AttendancePage: React.FC = () => {
     useAttendance(LATEST_LIMIT);
   const { activeLocations } = useGymLocations();
   const { settings } = useAccessSettings();
-  const { assignLocker } = useLockerActions();
+  // Only used to simulate a reader in development; never fetched in production.
+  const { clients } = useClients();
+  const { cards } = useMemberCards();
   const [code, setCode] = useState('');
-  const [lockerCode, setLockerCode] = useState('');
-  const [lockerNumber, setLockerNumber] = useState('');
-  const [lockerFeedback, setLockerFeedback] = useState<Feedback>(null);
   const [feedback, setFeedback] = useState<Feedback>(null);
   const [savedLocationId, setSavedLocationId] = useState(
     () => window.localStorage.getItem(DESK_LOCATION_KEY) ?? ''
@@ -109,36 +110,6 @@ export const AttendancePage: React.FC = () => {
   ): Promise<void> => {
     event.preventDefault();
     await submitCheckIn(code);
-  };
-
-  const onLockerSubmit = async (
-    event: React.FormEvent<HTMLFormElement>
-  ): Promise<void> => {
-    event.preventDefault();
-    try {
-      const result = await assignLocker.mutateAsync({
-        code: lockerCode.trim(),
-        lockerNumber: lockerNumber.trim(),
-      });
-      setLockerFeedback({
-        type: 'success',
-        action: 'checked_in',
-        name: result.clientName,
-        time: '',
-        location: result.locationName,
-        locker: result.lockerNumber,
-      });
-      setLockerCode('');
-      setLockerNumber('');
-    } catch (lockerError) {
-      setLockerFeedback({
-        type: 'error',
-        message:
-          lockerError instanceof Error
-            ? lockerError.message
-            : t('Could not give the locker.'),
-      });
-    }
   };
 
   const onScanned = useCallback(
@@ -244,6 +215,14 @@ export const AttendancePage: React.FC = () => {
               </Button>
             </form>
 
+            {import.meta.env.DEV ? (
+              <DevScanSimulator
+                clients={clients}
+                cards={cards}
+                onSimulate={onScanned}
+              />
+            ) : null}
+
             {feedback?.type === 'success' ? (
               <div
                 role="status"
@@ -277,69 +256,6 @@ export const AttendancePage: React.FC = () => {
             ) : null}
             {feedback?.type === 'error' ? (
               <Alert className="mt-4">{feedback.message}</Alert>
-            ) : null}
-
-            {settings.lockersEnabled ? (
-              <div className="mt-5 border-t border-white/10 pt-4">
-                <p className="text-sm font-semibold text-bone">
-                  {t('Give a locker')}
-                </p>
-                <p className="mt-1 text-xs text-bone/50">
-                  {settings.lockersUseCard
-                    ? t('Tap the member card, then enter the locker it locks.')
-                    : t(
-                        'For a member who is inside: enter their code and the locker number.'
-                      )}
-                </p>
-                <form
-                  onSubmit={onLockerSubmit}
-                  className="mt-3 flex flex-col gap-2 sm:flex-row"
-                >
-                  <label htmlFor="locker-member" className="sr-only">
-                    {t('Member code or card')}
-                  </label>
-                  <input
-                    id="locker-member"
-                    type="text"
-                    autoComplete="off"
-                    value={lockerCode}
-                    onChange={(event) => setLockerCode(event.target.value)}
-                    placeholder={t('Member code or card')}
-                    className={`${fieldInputClass} flex-1 font-mono`}
-                  />
-                  <label htmlFor="locker-number" className="sr-only">
-                    {t('Locker number')}
-                  </label>
-                  <input
-                    id="locker-number"
-                    type="text"
-                    autoComplete="off"
-                    value={lockerNumber}
-                    onChange={(event) => setLockerNumber(event.target.value)}
-                    placeholder={t('Locker number')}
-                    className={`${fieldInputClass} sm:w-32`}
-                  />
-                  <Button
-                    type="submit"
-                    variant="secondary"
-                    loading={assignLocker.isPending}
-                    disabled={!lockerCode.trim() || !lockerNumber.trim()}
-                  >
-                    {t('Give locker')}
-                  </Button>
-                </form>
-                {lockerFeedback?.type === 'success' ? (
-                  <Alert tone="success" className="mt-3">
-                    {t('{{name}} has locker {{locker}}.', {
-                      name: lockerFeedback.name,
-                      locker: lockerFeedback.locker ?? '',
-                    })}
-                  </Alert>
-                ) : null}
-                {lockerFeedback?.type === 'error' ? (
-                  <Alert className="mt-3">{lockerFeedback.message}</Alert>
-                ) : null}
-              </div>
             ) : null}
 
             <div className="mt-5 border-t border-white/10 pt-4">

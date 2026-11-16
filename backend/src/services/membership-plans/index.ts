@@ -1,8 +1,9 @@
 import type { MembershipPlan as PlanRow } from '@prisma/client';
 import { NotFoundError } from '@/errors';
+import { genderSettingsService } from '@/services/gender-settings';
 import { priceOfferService } from '@/services/price-offers';
 import type { TenantContext } from '@/tenant/context';
-import type { MembershipPlan, PlanOffer } from '@gym/shared/types';
+import type { Gender, MembershipPlan, PlanOffer } from '@gym/shared/types';
 import type {
   MembershipPlanFormValues,
   PriceGridValues,
@@ -124,61 +125,67 @@ export const membershipPlanService = {
 
   // Saves the standard price table of one gender: a plan per (weekly visits, term) cell.
   // Empty cells are deactivated, not deleted, because memberships reference their plan.
+  // Mirrors the same cells to the other gender when the gym keeps one price list for both.
   async savePriceGrid(
     ctx: TenantContext,
     input: PriceGridValues
   ): Promise<MembershipPlan[]> {
-    await ctx.db.$transaction(async (tx) => {
-      for (const cell of input.cells) {
-        const matches = (
-          await tx.membershipPlan.findMany({
-            where: {
-              gender: input.gender,
-              type: cell.type,
-              weeklyVisits: cell.weeklyVisits,
-            },
-            orderBy: { createdAt: 'asc' },
-          })
-        ).sort((a, b) => Number(b.isActive) - Number(a.isActive));
-        const price = cell.price ?? 0;
+    const mirror = await genderSettingsService.isSamePricesForBothGenders(ctx);
+    const genders: Gender[] = mirror ? ['male', 'female'] : [input.gender];
 
-        if (price <= 0) {
-          if (matches.length > 0) {
+    await ctx.db.$transaction(async (tx) => {
+      for (const gender of genders) {
+        for (const cell of input.cells) {
+          const matches = (
+            await tx.membershipPlan.findMany({
+              where: {
+                gender,
+                type: cell.type,
+                weeklyVisits: cell.weeklyVisits,
+              },
+              orderBy: { createdAt: 'asc' },
+            })
+          ).sort((a, b) => Number(b.isActive) - Number(a.isActive));
+          const price = cell.price ?? 0;
+
+          if (price <= 0) {
+            if (matches.length > 0) {
+              await tx.membershipPlan.updateMany({
+                where: { id: { in: matches.map((plan) => plan.id) } },
+                data: { isActive: false },
+              });
+            }
+            continue;
+          }
+
+          const [primary, ...duplicates] = matches;
+          if (!primary) {
+            const term = TERMS[cell.type];
+            await tx.membershipPlan.create({
+              data: {
+                gymId: ctx.gymId,
+                name: `${cell.weeklyVisits > 0 ? `${cell.weeklyVisits}x / week` : 'Unlimited'} - ${term.label}`,
+                type: cell.type,
+                durationDays: term.days,
+                visitCount: 0,
+                gender,
+                weeklyVisits: cell.weeklyVisits,
+                price: price.toFixed(2),
+              },
+            });
+            continue;
+          }
+
+          await tx.membershipPlan.updateMany({
+            where: { id: primary.id },
+            data: { price: price.toFixed(2), isActive: true },
+          });
+          if (duplicates.length > 0) {
             await tx.membershipPlan.updateMany({
-              where: { id: { in: matches.map((plan) => plan.id) } },
+              where: { id: { in: duplicates.map((plan) => plan.id) } },
               data: { isActive: false },
             });
           }
-          continue;
-        }
-
-        const [primary, ...duplicates] = matches;
-        if (!primary) {
-          const term = TERMS[cell.type];
-          await tx.membershipPlan.create({
-            data: {
-              gymId: ctx.gymId,
-              name: `${cell.weeklyVisits > 0 ? `${cell.weeklyVisits}x / week` : 'Unlimited'} - ${term.label}`,
-              type: cell.type,
-              durationDays: term.days,
-              visitCount: 0,
-              gender: input.gender,
-              weeklyVisits: cell.weeklyVisits,
-              price: price.toFixed(2),
-            },
-          });
-          continue;
-        }
-
-        await tx.membershipPlan.updateMany({
-          where: { id: primary.id },
-          data: { price: price.toFixed(2), isActive: true },
-        });
-        if (duplicates.length > 0) {
-          await tx.membershipPlan.updateMany({
-            where: { id: { in: duplicates.map((plan) => plan.id) } },
-            data: { isActive: false },
-          });
         }
       }
     });

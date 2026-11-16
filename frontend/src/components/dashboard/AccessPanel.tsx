@@ -19,12 +19,7 @@ export const AccessPanel: React.FC<AccessPanelProps> = ({ data }) => {
   const { assignLocker, releaseLocker } = useLockerActions();
   const [lockerNumber, setLockerNumber] = useState('');
 
-  if (!settings.cardsEnabled && !settings.lockersEnabled) {
-    return null;
-  }
-
-  const canPickLocker =
-    settings.lockersEnabled && !settings.lockersUseCard && data.checkedIn;
+  const canPickLocker = !settings.lockersUseCard && data.checkedIn;
   const error =
     checkOut.error ?? assignLocker.error ?? releaseLocker.error ?? null;
 
@@ -39,29 +34,22 @@ export const AccessPanel: React.FC<AccessPanelProps> = ({ data }) => {
             </dd>
           </div>
         ) : null}
-        {settings.lockersEnabled ? (
-          <div>
-            <dt className="text-xs text-bone/50">{t('My locker')}</dt>
-            <dd className="mt-0.5 text-lg font-semibold tabular-nums text-bone">
-              {data.locker
-                ? data.locker.lockerNumber
-                : data.checkedIn
-                  ? t('None yet')
-                  : '—'}
-            </dd>
-            {data.locker?.locationName ? (
-              <dd className="text-xs text-bone/45">
-                {data.locker.locationName}
-              </dd>
-            ) : null}
-          </div>
-        ) : null}
+        <div>
+          <dt className="text-xs text-bone/50">{t('My locker')}</dt>
+          <dd className="mt-0.5 text-lg font-semibold tabular-nums text-bone">
+            {data.locker
+              ? data.locker.lockerNumber
+              : data.checkedIn
+                ? t('None yet')
+                : '—'}
+          </dd>
+          {data.locker?.locationName ? (
+            <dd className="text-xs text-bone/45">{data.locker.locationName}</dd>
+          ) : null}
+        </div>
       </dl>
 
-      {settings.lockersEnabled &&
-      settings.lockersUseCard &&
-      data.checkedIn &&
-      !data.locker ? (
+      {settings.lockersUseCard && data.checkedIn && !data.locker ? (
         <p className="mt-3 text-xs text-bone/55">
           {t('Lock a locker with your card and its number shows here.')}
         </p>

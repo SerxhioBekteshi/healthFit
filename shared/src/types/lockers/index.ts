@@ -1,7 +1,11 @@
+import type { Gender } from '../clients';
+
 export interface Locker {
   id: string;
   locationId: string;
   locationName: string;
+  // Changing rooms are separated by gender.
+  gender: Gender;
   number: string;
   // Out of service when false.
   isActive: boolean;

@@ -10,10 +10,11 @@ import {
 } from '@/errors';
 import { accessSettingsService } from '@/services/access-settings';
 import { openVisitSince, openVisitWhere } from '@/services/attendance/open';
+import { genderSettingsService } from '@/services/gender-settings';
 import { memberCardService } from '@/services/member-cards';
 import type { TenantContext } from '@/tenant/context';
 import { retryOnConflict } from '@/utils/transactions';
-import type { Locker, LockerAssignment } from '@gym/shared/types';
+import type { Gender, Locker, LockerAssignment } from '@gym/shared/types';
 import type {
   AssignLockerValues,
   LockerRangeValues,
@@ -30,6 +31,9 @@ type LockerWithState = LockerRow & {
 
 // Lockers are labelled in upper case ("M12"), so what staff type always matches.
 const normalizeNumber = (value: string): string => value.trim().toUpperCase();
+
+const otherGender = (gender: Gender): Gender =>
+  gender === 'male' ? 'female' : 'male';
 
 const withState = (now: Date) =>
   ({
@@ -52,6 +56,7 @@ const toDto = (row: LockerWithState): Locker => {
     id: row.id,
     locationId: row.locationId,
     locationName: row.location.name,
+    gender: row.gender,
     number: row.number,
     isActive: row.isActive,
     occupiedBy: holder
@@ -66,6 +71,7 @@ const toDto = (row: LockerWithState): Locker => {
 
 const byPlace = (a: Locker, b: Locker): number =>
   a.locationName.localeCompare(b.locationName) ||
+  a.gender.localeCompare(b.gender) ||
   a.number.localeCompare(b.number, undefined, { numeric: true });
 
 // Who the request is about: a member for themselves, or staff naming a member by card or code.
@@ -73,7 +79,7 @@ const resolveMember = async (
   ctx: TenantContext,
   code: string | undefined,
   options: { cardOnly: boolean }
-): Promise<{ id: string; fullName: string }> => {
+): Promise<{ id: string; fullName: string; gender: Gender | null }> => {
   const settings = await accessSettingsService.get(ctx);
   if (ctx.role === 'client') {
     if (settings.lockersUseCard || !ctx.clientId) {
@@ -112,7 +118,8 @@ export const lockerService = {
     return rows.map(toDto).sort(byPlace);
   },
 
-  // Adds the numbers from..to (with an optional prefix) to one location; existing ones are kept.
+  // Adds the numbers from..to (with an optional prefix) to one location and gender; existing
+  // ones are kept. Mirrors the same range to the other gender when the gym configures them alike.
   async createRange(
     ctx: TenantContext,
     input: LockerRangeValues
@@ -123,16 +130,26 @@ export const lockerService = {
     if (!location) {
       throw new NotFoundError('Gym location not found.');
     }
+    const mirror = await genderSettingsService.isSameLockersForBothGenders(ctx);
     const prefix = input.prefix.trim().toUpperCase();
-    const data = Array.from(
+    const numbers = Array.from(
       { length: input.to - input.from + 1 },
-      (_, index) => ({
-        gymId: ctx.gymId,
-        locationId: location.id,
-        number: `${prefix}${input.from + index}`,
-      })
+      (_, index) => `${prefix}${input.from + index}`
     );
-    await ctx.db.locker.createMany({ data, skipDuplicates: true });
+    const genders = mirror
+      ? [input.gender, otherGender(input.gender)]
+      : [input.gender];
+    for (const gender of genders) {
+      await ctx.db.locker.createMany({
+        data: numbers.map((number) => ({
+          gymId: ctx.gymId,
+          locationId: location.id,
+          gender,
+          number,
+        })),
+        skipDuplicates: true,
+      });
+    }
     return lockerService.list(ctx, location.id);
   },
 
@@ -180,10 +197,6 @@ export const lockerService = {
     input: AssignLockerValues,
     now: Date = new Date()
   ): Promise<LockerAssignment> {
-    const settings = await accessSettingsService.get(ctx);
-    if (!settings.lockersEnabled) {
-      throw new ValidationError('Lockers are not used at this gym.');
-    }
     const client = await resolveMember(ctx, input.code, { cardOnly: true });
     const visit = await ctx.db.attendance.findFirst({
       where: openVisitWhere(client.id, now),
@@ -197,14 +210,24 @@ export const lockerService = {
     const locker = await retryOnConflict(() =>
       ctx.db.$transaction(
         async (tx) => {
-          const found = await tx.locker.findFirst({
+          const matches = await tx.locker.findMany({
             where: {
               number,
               ...(visit.locationId ? { locationId: visit.locationId } : {}),
             },
             include: { location: { select: { name: true } } },
           });
+          // Men's and women's rooms can share a number; the member's own gender picks the room.
+          const found =
+            matches.length > 1
+              ? (matches.find((item) => item.gender === client.gender) ?? null)
+              : (matches[0] ?? null);
           if (!found) {
+            if (matches.length > 1) {
+              throw new ValidationError(
+                "This gym has separate lockers for men and women; set this member's gender first."
+              );
+            }
             throw new NotFoundError('Locker not found.');
           }
           if (!found.isActive) {

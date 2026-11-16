@@ -1,10 +1,13 @@
 import { z } from 'zod';
+import { genderSchema } from '../common';
 
 export const MAX_LOCKERS_PER_RANGE = 300;
 
 export const lockerRangeSchema = z
   .object({
     locationId: z.string().trim().min(1, 'Select a gym location.'),
+    // Changing rooms are separated by gender.
+    gender: genderSchema,
     // Put in front of each number, for example "M" for M1, M2, ...
     prefix: z
       .string()

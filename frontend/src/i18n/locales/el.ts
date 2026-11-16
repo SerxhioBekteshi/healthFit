@@ -1,6 +1,7 @@
 // Greek. Keys are the English texts used in the app; every key must be translated (npm run i18n:check).
 export const el: Record<string, string> = {
   '& revenue': '& έσοδα',
+  '& lockers': '& ντουλάπια',
   '(tap to fill it in).': '(πατήστε για συμπλήρωση).',
   '+ Add frequency': '+ Προσθήκη συχνότητας',
   '+1 visit vs last week': '+1 επίσκεψη σε σχέση με την προηγούμενη εβδομάδα',
@@ -9,7 +10,6 @@ export const el: Record<string, string> = {
   '1 day': '1 ημέρα',
   '1 day left': 'Απομένει 1 ημέρα',
   '1 month': '1 μήνας',
-  '1 row': '1 γραμμή',
   '1 visit': '1 επίσκεψη',
   '12 months': '12 μήνες',
   '3 Months': '3 μήνες',
@@ -1014,8 +1014,6 @@ export const el: Record<string, string> = {
     'Το γυμναστήριό σας δεν έχει ορίσει ακόμη το φύλο σας. Ζητήστε να ενημερώσει το προφίλ σας.',
   'Your membership works at every gym below. Train wherever suits you; the gym records the visit when you check in.':
     'Η συνδρομή σας ισχύει σε κάθε γυμναστήριο παρακάτω. Προπονηθείτε όπου σας βολεύει· το γυμναστήριο καταγράφει την επίσκεψη όταν κάνετε check-in.',
-  'Your membership, balance and gym activity.':
-    'Η συνδρομή, το υπόλοιπο και η δραστηριότητά σας στο γυμναστήριο.',
   'Your memberships': 'Οι συνδρομές σας',
   'Your session has expired. Please login again.':
     'Η συνεδρία σας έχει λήξει. Συνδεθείτε ξανά.',
@@ -1088,14 +1086,12 @@ export const el: Record<string, string> = {
   '{{n}} per day': '{{n}} ανά ημέρα',
   '{{n}} per week': '{{n}} ανά εβδομάδα',
   '{{n}} product(s) running low': '{{n}} προϊόν(τα) σε χαμηλό απόθεμα',
-  '{{n}} rows': '{{n}} γραμμές',
   '{{n}} sessions / week': '{{n}} συνεδρίες / εβδομάδα',
   '{{n}} this month': '{{n}} αυτόν τον μήνα',
   '{{n}} visits': '{{n}} επισκέψεις',
   '{{n}}s rest': '{{n}} δ. ξεκούραση',
   '{{n}}x per week': '{{n}}x την εβδομάδα',
   '{{pastDue}} gym(s) past due': '{{pastDue}} γυμναστήριο(α) εκπρόθεσμα',
-  '{{shown}} of {{all}}': '{{shown}} από {{all}}',
   '{{stock}} in stock': '{{stock}} σε απόθεμα',
   '{{term}}, {{frequency}}, price in {{currency}}':
     '{{term}}, {{frequency}}, τιμή σε {{currency}}',
@@ -1197,7 +1193,6 @@ export const el: Record<string, string> = {
     'Τα μέλη πληρώνουν online με Visa ή Mastercard και το προσωπικό μπορεί να δεχτεί κάρτα στο ταμείο.',
   'Paying from the balance is not accepted by this gym.':
     'Οι πληρωμές από το υπόλοιπο δεν γίνονται δεκτές από αυτό το γυμναστήριο.',
-  'Payment settings': 'Ρυθμίσεις πληρωμών',
   'Payment settings saved.': 'Οι ρυθμίσεις πληρωμών αποθηκεύτηκαν.',
   'Staff take cash at the counter. Shakes and smoothies are cash only, so they cannot be sold without it.':
     'Το προσωπικό παίρνει μετρητά στο ταμείο. Τα σέικ και τα smoothies πληρώνονται μόνο με μετρητά, οπότε δεν πωλούνται χωρίς αυτά.',
@@ -1285,7 +1280,6 @@ export const el: Record<string, string> = {
   'Valid {{from}} to {{to}}': 'Ισχύει από {{from}} έως {{to}}',
   'A locker in use cannot be removed.':
     'Ένα ντουλάπι σε χρήση δεν μπορεί να αφαιρεθεί.',
-  'Access settings': 'Ρυθμίσεις πρόσβασης',
   'Access settings saved.': 'Οι ρυθμίσεις πρόσβασης αποθηκεύτηκαν.',
   'Add Lockers': 'Προσθήκη ντουλαπιών',
   'Add a row of numbered lockers, for example 1 to 60. Numbers that already exist are kept.':
@@ -1315,9 +1309,6 @@ export const el: Record<string, string> = {
   'Checked out at {{time}}': 'Check-out στις {{time}}',
   'Checked out at {{time}} - locker {{locker}} is free':
     'Check-out στις {{time}} - το ντουλάπι {{locker}} είναι ελεύθερο',
-  'Choose how members get in and keep their things.':
-    'Επιλέξτε πώς μπαίνουν τα μέλη και πού αφήνουν τα πράγματά τους.',
-  'Could not give the locker.': 'Δεν ήταν δυνατή η παραχώρηση του ντουλαπιού.',
   'Each member can get a card that is tapped at the door to check in and out. A member has one active card at a time.':
     'Κάθε μέλος μπορεί να έχει μια κάρτα που πλησιάζει στην πόρτα για check-in και check-out. Ένα μέλος έχει μία ενεργή κάρτα τη φορά.',
   'Enter the first locker number.':
@@ -1327,27 +1318,20 @@ export const el: Record<string, string> = {
   'Enter the locker number.': 'Εισάγετε τον αριθμό του ντουλαπιού.',
   'Enter the member code or card number.':
     'Εισάγετε τον κωδικό μέλους ή τον αριθμό κάρτας.',
-  'For a member who is inside: enter their code and the locker number.':
-    'Για μέλος που είναι μέσα: εισάγετε τον κωδικό του και τον αριθμό ντουλαπιού.',
   'For example M for M1, M2 in the men changing room.':
     'Για παράδειγμα M για M1, M2 στα αποδυτήρια ανδρών.',
   Free: 'Ελεύθερο',
   'Free my locker': 'Αποδέσμευση του ντουλαπιού μου',
   'From number': 'Από αριθμό',
-  'Give a locker': 'Παραχώρηση ντουλαπιού',
-  'Give locker': 'Παραχώρηση ντουλαπιού',
   'Gym location not found.': 'Η τοποθεσία του γυμναστηρίου δεν βρέθηκε.',
   'In use': 'Σε χρήση',
   'Issue Card': 'Έκδοση κάρτας',
   'Issue a card to a member so they can tap in.':
     'Εκδώστε μια κάρτα σε ένα μέλος για να μπορεί να μπαίνει.',
   'Issue card': 'Έκδοση κάρτας',
-  'Issue cards on the Cards page and add lockers on the Lockers page.':
-    'Εκδώστε κάρτες στη σελίδα Κάρτες και προσθέστε ντουλάπια στη σελίδα Ντουλάπια.',
   Issued: 'Εκδόθηκε',
   'Lock a locker with your card and its number shows here.':
     'Κλειδώστε ένα ντουλάπι με την κάρτα σας και ο αριθμός του εμφανίζεται εδώ.',
-  'Lock lockers with the card': 'Κλείδωμα ντουλαπιών με την κάρτα',
   Locker: 'Ντουλάπι',
   'Locker freed.': 'Το ντουλάπι αποδεσμεύτηκε.',
   'Locker not found.': 'Το ντουλάπι δεν βρέθηκε.',
@@ -1362,27 +1346,14 @@ export const el: Record<string, string> = {
   'Locker {{number}}': 'Ντουλάπι {{number}}',
   Lockers: 'Ντουλάπια',
   'Lockers added.': 'Τα ντουλάπια προστέθηκαν.',
-  'Lockers are locked with a key or padlock.':
-    'Τα ντουλάπια κλειδώνουν με κλειδί ή λουκέτο.',
-  'Lockers are locked with the member card.':
-    'Τα ντουλάπια κλειδώνουν με την κάρτα μέλους.',
-  'Lockers are not used at this gym.':
-    'Αυτό το γυμναστήριο δεν χρησιμοποιεί ντουλάπια.',
-  'Lockers are turned off, so members cannot take one.':
-    'Τα ντουλάπια είναι απενεργοποιημένα, οπότε τα μέλη δεν μπορούν να πάρουν κανένα.',
   'Lockers here are locked with a card: scan the member card.':
     'Τα ντουλάπια εδώ κλειδώνουν με κάρτα: σαρώστε την κάρτα μέλους.',
   'Lockers here are locked with your card. Tap it at the locker.':
     'Τα ντουλάπια εδώ κλειδώνουν με την κάρτα σας. Πλησιάστε την στο ντουλάπι.',
-  'Locking lockers with a card needs cards and lockers turned on.':
-    'Το κλείδωμα με κάρτα απαιτεί ενεργοποιημένες κάρτες και ντουλάπια.',
   'Member cards': 'Κάρτες μελών',
   'Member cards are not used at this gym.':
     'Αυτό το γυμναστήριο δεν χρησιμοποιεί κάρτες μελών.',
   'Member cards are turned off.': 'Οι κάρτες μελών είναι απενεργοποιημένες.',
-  'Member code or card': 'Κωδικός μέλους ή κάρτα',
-  'Members can leave their things in a locker during a visit. A locker is free again when the member checks out.':
-    'Τα μέλη μπορούν να αφήνουν τα πράγματά τους σε ντουλάπι κατά την επίσκεψη. Το ντουλάπι ελευθερώνεται όταν το μέλος κάνει check-out.',
   'My card': 'Η κάρτα μου',
   'My locker': 'Το ντουλάπι μου',
   'No card yet': 'Καμία κάρτα ακόμη',
@@ -1390,7 +1361,8 @@ export const el: Record<string, string> = {
   'No locker is in use.': 'Κανένα ντουλάπι δεν είναι σε χρήση.',
   'No lockers yet': 'Κανένα ντουλάπι ακόμη',
   'None yet': 'Κανένα ακόμη',
-  'Open access settings': 'Άνοιγμα ρυθμίσεων πρόσβασης',
+  'Not used when lockers are the same for men and women.':
+    'Δεν χρησιμοποιείται όταν τα ντουλάπια είναι ίδια για άντρες και γυναίκες.',
   'Out of service': 'Εκτός λειτουργίας',
   'Prefix (optional)': 'Πρόθεμα (προαιρετικό)',
   'Remove locker': 'Αφαίρεση ντουλαπιού',
@@ -1410,8 +1382,6 @@ export const el: Record<string, string> = {
     'Πλησιάστε την κάρτα ή επικολλήστε τον κωδικό μέλους',
   'Tap the card on the reader or type its number. The member can check in and out with it.':
     'Πλησιάστε την κάρτα στον αναγνώστη ή πληκτρολογήστε τον αριθμό. Το μέλος μπορεί να κάνει check-in και check-out με αυτήν.',
-  'Tap the member card, then enter the locker it locks.':
-    'Πλησιάστε την κάρτα μέλους και μετά εισάγετε το ντουλάπι που κλειδώνει.',
   'That card number is already in use.':
     'Αυτός ο αριθμός κάρτας χρησιμοποιείται ήδη.',
   'That locker is already in use.': 'Αυτό το ντουλάπι χρησιμοποιείται ήδη.',
@@ -1427,8 +1397,6 @@ export const el: Record<string, string> = {
     'Ο τελευταίος αριθμός πρέπει να είναι ίδιος ή μετά τον πρώτο.',
   'The locker is deleted from the list.':
     'Το ντουλάπι διαγράφεται από τη λίστα.',
-  'The locker is locked and opened with the member card, so the card number is sent when a locker is taken. Turn it off for lockers with a key or padlock, where the member notes the locker number.':
-    'Το ντουλάπι κλειδώνει και ανοίγει με την κάρτα μέλους, οπότε ο αριθμός κάρτας στέλνεται όταν παίρνεται ντουλάπι. Απενεργοποιήστε το για ντουλάπια με κλειδί ή λουκέτο, όπου το μέλος σημειώνει τον αριθμό.',
   'The member is not checked in.': 'Το μέλος δεν έχει κάνει check-in.',
   'The prefix can only have letters and numbers.':
     'Το πρόθεμα μπορεί να έχει μόνο γράμματα και αριθμούς.',
@@ -1445,10 +1413,53 @@ export const el: Record<string, string> = {
   'Which locker are you using?': 'Ποιο ντουλάπι χρησιμοποιείτε;',
   'You are checked in': 'Έχετε κάνει check-in',
   'You are checked out.': 'Έχετε κάνει check-out.',
-  '{{name}} has locker {{locker}}.': '{{name}}: ντουλάπι {{locker}}.',
   '{{name}} since {{time}}': '{{name}} από τις {{time}}',
   '{{used}} of {{total}} lockers in use':
     '{{used}} από {{total}} ντουλάπια σε χρήση',
   '{{visits}}, {{valid}}': '{{visits}}, {{valid}}',
+  "Added to both the men's and the women's changing room, since your gym keeps them the same.":
+    'Προστίθεται και στον αντρικό χώρο και στον γυναικείο, αφού το γυμναστήριό σας τους κρατάει ίδιους.',
+  'Adding lockers for one changing room adds the same numbers for the other automatically.':
+    'Η προσθήκη ντουλαπιών για το ένα αποδυτήριο προσθέτει αυτόματα τους ίδιους αριθμούς και για το άλλο.',
+  'Both changing rooms': 'Και τα δύο αποδυτήρια',
+  'Changing room': 'Αποδυτήριο',
+  'Choose how members get in and lock their lockers.':
+    'Επιλέξτε πώς μπαίνουν τα μέλη και πώς κλειδώνουν τα ντουλάπια τους.',
+  'Fill the cells you sell. Saved prices apply to both men and women, since your gym keeps them the same.':
+    'Συμπληρώστε τα κελιά που πουλάτε. Οι αποθηκευμένες τιμές ισχύουν και για άντρες και γυναίκες, αφού το γυμναστήριό σας τους κρατάει ίδιους.',
+  'Lock lockers with a card': 'Κλείδωμα ντουλαπιών με κάρτα',
+  'Locking lockers with a card needs member cards turned on.':
+    'Το κλείδωμα με κάρτα απαιτεί ενεργοποιημένες κάρτες μελών.',
+  'Men and women': 'Άνδρες και γυναίκες',
+  Release: 'Απελευθέρωση',
+  'Same lockers for both': 'Ίδια ντουλάπια και για τους δύο',
+  'Same prices for both': 'Ίδιες τιμές και για τους δύο',
+  'Settings saved.': 'Οι ρυθμίσεις αποθηκεύτηκαν.',
+  'Some gyms price men and women differently, or have a different number of lockers for each.':
+    'Μερικά γυμναστήρια έχουν διαφορετικές τιμές για άντρες και γυναίκες, ή διαφορετικό αριθμό ντουλαπιών για τον καθένα.',
+  'Standard membership prices are shared between men and women instead of set separately.':
+    'Οι κανονικές τιμές μοιράζονται μεταξύ ανδρών και γυναικών, αντί να ορίζονται ξεχωριστά.',
+  'The locker is locked and opened with the member card, so the card number is sent when a locker is taken. Turn it off for lockers with a key or padlock, where the member notes the locker number themselves.':
+    'Το ντουλάπι κλειδώνει και ανοίγει με την κάρτα μέλους, οπότε ο αριθμός κάρτας στέλνεται όταν παίρνεται ντουλάπι. Απενεργοποιήστε το για ντουλάπια με κλειδί ή λουκέτο, όπου το μέλος σημειώνει τον αριθμό μόνο του.',
+  "This gym has separate lockers for men and women; set this member's gender first.":
+    'Αυτό το γυμναστήριο έχει ξεχωριστά ντουλάπια για άντρες και γυναίκες· ορίστε πρώτα το φύλο αυτού του μέλους.',
+  Access: 'Πρόσβαση',
+  'Member cards for the door, and the lockers of your changing room.':
+    'Κάρτες μελών για την πόρτα, και τα ντουλάπια του αποδυτηρίου σας.',
+  'Open settings': 'Άνοιγμα ρυθμίσεων',
+  'Payment and access settings for your gym.':
+    'Ρυθμίσεις πληρωμών και πρόσβασης για το γυμναστήριό σας.',
+  Section: 'Ενότητα',
+  'Dev only: fill a test number, as a reader would type it':
+    'Μόνο για ανάπτυξη: συμπληρώνει έναν δοκιμαστικό αριθμό, όπως θα έκανε ένας αναγνώστης',
+  'Dev only: simulate a reader': 'Μόνο για ανάπτυξη: προσομοίωση αναγνώστη',
+  'Pick a member to simulate their tap...':
+    'Επιλέξτε ένα μέλος για να προσομοιώσετε το πλήσιμό του...',
+  'Simulate a tap': 'Προσομοίωση πλήσιμου',
+  'Simulate tap': 'Προσομοίωση πλήσιμου',
+  '{{name}} (has a card)': '{{name}} (έχει κάρτα)',
+  '{{name}} (no card, uses their QR code)':
+    '{{name}} (χωρίς κάρτα, χρησιμοποιεί QR)',
+  Settings: 'Ρυθμίσεις',
   '← Back to home': '← Επιστροφή στην αρχική',
 };

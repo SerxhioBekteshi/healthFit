@@ -570,7 +570,6 @@ const seedAlpha = async () => {
       closesAt: '23:59',
       timezone: 'Europe/Tirane',
       cardsEnabled: true,
-      lockersEnabled: true,
     },
   });
   await createUser(
@@ -646,6 +645,9 @@ const seedAlpha = async () => {
   );
   await deposit(gym, ana, '2000.00', 'card', -15);
   await visits(gym, ana, anaMembership, [3, 6, 12], [locations[1]]);
+  await prisma.memberCard.create({
+    data: { gymId: gym.id, clientId: ana.id, number: 'ANA-3003' },
+  });
 
   // Currently inside the gym (checked in 40 minutes ago).
   const jon = await createClient(gym, 'alpha', 'Jon Sula', 'jon', {
@@ -685,6 +687,25 @@ const seedAlpha = async () => {
     }
   );
   await visits(gym, mira, miraMembership, [25, 28, 33]);
+  // A lost card (retired) replaced by the current one; the card still works only with an active membership.
+  await prisma.memberCard.createMany({
+    data: [
+      {
+        gymId: gym.id,
+        clientId: mira.id,
+        number: 'MIRA-4000',
+        isActive: false,
+        issuedAt: instant(-80),
+        deactivatedAt: instant(-45),
+      },
+      {
+        gymId: gym.id,
+        clientId: mira.id,
+        number: 'MIRA-4004',
+        issuedAt: instant(-45),
+      },
+    ],
+  });
 
   // Bank transfer waiting for the gym admin to confirm.
   const leo = await createClient(gym, 'alpha', 'Leo Marku', 'leo', {
@@ -696,12 +717,25 @@ const seedAlpha = async () => {
     method: 'bank_transfer',
     pending: true,
   });
+  await prisma.memberCard.create({
+    data: { gymId: gym.id, clientId: leo.id, number: 'LEO-5005' },
+  });
 
   // Deactivated member.
-  await createClient(gym, 'alpha', 'Sara Hoxha', 'sara', {
+  const sara = await createClient(gym, 'alpha', 'Sara Hoxha', 'sara', {
     isActive: false,
     note: 'Deactivated client account',
     gender: 'female',
+  });
+  await prisma.memberCard.create({
+    data: {
+      gymId: gym.id,
+      clientId: sara.id,
+      number: 'SARA-6006',
+      isActive: false,
+      issuedAt: instant(-120),
+      deactivatedAt: instant(-30),
+    },
   });
   await createInvitedClient(gym);
 

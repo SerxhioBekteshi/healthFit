@@ -8,7 +8,6 @@ const settingsQueryKey = ['access-settings'] as const;
 // Until the answer arrives nothing is offered, which is the default for a gym.
 const allOff: AccessSettings = {
   cardsEnabled: false,
-  lockersEnabled: false,
   lockersUseCard: false,
 };
 

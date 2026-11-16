@@ -12,6 +12,7 @@ export * from './gym-closures';
 export * from './gym-locations';
 export * from './gym-subscriptions';
 export * from './gyms';
+export * from './gender-settings';
 export * from './lockers';
 export * from './member-cards';
 export * from './membership-plans';

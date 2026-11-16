@@ -12,7 +12,6 @@ export const accessSettingsService = {
     }
     return {
       cardsEnabled: gym.cardsEnabled,
-      lockersEnabled: gym.lockersEnabled,
       lockersUseCard: gym.lockersUseCard,
     };
   },
@@ -25,7 +24,6 @@ export const accessSettingsService = {
       where: { id: ctx.gymId },
       data: {
         cardsEnabled: input.cardsEnabled,
-        lockersEnabled: input.lockersEnabled,
         lockersUseCard: input.lockersUseCard,
       },
     });

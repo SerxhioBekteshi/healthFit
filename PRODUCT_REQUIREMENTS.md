@@ -147,7 +147,9 @@ Subscription term discounts are the longer terms of the same plan, priced by the
 - Visit-based memberships
 - Personal training memberships
 
-The gym owner configures the standard price list in a Membership > Configuration screen: a table with the weekly frequency across (3x, 4x, 5x, 6x per week) and the term down (1, 3, 6, 12 months), one price per cell, separately for men and women. The saving of the longer terms is shown against the monthly price. The same screen holds extras (for example a daily pass at 1000 ALL, visit packs, personal training), short notes (for example "Subscription at any hour of the day") and uploaded gym photos. The Membership menu has two entries: Members (the list of member memberships) and Configuration.
+The gym owner configures the standard price list in a Membership > Configuration screen: a table with the weekly frequency across (3x, 4x, 5x, 6x per week) and the term down (1, 3, 6, 12 months), one price per cell, separately for men and women (some gyms charge men and women differently, for example men more than women). The saving of the longer terms is shown against the monthly price. The same screen holds extras (for example a daily pass at 1000 ALL, visit packs, personal training), short notes (for example "Subscription at any hour of the day") and uploaded gym photos. The Membership menu has two entries: Members (the list of member memberships) and Configuration.
+
+A gym that charges the same prices for men and women can turn on "Same prices for both" in Settings; saving the price list then updates both at once instead of one gender at a time. A separate "Same lockers for both" setting does the same for the changing-room lockers (see Attendance), so the two can be turned on independently.
 
 Clients see the same price list for their own gender, with the notes and photos, on their Membership page next to their current membership, and tap any price (for example 5x per week for 6 months) to subscribe with credit or card.
 
@@ -225,12 +227,14 @@ At the door the same scan checks a member in, and checks them out when they are 
 
 ### Lockers
 
-The gym owner sets up the changing-room lockers (numbered, for each gym location) and says whether lockers are locked with the member card or with a key or padlock.
+The gym owner sets up the changing-room lockers (numbered, for each gym location, separately for the men's and the women's room) and says whether lockers are locked with the member card or with a key or padlock.
 
-- With a key or padlock the member enters the number of the locker they used (or staff do it at the desk).
+- With a key or padlock the member enters the number of the locker they used themselves, when they go in.
 - With card lockers the locker is taken by tapping the member card, so only the card number is accepted.
 
-A locker belongs to a member until they check out, then it is free again. Staff see which lockers are free or in use and by whom, can take a locker out of service, and cannot remove one that is in use. The member sees their card and the number of their locker on their dashboard while they are in the gym.
+A locker belongs to a member until they check out, then it is free again. Staff see which lockers are free or in use and by whom, can free one early, take a locker out of service, and cannot remove one that is in use; staff do not assign a locker to a member themselves. The member sees their card and the number of their locker on their dashboard while they are in the gym.
+
+If a gym keeps its lockers the same for men and women (see the "Same lockers for both" setting), adding a locker range for one changing room adds the same numbers for the other automatically.
 
 ## 8. Workout Programs
 

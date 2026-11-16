@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form';
 import { FormField, fieldInputClass } from '@/components/common/FormField';
 import { Drawer } from '@/components/ui/Drawer';
 import { t } from '@/i18n';
+import { genderLabels, genders } from '@/utils/constants/labels';
 import type { GymLocation } from '@gym/shared/types';
 import {
   lockerRangeSchema,
@@ -15,6 +16,10 @@ interface LockerRangeDrawerProps {
   locations: GymLocation[];
   // Location selected on the page; the drawer starts with it.
   locationId: string;
+  // Gender selected on the page; the drawer starts with it.
+  gender: LockerRangeValues['gender'];
+  // When on, one range is mirrored to both genders, so the gender field is hidden.
+  sameForBothGenders: boolean;
   isPending: boolean;
   serverError: string | null;
   onSubmit: (values: LockerRangeValues) => Promise<void>;
@@ -25,6 +30,8 @@ export const LockerRangeDrawer: React.FC<LockerRangeDrawerProps> = ({
   isOpen,
   locations,
   locationId,
+  gender,
+  sameForBothGenders,
   isPending,
   serverError,
   onSubmit,
@@ -38,16 +45,22 @@ export const LockerRangeDrawer: React.FC<LockerRangeDrawerProps> = ({
   } = useForm<LockerRangeValues>({ resolver: zodResolver(lockerRangeSchema) });
 
   useEffect(() => {
-    if (isOpen) reset({ locationId, prefix: '', from: 1, to: 20 });
-  }, [isOpen, locationId, reset]);
+    if (isOpen) reset({ locationId, gender, prefix: '', from: 1, to: 20 });
+  }, [isOpen, locationId, gender, reset]);
 
   return (
     <Drawer
       isOpen={isOpen}
       title={t('Add Lockers')}
-      description={t(
-        'Add a row of numbered lockers, for example 1 to 60. Numbers that already exist are kept.'
-      )}
+      description={
+        sameForBothGenders
+          ? t(
+              "Added to both the men's and the women's changing room, since your gym keeps them the same."
+            )
+          : t(
+              'Add a row of numbered lockers, for example 1 to 60. Numbers that already exist are kept.'
+            )
+      }
       onClose={onClose}
       onSubmitClick={handleSubmit(onSubmit)}
       submitLabel={t('Add lockers')}
@@ -77,16 +90,43 @@ export const LockerRangeDrawer: React.FC<LockerRangeDrawerProps> = ({
           <input type="hidden" {...register('locationId')} />
         )}
 
+        {sameForBothGenders ? (
+          <input type="hidden" {...register('gender')} />
+        ) : (
+          <FormField
+            id="lockerGender"
+            label={t('Changing room')}
+            error={errors.gender?.message}
+          >
+            <select
+              id="lockerGender"
+              className={fieldInputClass}
+              {...register('gender')}
+            >
+              {genders.map((value) => (
+                <option key={value} value={value}>
+                  {genderLabels[value]}
+                </option>
+              ))}
+            </select>
+          </FormField>
+        )}
+
         <FormField
           id="lockerPrefix"
           label={t('Prefix (optional)')}
           error={errors.prefix?.message}
-          hint={t('For example M for M1, M2 in the men changing room.')}
+          hint={
+            sameForBothGenders
+              ? t('Not used when lockers are the same for men and women.')
+              : t('For example M for M1, M2 in the men changing room.')
+          }
         >
           <input
             id="lockerPrefix"
             maxLength={4}
-            className={`${fieldInputClass} uppercase`}
+            disabled={sameForBothGenders}
+            className={`${fieldInputClass} uppercase disabled:cursor-not-allowed disabled:opacity-50`}
             {...register('prefix')}
           />
         </FormField>

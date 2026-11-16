@@ -5,8 +5,10 @@ import { createTenantDb } from '@/tenant/scopedDb';
 import { accessSettingsService } from '@/services/access-settings';
 import { attendanceService } from '@/services/attendance';
 import { dashboardService } from '@/services/dashboard';
+import { genderSettingsService } from '@/services/gender-settings';
 import { lockerService } from '@/services/lockers';
 import { memberCardService } from '@/services/member-cards';
+import { membershipPlanService } from '@/services/membership-plans';
 import {
   ConflictError,
   ForbiddenError,
@@ -55,9 +57,17 @@ const clientContext = (id: string, clientId: string): TenantContext => ({
 
 const admin = (): TenantContext => adminContext(gymId);
 
-const makeMember = async (name: string): Promise<string> => {
+const makeMember = async (
+  name: string,
+  gender: 'male' | 'female' | null = null
+): Promise<string> => {
   const client = await prisma.client.create({
-    data: { gymId, fullName: name, email: `${name.toLowerCase()}@test.dev` },
+    data: {
+      gymId,
+      fullName: name,
+      email: `${name.toLowerCase()}@test.dev`,
+      gender: gender ?? undefined,
+    },
   });
   const plan = await prisma.membershipPlan.create({
     data: {
@@ -107,12 +117,12 @@ beforeEach(async () => {
   };
   gymId = (
     await prisma.gym.create({
-      data: { name: 'A', cardsEnabled: true, lockersEnabled: true, ...gymData },
+      data: { name: 'A', cardsEnabled: true, ...gymData },
     })
   ).id;
   otherGymId = (
     await prisma.gym.create({
-      data: { name: 'B', cardsEnabled: true, lockersEnabled: true, ...gymData },
+      data: { name: 'B', cardsEnabled: true, ...gymData },
     })
   ).id;
   locationId = (
@@ -130,8 +140,13 @@ afterAll(async () => {
 const issue = (clientId: string, number: string) =>
   memberCardService.issue(admin(), { clientId, number });
 
-const addLockers = (from = 1, to = 3, prefix = '') =>
-  lockerService.createRange(admin(), { locationId, prefix, from, to });
+const addLockers = (
+  from = 1,
+  to = 3,
+  prefix = '',
+  gender: 'male' | 'female' = 'male'
+) =>
+  lockerService.createRange(admin(), { locationId, gender, prefix, from, to });
 
 describe('memberCardService', () => {
   it('stores the number in upper case and replaces the active card', async () => {
@@ -170,7 +185,6 @@ describe('memberCardService', () => {
 
     await accessSettingsService.update(admin(), {
       cardsEnabled: false,
-      lockersEnabled: true,
       lockersUseCard: false,
     });
     await expect(issue(bobId, 'XY-99')).rejects.toBeInstanceOf(ValidationError);
@@ -341,7 +355,6 @@ describe('lockerService', () => {
     await issue(anaId, 'AB-12');
     await accessSettingsService.update(admin(), {
       cardsEnabled: true,
-      lockersEnabled: true,
       lockersUseCard: true,
     });
     await expect(
@@ -368,11 +381,110 @@ describe('lockerService', () => {
 });
 
 describe('accessSettingsService', () => {
-  it('only allows card lockers when cards and lockers are both on', async () => {
+  it('only needs cards turned on for card lockers', async () => {
     expect(await accessSettingsService.get(admin())).toEqual({
       cardsEnabled: true,
-      lockersEnabled: true,
       lockersUseCard: false,
     });
+  });
+});
+
+describe('gender-separated lockers', () => {
+  it("keeps a men's and a women's locker with the same number apart", async () => {
+    await addLockers(1, 2, '', 'male');
+    await addLockers(1, 2, '', 'female');
+    const anaFemale = await makeMember('AnaF', 'female');
+    const bobMale = await makeMember('BobM', 'male');
+    await attendanceService.checkIn(admin(), anaFemale, NOW);
+    await attendanceService.checkIn(admin(), bobMale, NOW);
+
+    const herLocker = await lockerService.assign(
+      admin(),
+      { lockerNumber: '1', code: anaFemale },
+      NOW
+    );
+    const hisLocker = await lockerService.assign(
+      admin(),
+      { lockerNumber: '1', code: bobMale },
+      NOW
+    );
+    expect(herLocker.lockerNumber).toBe('1');
+    expect(hisLocker.lockerNumber).toBe('1');
+
+    const listed = await lockerService.list(admin(), undefined, NOW);
+    expect(listed.filter((locker) => locker.number === '1')).toHaveLength(2);
+  });
+
+  it('asks to set the gender first when a number is ambiguous', async () => {
+    await addLockers(1, 1, '', 'male');
+    await addLockers(1, 1, '', 'female');
+    const noGender = await makeMember('NoGender');
+    await attendanceService.checkIn(admin(), noGender, NOW);
+    await expect(
+      lockerService.assign(admin(), { lockerNumber: '1', code: noGender }, NOW)
+    ).rejects.toThrow(/set this member's gender/);
+  });
+});
+
+describe('genderSettingsService', () => {
+  it('mirrors a new locker range to both genders when turned on', async () => {
+    await genderSettingsService.update(admin(), {
+      samePricesForGenders: false,
+      sameLockersForGenders: true,
+    });
+    const created = await addLockers(1, 2, 'M', 'male');
+    expect(created.filter((locker) => locker.gender === 'male')).toHaveLength(
+      2
+    );
+    expect(created.filter((locker) => locker.gender === 'female')).toHaveLength(
+      2
+    );
+
+    // Prices are a separate setting and stay off.
+    await membershipPlanService.savePriceGrid(admin(), {
+      gender: 'male',
+      cells: [{ weeklyVisits: 4, type: 'monthly', price: 4500 }],
+    });
+    const plans = await membershipPlanService.list(admin());
+    expect(
+      plans.find((plan) => plan.gender === 'female' && plan.weeklyVisits === 4)
+    ).toBeUndefined();
+  });
+
+  it('mirrors the standard price grid to both genders when turned on', async () => {
+    await genderSettingsService.update(admin(), {
+      samePricesForGenders: true,
+      sameLockersForGenders: false,
+    });
+    await membershipPlanService.savePriceGrid(admin(), {
+      gender: 'male',
+      cells: [{ weeklyVisits: 4, type: 'monthly', price: 4500 }],
+    });
+    const plans = await membershipPlanService.list(admin());
+    const men = plans.find(
+      (plan) => plan.gender === 'male' && plan.weeklyVisits === 4
+    );
+    const women = plans.find(
+      (plan) => plan.gender === 'female' && plan.weeklyVisits === 4
+    );
+    expect(men?.price).toBe(4500);
+    expect(women?.price).toBe(4500);
+
+    // Lockers are a separate setting and stay off.
+    const created = await addLockers(1, 2, 'M', 'male');
+    expect(created.filter((locker) => locker.gender === 'female')).toHaveLength(
+      0
+    );
+  });
+
+  it('keeps prices separate per gender when turned off', async () => {
+    await membershipPlanService.savePriceGrid(admin(), {
+      gender: 'male',
+      cells: [{ weeklyVisits: 4, type: 'monthly', price: 5000 }],
+    });
+    const plans = await membershipPlanService.list(admin());
+    expect(
+      plans.find((plan) => plan.gender === 'female' && plan.weeklyVisits === 4)
+    ).toBeUndefined();
   });
 });

@@ -45,7 +45,6 @@ export const ClientDashboardPage: React.FC = () => {
             : t('Welcome.')
         }
         accent={t('Let’s train')}
-        description={t('Your membership, balance and gym activity.')}
       />
 
       {isLoading ? (

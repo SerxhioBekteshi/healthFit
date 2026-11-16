@@ -21,6 +21,8 @@ interface TableProps<T> {
   searchPlaceholder?: string;
   // Extra controls beside the search box, such as a status filter.
   toolbar?: React.ReactNode;
+  // The primary action (for example an "Add" button), always last in the toolbar.
+  action?: React.ReactNode;
   // The footer with the range and page buttons. Page size and sizes come from useTableController.
   pagination?: boolean;
   // Rows-per-page selector in the footer.
@@ -108,6 +110,7 @@ export function Table<T>({
   emptyHint,
   searchPlaceholder,
   toolbar,
+  action,
   pagination = true,
   pageSizeSelector = true,
   fillHeight = true,
@@ -129,14 +132,13 @@ export function Table<T>({
 
   return (
     <>
-      {controller.isSearchable || toolbar ? (
+      {controller.isSearchable || toolbar || action ? (
         <TableToolbar
           searchable={controller.isSearchable}
           search={controller.search}
           onSearchChange={controller.setSearch}
           placeholder={searchPlaceholder}
-          shown={controller.total}
-          all={controller.all}
+          action={action}
         >
           {toolbar}
         </TableToolbar>
@@ -181,7 +183,7 @@ export function Table<T>({
               <div className="hidden min-h-0 flex-1 overflow-auto md:block">
                 <table className="min-w-full text-sm">
                   <thead>
-                    <tr className="text-left text-xs font-medium text-bone/50">
+                    <tr className="text-left text-xs font-semibold uppercase tracking-wide text-bone/70">
                       {columns.map((column) => (
                         <th
                           key={column.key}

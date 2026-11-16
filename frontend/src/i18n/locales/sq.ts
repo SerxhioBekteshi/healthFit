@@ -1,6 +1,7 @@
 // Albanian. Keys are the English texts used in the app; every key must be translated (npm run i18n:check).
 export const sq: Record<string, string> = {
   '& revenue': '& të ardhurat',
+  '& lockers': '& dollapë',
   '(tap to fill it in).': '(trokit për ta plotësuar).',
   '+ Add frequency': '+ Shto frekuencë',
   '+1 visit vs last week': '+1 vizitë krahasuar me javën e kaluar',
@@ -8,7 +9,6 @@ export const sq: Record<string, string> = {
   '1 day': '1 ditë',
   '1 day left': '1 ditë e mbetur',
   '1 month': '1 muaj',
-  '1 row': '1 rresht',
   '1 visit': '1 vizitë',
   '12 months': '12 muaj',
   '3 Months': '3 muaj',
@@ -998,8 +998,6 @@ export const sq: Record<string, string> = {
     'Palestra jote nuk e ka vendosur ende gjininë tënde. Kërkoji të përditësojë profilin tënd.',
   'Your membership works at every gym below. Train wherever suits you; the gym records the visit when you check in.':
     'Anëtarësia jote vlen në çdo palestër më poshtë. Stërvitu ku të të përshtatet; palestra e regjistron vizitën kur kryen hyrjen.',
-  'Your membership, balance and gym activity.':
-    'Anëtarësia, bilanci dhe aktiviteti yt në palestër.',
   'Your memberships': 'Anëtarësitë e tua',
   'Your session has expired. Please login again.':
     'Sesioni yt ka skaduar. Hyr përsëri.',
@@ -1071,14 +1069,12 @@ export const sq: Record<string, string> = {
   '{{n}} per day': '{{n}} në ditë',
   '{{n}} per week': '{{n}} në javë',
   '{{n}} product(s) running low': '{{n}} produkte po mbarojnë',
-  '{{n}} rows': '{{n}} rreshta',
   '{{n}} sessions / week': '{{n}} seanca / javë',
   '{{n}} this month': '{{n}} këtë muaj',
   '{{n}} visits': '{{n}} vizita',
   '{{n}}s rest': '{{n}}s pushim',
   '{{n}}x per week': '{{n}}x në javë',
   '{{pastDue}} gym(s) past due': '{{pastDue}} palestra me vonesë',
-  '{{shown}} of {{all}}': '{{shown}} nga {{all}}',
   '{{stock}} in stock': '{{stock}} në stok',
   '{{term}}, {{frequency}}, price in {{currency}}':
     '{{term}}, {{frequency}}, çmimi në {{currency}}',
@@ -1179,7 +1175,6 @@ export const sq: Record<string, string> = {
     'Anëtarët paguajnë online me Visa ose Mastercard, dhe stafi mund të marrë kartë në sportel.',
   'Paying from the balance is not accepted by this gym.':
     'Pagesa nga bilanci nuk pranohet nga kjo palestër.',
-  'Payment settings': 'Cilësimet e pagesave',
   'Payment settings saved.': 'Cilësimet e pagesave u ruajtën.',
   'Staff take cash at the counter. Shakes and smoothies are cash only, so they cannot be sold without it.':
     'Stafi merr para në dorë në sportel. Shejket dhe smoothie-t janë vetëm me para në dorë, ndaj nuk shiten pa to.',
@@ -1266,7 +1261,6 @@ export const sq: Record<string, string> = {
   'Valid {{from}} to {{to}}': 'E vlefshme nga {{from}} deri më {{to}}',
   'A locker in use cannot be removed.':
     'Një dollap në përdorim nuk mund të hiqet.',
-  'Access settings': 'Cilësimet e hyrjes',
   'Access settings saved.': 'Cilësimet e hyrjes u ruajtën.',
   'Add Lockers': 'Shto dollapë',
   'Add a row of numbered lockers, for example 1 to 60. Numbers that already exist are kept.':
@@ -1295,10 +1289,7 @@ export const sq: Record<string, string> = {
   'Checked out': 'Doli',
   'Checked out at {{time}}': 'Doli në {{time}}',
   'Checked out at {{time}} - locker {{locker}} is free':
-    'Doli në {{time}} - dollapi {{locker}} është i lërë',
-  'Choose how members get in and keep their things.':
-    'Zgjidh si hyjnë anëtarët dhe ku i mbajnë gjërat.',
-  'Could not give the locker.': 'Dollapi nuk mund të jepej.',
+    'Doli në {{time}} - dollapi {{locker}} është i lirë',
   'Each member can get a card that is tapped at the door to check in and out. A member has one active card at a time.':
     'Çdo anëtar mund të ketë një kartë që e afron te dera për të hyrë e dalë. Një anëtar ka vetëm një kartë aktive në të njëjtën kohë.',
   'Enter the first locker number.': 'Shkruaj numrin e dollapit të parë.',
@@ -1306,27 +1297,20 @@ export const sq: Record<string, string> = {
   'Enter the locker number.': 'Shkruaj numrin e dollapit.',
   'Enter the member code or card number.':
     'Shkruaj kodin e anëtarit ose numrin e kartës.',
-  'For a member who is inside: enter their code and the locker number.':
-    'Për një anëtar që është brenda: shkruaj kodin e tij dhe numrin e dollapit.',
   'For example M for M1, M2 in the men changing room.':
     'P.sh. M për M1, M2 te dhoma e zhveshjes së meshkujve.',
-  Free: 'I lërë',
+  Free: 'I lirë',
   'Free my locker': 'Liro dollapin tim',
   'From number': 'Nga numri',
-  'Give a locker': 'Jep një dollap',
-  'Give locker': 'Jep dollapin',
   'Gym location not found.': 'Vendndodhja e palestrës nuk u gjet.',
   'In use': 'Në përdorim',
   'Issue Card': 'Lësho kartë',
   'Issue a card to a member so they can tap in.':
     'Lësho një kartë për një anëtar që të mund të hyjë.',
   'Issue card': 'Lësho kartën',
-  'Issue cards on the Cards page and add lockers on the Lockers page.':
-    'Lësho kartat te faqja Kartat dhe shto dollapët te faqja Dollapët.',
   Issued: 'Lëshuar',
   'Lock a locker with your card and its number shows here.':
     'Mbylle një dollap me kartën tënde dhe numri i tij shfaqet këtu.',
-  'Lock lockers with the card': 'Mbyll dollapët me kartë',
   Locker: 'Dollapi',
   'Locker freed.': 'Dollapi u lirua.',
   'Locker not found.': 'Dollapi nuk u gjet.',
@@ -1341,25 +1325,13 @@ export const sq: Record<string, string> = {
   'Locker {{number}}': 'Dollapi {{number}}',
   Lockers: 'Dollapët',
   'Lockers added.': 'Dollapët u shtuan.',
-  'Lockers are locked with a key or padlock.':
-    'Dollapët mbyllen me çelës ose dryn.',
-  'Lockers are locked with the member card.':
-    'Dollapët mbyllen me kartën e anëtarit.',
-  'Lockers are not used at this gym.': 'Kjo palestrër nuk përdor dollapë.',
-  'Lockers are turned off, so members cannot take one.':
-    'Dollapët janë të fikur, ndaj anëtarët nuk mund të marrin asnjë.',
   'Lockers here are locked with a card: scan the member card.':
     'Dollapët këtu mbyllen me kartë: skano kartën e anëtarit.',
   'Lockers here are locked with your card. Tap it at the locker.':
     'Dollapët këtu mbyllen me kartën tënde. Afroje te dollapi.',
-  'Locking lockers with a card needs cards and lockers turned on.':
-    'Mbyllja e dollapëve me kartë kërkon kartat dhe dollapët të ndezur.',
   'Member cards': 'Kartat e anëtarëve',
   'Member cards are not used at this gym.': 'Kjo palestrër nuk përdor karta.',
   'Member cards are turned off.': 'Kartat e anëtarëve janë të fikura.',
-  'Member code or card': 'Kodi i anëtarit ose karta',
-  'Members can leave their things in a locker during a visit. A locker is free again when the member checks out.':
-    'Anëtarët mund t’i lënë gjërat në një dollap gjatë vizitës. Dollapi bëhet përsëri i lërë kur anëtari del.',
   'My card': 'Karta ime',
   'My locker': 'Dollapi im',
   'No card yet': 'Ende pa kartë',
@@ -1367,7 +1339,8 @@ export const sq: Record<string, string> = {
   'No locker is in use.': 'Asnjë dollap nuk është në përdorim.',
   'No lockers yet': 'Ende pa dollapë',
   'None yet': 'Ende asnjë',
-  'Open access settings': 'Hap cilësimet e hyrjes',
+  'Not used when lockers are the same for men and women.':
+    'Nuk përdoret kur dollapët janë të njëjtë për burra dhe gra.',
   'Out of service': 'Jashtë shërbimit',
   'Prefix (optional)': 'Parashtesa (opsionale)',
   'Remove locker': 'Hiq dollapin',
@@ -1387,8 +1360,6 @@ export const sq: Record<string, string> = {
     'Afro kartën ose ngjit kodin e anëtarit',
   'Tap the card on the reader or type its number. The member can check in and out with it.':
     'Afro kartën te lexuesi ose shkruaj numrin. Anëtari mund të hyjë e dalë me të.',
-  'Tap the member card, then enter the locker it locks.':
-    'Afro kartën e anëtarit, pastaj shkruaj dollapin që mbyll.',
   'That card number is already in use.':
     'Ky numër karte është përdorur tashmë.',
   'That locker is already in use.': 'Ky dollap është tashmë në përdorim.',
@@ -1402,8 +1373,6 @@ export const sq: Record<string, string> = {
   'The last number must be the same or after the first.':
     'Numri i fundit duhet të jetë i njëjtë ose pas të parit.',
   'The locker is deleted from the list.': 'Dollapi fshihet nga lista.',
-  'The locker is locked and opened with the member card, so the card number is sent when a locker is taken. Turn it off for lockers with a key or padlock, where the member notes the locker number.':
-    'Dollapi mbyllet e hapet me kartën e anëtarit, ndaj numri i kartës dërgohet kur merret një dollap. Fike për dollapë me çelës ose dryn, ku anëtari shënon numrin e dollapit.',
   'The member is not checked in.': 'Anëtari nuk ka hyrë.',
   'The prefix can only have letters and numbers.':
     'Parashtesa mund të ketë vetëm shkronja dhe numra.',
@@ -1420,10 +1389,53 @@ export const sq: Record<string, string> = {
   'Which locker are you using?': 'Cilin dollap po përdor?',
   'You are checked in': 'Ke hyrë',
   'You are checked out.': 'Ke dalë.',
-  '{{name}} has locker {{locker}}.': '{{name}} ka dollapin {{locker}}.',
   '{{name}} since {{time}}': '{{name}} që nga {{time}}',
   '{{used}} of {{total}} lockers in use':
     '{{used}} nga {{total}} dollapë në përdorim',
   '{{visits}}, {{valid}}': '{{visits}}, {{valid}}',
+  "Added to both the men's and the women's changing room, since your gym keeps them the same.":
+    'Shtohet në dhomën e zhveshjes së burrave dhe të grave, pasi palestra jote i mban të njëjta.',
+  'Adding lockers for one changing room adds the same numbers for the other automatically.':
+    'Shtimi i dollapëve për një dhomë zhveshjeje shton automatikisht të njëjtët numra edhe për tjetrën.',
+  'Both changing rooms': 'Të dyja dhomat e zhveshjes',
+  'Changing room': 'Dhoma e zhveshjes',
+  'Choose how members get in and lock their lockers.':
+    'Zgjidh si hyjnë anëtarët dhe si i mbyllin dollapët e tyre.',
+  'Fill the cells you sell. Saved prices apply to both men and women, since your gym keeps them the same.':
+    'Plotëso qelitët që shet. Çmimet e ruajtura vlejnë për burra dhe gra, pasi palestra jote i mban të njëjta.',
+  'Lock lockers with a card': 'Mbyll dollapët me kartë',
+  'Locking lockers with a card needs member cards turned on.':
+    'Mbyllja me kartë kërkon që kartat e anëtarëve të jenë të ndezura.',
+  'Men and women': 'Burra dhe gra',
+  Release: 'Liro',
+  'Same lockers for both': 'Dollapë të njëjtë për të dy gjinitë',
+  'Same prices for both': 'Çmime të njëjta për të dy gjinitë',
+  'Settings saved.': 'Cilësimet u ruajtën.',
+  'Some gyms price men and women differently, or have a different number of lockers for each.':
+    'Disa palestra kanë çmime të ndryshme për burra dhe gra, ose një numër të ndryshëm dollapësh për secilin.',
+  'Standard membership prices are shared between men and women instead of set separately.':
+    'Çmimet standarde ndahen mes burrave dhe grave, në vend që të caktohen veç e veç.',
+  'The locker is locked and opened with the member card, so the card number is sent when a locker is taken. Turn it off for lockers with a key or padlock, where the member notes the locker number themselves.':
+    'Dollapi mbyllet e hapet me kartën e anëtarit, ndaj numri i kartës dërgohet kur merret një dollap. Fike për dollapë me çelës ose dryn, ku anëtari shënon vetë numrin e dollapit.',
+  "This gym has separate lockers for men and women; set this member's gender first.":
+    'Kjo palestrër ka dollapë të ndërë për burra dhe gra; cakto së pari gjininë e këtij anëtari.',
+  Access: 'Hyrja',
+  'Member cards for the door, and the lockers of your changing room.':
+    'Kartat e anëtarëve për derën, dhe dollapët e dhomës së zhveshjes.',
+  'Open settings': 'Hap cilësimet',
+  'Payment and access settings for your gym.':
+    'Cilësimet e pagesës dhe të hyrjes për palestrën tënde.',
+  Section: 'Seksioni',
+  'Dev only: fill a test number, as a reader would type it':
+    'Vetëm për zhvillim: plotëson një numër prove, siç do ta shkruante një lexues',
+  'Dev only: simulate a reader': 'Vetëm për zhvillim: simulo një lexues',
+  'Pick a member to simulate their tap...':
+    'Zgjidh një anëtar për të simuluar prekjen e tij...',
+  'Simulate a tap': 'Simulo një prekje',
+  'Simulate tap': 'Simulo prekjen',
+  '{{name}} (has a card)': '{{name}} (ka një kartë)',
+  '{{name}} (no card, uses their QR code)':
+    '{{name}} (pa kartë, përdor kodin QR)',
+  Settings: 'Cilësimet',
   '← Back to home': '← Kthehu te ballina',
 };

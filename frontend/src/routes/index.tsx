@@ -128,31 +128,17 @@ export const router = createBrowserRouter([
             ),
           },
           {
-            path: '/payment-settings',
+            path: '/settings',
             ...page(
-              () => import('@/views/gym/payment-settings/PaymentSettingsPage'),
-              'PaymentSettingsPage'
+              () => import('@/views/gym/settings/SettingsPage'),
+              'SettingsPage'
             ),
           },
           {
-            path: '/access-settings',
+            path: '/cards-lockers',
             ...page(
-              () => import('@/views/gym/access-settings/AccessSettingsPage'),
-              'AccessSettingsPage'
-            ),
-          },
-          {
-            path: '/member-cards',
-            ...page(
-              () => import('@/views/gym/member-cards/MemberCardsPage'),
-              'MemberCardsPage'
-            ),
-          },
-          {
-            path: '/lockers',
-            ...page(
-              () => import('@/views/gym/lockers/LockersPage'),
-              'LockersPage'
+              () => import('@/views/gym/cards-lockers/CardsLockersPage'),
+              'CardsLockersPage'
             ),
           },
           {
