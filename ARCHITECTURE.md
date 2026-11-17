@@ -31,7 +31,7 @@ React UI -> frontend/src/hooks/<domain> (React Query)
          -> Prisma -> PostgreSQL
 ```
 
-The REST API is the only server surface. Mobile calls the same `/api/v1` endpoints (contract: `mobile/API_CONTRACT.md`).
+The REST API is the only server surface. The mobile member app (`mobile/`, Expo + React Native, clients only) calls the same `/api/v1` endpoints with a bearer token (contract: `mobile/API_CONTRACT.md`).
 
 ## Folder structure
 
@@ -61,7 +61,7 @@ frontend/
 shared/
   src/types/<domain>/index.ts + barrel index.ts
   src/validation/<domain>/index.ts
-mobile/                   README.md, API_CONTRACT.md (app not scaffolded)
+mobile/                   Expo (React Native) member app: src/app (screens), components/ui, hooks, services; GUIDE.md, API_CONTRACT.md. Not an npm workspace (own node_modules, Node 22)
 docker-compose.yml        Postgres
 ```
 
@@ -143,8 +143,8 @@ Better Auth with the Prisma adapter and email/password (no self sign-up). The se
 ## Languages and currency
 
 - A gym has a `country` (`AL`, `GB`, `IT`, `DE`, `GR`; super admin sets it in the gym form, a sign-up request carries it). The country decides the starting language of its admins and members (Albanian, English, Italian, German, Greek, `utils/constants/countries`) and, once, the gym's currency. `Gym.currency` (`ALL`, `EUR`, `GBP`) is stored: the server derives it from the country when the gym is created or its country changes (`COUNTRY_CURRENCIES` in `shared`, applied by `gymService`), also for approved sign-ups, and it never follows a user's language: a German gym pays in EUR even when a member reads the app in English. The country (and so the currency) is locked (`Gym.countryLocked`) once the gym has any plan, product, membership, balance transaction, sale or platform subscription/payment, because amounts are never converted. `GET /me` returns `gymCountry` and `gymCurrency`; `hooks/session` applies the stored currency and the country's language when the session loads. A user can switch language with `components/common/LanguageSwitcher` (kept on the device); the choice wins over the country but not over the currency. Payment providers receive the gym currency in `PaymentIntent.currency`. The platform owner sees gyms of several currencies: subscription and payment rows carry `currency`, and platform totals are grouped per currency (`MoneyTotal[]`, `formatMoneyTotals`), never summed across currencies.
-- `frontend/src/i18n`: the English text is the key (`t('Create client')`), so English needs no dictionary and a missing translation shows English. Dictionaries are flat `locales/{sq,it,de,el}.ts` maps. `t()` translates now; `msg()` marks text declared at module level (constants, option lists) and `translated({...})` builds label maps, both translated where shown. A language or currency change remounts the app (`providers/I18nProvider`), so plain `t()` calls are enough. Dates and numbers use the current locale through `utils/format`.
-- API and shared validation messages stay English in the backend and `shared/`; `FormField` and the API client translate the known ones. `npm run i18n:check` lists every text (`t()`, `msg()`, mutation `meta.success`, shared validation messages, thrown API errors) and fails when a language misses one; `-- --prune` removes unused entries.
+- `frontend/src/i18n` and `mobile/src/i18n`: the English text is the key (`t('Create client')`), so English needs no dictionary and a missing translation shows English. The dictionaries are flat `sq/it/de/el` maps kept once in `shared/src/i18n/<language>/index.ts` and used by both apps. `t()` translates now; `msg()` marks text declared at module level (constants, option lists) and `translated({...})` builds label maps, both translated where shown. On the web a language or currency change remounts the app (`providers/I18nProvider`), so plain `t()` calls are enough; the mobile app redraws the components that call `useTranslation()`. Dates and numbers use the current locale through `utils/format`.
+- API and shared validation messages stay English in the backend and `shared/`; `FormField` (web), `FormTextField` (mobile) and the API clients translate the known ones. `npm run i18n:check` lists every text of both apps (`t()`, `msg()`, mutation `meta.success`, shared validation messages, thrown API errors) and fails when a language misses one; `-- --prune` removes unused entries.
 - The public landing page is English only and does not use `t()`.
 
 ## Frontend feedback

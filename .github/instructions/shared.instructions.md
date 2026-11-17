@@ -7,7 +7,8 @@ applyTo: 'shared/src/**'
 
 `@gym/shared` is the single source of truth for request schemas and entity types. It ships raw TypeScript (no build step); the backend bundles it with tsup, Vite compiles it for the frontend.
 
-- Layout: `src/types/<domain>/index.ts` (re-exported from `src/types/index.ts`) and `src/validation/<domain>/index.ts`. Same kebab-case plural domain name as the backend and frontend.
+- Layout: `src/types/<domain>/index.ts` (re-exported from `src/types/index.ts`), `src/validation/<domain>/index.ts` and `src/i18n/<language>/index.ts`. Same kebab-case plural domain name as the backend and frontend.
+- The translation dictionaries (`@gym/shared/i18n/sq|it|de|el`) are flat `English text -> translation` maps shared by the web and mobile apps; add a text once there and `npm run i18n:check` covers both apps.
 - Consumers import `@gym/shared/types`, `@gym/shared/types/<domain>` and `@gym/shared/validation/<domain>`. Exports are declared in `shared/package.json`; add an entry there only for a new kind of module.
 - Pure and runtime-neutral: only `zod`. No Prisma, Node, DOM, React or env access.
 - `Gender` (`male` | `female`) lives in `types/clients` and `genderSchema` in `validation/common`; clients and membership plans both use them. Plan terms and weekly frequency live on `MembershipPlan` (`type`, `weeklyVisits`, `gender`); the price table request is `priceGridSchema` in `validation/membership-plans`. Price list notes and photos are the `price-lists` domain (`types/price-lists`, `validation/price-lists`). Limited-time plan prices are the `price-offers` domain (`PriceOffer`, `PlanOffer`, `priceOfferFormSchema`).

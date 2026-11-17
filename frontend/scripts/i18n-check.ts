@@ -1,13 +1,14 @@
-// Lists every English text the web app can show and checks that each language translates it.
+// Lists every English text the web and mobile apps can show and checks that each language translates it.
+// The dictionaries live once in shared/src/i18n and are used by both apps.
 //   npm run i18n:check -w frontend            report missing translations (exit 1 if any)
 //   npm run i18n:check -w frontend -- --keys  print all keys as JSON
 //   npm run i18n:check -w frontend -- --write <file>  save all keys as UTF-8 JSON
 import { readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
 import { join, relative, resolve } from 'node:path';
-import { de } from '../src/i18n/locales/de';
-import { el } from '../src/i18n/locales/el';
-import { it } from '../src/i18n/locales/it';
-import { sq } from '../src/i18n/locales/sq';
+import { de } from '@gym/shared/i18n/de';
+import { el } from '@gym/shared/i18n/el';
+import { it } from '@gym/shared/i18n/it';
+import { sq } from '@gym/shared/i18n/sq';
 
 const root = resolve(import.meta.dirname, '..', '..');
 
@@ -49,13 +50,14 @@ const sourceFiles = (dir: string, skip: string[] = []): string[] =>
   );
 
 // Texts marked in the web app: t('...'), msg('...') and the success text of a mutation.
-const frontend = collect(
-  sourceFiles(join('frontend', 'src'), [join('i18n', 'locales')]),
-  [
-    new RegExp(String.raw`(?<![\w.])(?:t|msg)\(\s*${STRING}`, 'g'),
-    new RegExp(String.raw`meta:\s*\{\s*success:\s*${STRING}`, 'g'),
-  ]
-);
+const marked = [
+  new RegExp(String.raw`(?<![\w.])(?:t|msg)\(\s*${STRING}`, 'g'),
+  new RegExp(String.raw`meta:\s*\{\s*success:\s*${STRING}`, 'g'),
+];
+const frontend = collect(sourceFiles(join('frontend', 'src')), marked);
+
+// The mobile app marks its texts the same way.
+const mobile = collect(sourceFiles(join('mobile', 'src')), marked);
 
 // Validation messages of the shared schemas, shown through FormField.
 const looksLikeMessage = (text: string): boolean =>
@@ -77,7 +79,7 @@ const backend = collect(sourceFiles(join('backend', 'src')), [
   new RegExp(String.raw`message = ${STRING}`, 'g'),
 ]);
 
-const keys = [...new Set([...frontend, ...shared, ...backend])]
+const keys = [...new Set([...frontend, ...mobile, ...shared, ...backend])]
   .filter((text) => text.trim() !== '')
   .sort();
 
@@ -125,7 +127,7 @@ if (process.argv.includes('--prune')) {
       .map(([key, value]) => `  ${quote(key)}: ${quote(value)},`)
       .join('\n');
     writeFileSync(
-      join(root, 'frontend', 'src', 'i18n', 'locales', `${code}.ts`),
+      join(root, 'shared', 'src', 'i18n', code, 'index.ts'),
       `// ${languageNames[code]}. Keys are the English texts used in the app; every key must be translated (npm run i18n:check).\nexport const ${code}: Record<string, string> = {\n${body}\n};\n`,
       'utf8'
     );

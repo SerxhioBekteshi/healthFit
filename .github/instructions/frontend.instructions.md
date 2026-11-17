@@ -48,7 +48,7 @@ src/
 
 ## Services, Hooks, State
 
-- Fetchers use `apiClient` from `@/services/api` (base URL from `VITE_API_BASE_URL`, empty in dev, `credentials: 'include'`). They never contain business rules.
+- Fetchers use `apiClient` from `@/services/api` (an axios instance; base URL from `VITE_API_BASE_URL`, empty in dev, `withCredentials: true`). They never contain business rules.
 - React Query hooks return `{ data, isLoading, error, ... }` and invalidate related keys after mutations.
 - Every `useMutation` sets `meta: { success: 'Short message.' }`. `providers/QueryProvider` turns that into a success toast and turns every mutation or initial-load query error into an error toast (`components/ui/Toaster`, store in `utils/toast`; `toast.success/error` for the rare call outside a mutation). Use `meta: { silent: true }` only for background checks such as the session query. Do not add a page-level success banner for something the toast already says; keep inline errors inside forms and drawers.
 - Long histories (balance transactions, attendance, membership history) use `useInfiniteQuery` and return a `pagination` object (`hasMore`, `isLoadingMore`, `loadMoreFailed`, `onLoadMore`). Render the rows in a scrolling container with `components/ui/LoadMore` after the list (pass `itemCount`); never load the full history into one page. Filters for such a list use `components/ui/FilterBar` in the card title (inputs open over the list; examples `components/balance/BalanceFilters.tsx`, `components/memberships/MembershipHistoryFilters.tsx`): keep the draft filters in page state, pass `useDebouncedValue(...)` of them to the hook (memoize the object you debounce), include them in the query key, and never send an inverted range (`utils/filters`).
@@ -66,7 +66,7 @@ src/
 ## Translations
 
 - Every text a signed-in user or the login page shows goes through `t('English text')` from `@/i18n` (JSX text, `placeholder`, `aria-label`, `title`, table `header`/`searchValue`, toasts, dialogs). The English text is the key and must be a literal: use `t('Welcome, {{name}}.', { name })`, never a template string or concatenation, and avoid the variable name `count`. Text declared at module level uses `msg('...')` (translate it with `t(value)` where it is shown) and label maps use `translated({ ... })`.
-- Add the new text to all four dictionaries in `src/i18n/locales` (`sq`, `it`, `de`, `el`) and run `npm run i18n:check`; it must pass. Mutations set `meta: { success: '...' }` (translated by `QueryProvider`); server messages and shared Zod messages are translated by the API client and `FormField`, so keep them plain English sentences.
+- Add the new text to all four dictionaries in `shared/src/i18n` (`sq`, `it`, `de`, `el`, shared with the mobile app) and run `npm run i18n:check`; it must pass. Mutations set `meta: { success: '...' }` (translated by `QueryProvider`); server messages and shared Zod messages are translated by the API client and `FormField`, so keep them plain English sentences.
 - Show dates, numbers and money with `utils/format` (`formatDay`, `formatDateTime`, `formatTime`, `formatMoney`, `dateTimeFormat`), never a hard-coded locale. Do not translate user data (names, plan names), the brand name or the public landing page (English only, no `t()`).
 
 ## Forms

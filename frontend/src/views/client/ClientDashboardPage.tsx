@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { QRCodeSVG } from 'qrcode.react';
+import { AttendanceHistoryModal } from '@/components/attendance/AttendanceHistoryModal';
 import { WeekCalendar } from '@/components/attendance/WeekCalendar';
 import { WeekTrend } from '@/components/attendance/WeekTrend';
 import { VisitBoxes } from '@/components/memberships/VisitBoxes';
@@ -34,6 +35,7 @@ const daysRemaining = (endDate: string): string => {
 export const ClientDashboardPage: React.FC = () => {
   const { data, isLoading, error } = useClientDashboard();
   const membership = data?.activeMembership ?? null;
+  const [historyOpen, setHistoryOpen] = useState(false);
 
   return (
     <>
@@ -146,7 +148,17 @@ export const ClientDashboardPage: React.FC = () => {
             <Card className="client-card-reveal lg:col-span-6">
               <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
                 <p className="text-sm text-bone/55">{t('This week')}</p>
-                <WeekTrend week={data.week} />
+                <div className="flex flex-wrap items-center gap-2">
+                  <WeekTrend week={data.week} />
+                  <button
+                    type="button"
+                    onClick={() => setHistoryOpen(true)}
+                    className="flex items-center gap-1 rounded-md px-1.5 py-1 text-xs font-medium text-signal transition-colors hover:bg-signal/10"
+                  >
+                    <Icon name="clock" className="h-3.5 w-3.5" />
+                    {t('History')}
+                  </button>
+                </div>
               </div>
               <WeekCalendar week={data.week} />
               <div className="mt-5 flex items-center gap-2 border-t border-white/10 pt-4 text-sm text-bone/65">
@@ -211,6 +223,11 @@ export const ClientDashboardPage: React.FC = () => {
               <AccessPanel data={data} />
             </div>
           </section>
+          <AttendanceHistoryModal
+            isOpen={historyOpen}
+            today={data.week.today}
+            onClose={() => setHistoryOpen(false)}
+          />
         </div>
       ) : null}
     </>

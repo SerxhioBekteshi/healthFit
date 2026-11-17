@@ -1,0 +1,15 @@
+{
+  "extends": "expo/tsconfig.base",
+  "compilerOptions": {
+    "strict": true,
+    "paths": {
+      "@/*": ["./src/*"],
+      "@gym/shared/types": ["../shared/src/types/index.ts"],
+      "@gym/shared/types/*": ["../shared/src/types/*/index.ts"],
+      "@gym/shared/validation/*": ["../shared/src/validation/*/index.ts"],
+      "@gym/shared/i18n/*": ["../shared/src/i18n/*/index.ts"],
+      "@gym/shared/calendar": ["../shared/src/calendar/index.ts"]
+    }
+  },
+  "include": ["**/*.ts", "**/*.tsx", ".expo/types/**/*.ts", "expo-env.d.ts"]
+}

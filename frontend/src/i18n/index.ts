@@ -1,9 +1,9 @@
 import i18next from 'i18next';
 import type { CurrencyCode } from '@gym/shared/types';
-import { de } from './locales/de';
-import { el } from './locales/el';
-import { it } from './locales/it';
-import { sq } from './locales/sq';
+import { de } from '@gym/shared/i18n/de';
+import { el } from '@gym/shared/i18n/el';
+import { it } from '@gym/shared/i18n/it';
+import { sq } from '@gym/shared/i18n/sq';
 
 export const LANGUAGES = ['en', 'sq', 'it', 'de', 'el'] as const;
 export type Language = (typeof LANGUAGES)[number];

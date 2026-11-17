@@ -1,13 +1,23 @@
 import { Router } from 'express';
-import { ok, parseBody, withTenant } from '@/http/withTenant';
+import { ok, parseBody, parseQuery, withTenant } from '@/http/withTenant';
 import { attendanceService } from '@/services/attendance';
 import {
+  attendanceDaysQuerySchema,
   checkInSchema,
   checkOutSchema,
   scanSchema,
 } from '@gym/shared/validation/attendance';
 
 export const attendanceRouter = Router();
+
+// The days of one month on which the signed-in member checked in, for the calendar on their home page.
+attendanceRouter.get(
+  '/days',
+  withTenant(['client'], async (ctx, req) => {
+    const { month } = parseQuery(req, attendanceDaysQuerySchema);
+    return ok(await attendanceService.myDays(ctx, month));
+  })
+);
 
 attendanceRouter.get(
   '/',

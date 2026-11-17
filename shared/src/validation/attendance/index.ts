@@ -22,3 +22,10 @@ export const checkOutSchema = z.object({
 });
 
 export type CheckOutValues = z.infer<typeof checkOutSchema>;
+
+// `GET /attendance/days` query: the month to show, as YYYY-MM.
+export const attendanceDaysQuerySchema = z.object({
+  month: z.string().regex(/^\d{4}-(0[1-9]|1[0-2])$/),
+});
+
+export type AttendanceDaysQuery = z.infer<typeof attendanceDaysQuerySchema>;

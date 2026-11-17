@@ -494,3 +494,36 @@ describe('attendanceService.stats', () => {
     });
   });
 });
+
+describe('attendanceService.myDays', () => {
+  it('lists the gym-local days of a month once each, for the signed-in client only', async () => {
+    const record = (checkedInAt: string, clientId = clientAId) =>
+      prisma.attendance.create({
+        data: {
+          gymId: gymAId,
+          clientId,
+          membershipId: membershipAId,
+          checkedInAt: new Date(checkedInAt),
+        },
+      });
+
+    // Europe/Tirane is UTC+1 in November: 23:30Z on 31 Oct is already 1 Nov locally.
+    await record('2026-10-31T23:30:00Z');
+    await record('2026-11-02T08:00:00Z');
+    await record('2026-11-02T15:00:00Z');
+    await record('2026-11-10T12:00:00Z');
+    // 23:30Z on 30 Nov is 1 Dec locally: it belongs to the next month.
+    await record('2026-11-30T23:30:00Z');
+    await record('2026-11-05T12:00:00Z', clientBId);
+
+    const ctx = clientContext(gymAId, clientAId);
+    const november = await attendanceService.myDays(ctx, '2026-11');
+    expect(november).toEqual({
+      month: '2026-11',
+      days: ['2026-11-01', '2026-11-02', '2026-11-10'],
+    });
+    const december = await attendanceService.myDays(ctx, '2026-12');
+    expect(december.days).toEqual(['2026-12-01']);
+    expect((await attendanceService.myDays(ctx, '2026-09')).days).toEqual([]);
+  });
+});

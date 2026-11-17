@@ -96,6 +96,14 @@ export const useAttendance = (limit?: number) => {
   };
 };
 
+// Days of one month (YYYY-MM) on which the member checked in; past months do not change, so they stay cached.
+export const useAttendanceDays = (month: string, enabled: boolean) =>
+  useQuery({
+    queryKey: ['attendance', 'days', month],
+    queryFn: () => attendanceService.days(month),
+    enabled,
+  });
+
 // A member checking themselves out from their dashboard.
 export const useCheckOut = () => {
   const queryClient = useQueryClient();

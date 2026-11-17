@@ -31,3 +31,9 @@ export interface AttendanceStats {
   thisMonth: number;
   currentlyInside: number;
 }
+
+// The gym-local days (YYYY-MM-DD) of one month (YYYY-MM) on which the member checked in, oldest first.
+export interface AttendanceDays {
+  month: string;
+  days: string[];
+}

@@ -1,5 +1,6 @@
 import { apiClient } from '@/services/api';
 import type {
+  AttendanceDays,
   AttendanceHistoryPage,
   AttendanceRecord,
   AttendanceStats,
@@ -18,6 +19,9 @@ export const attendanceService = {
         : '/attendance/history'
     ),
   stats: () => apiClient.get<AttendanceStats>('/attendance/stats'),
+  // Days of one month (YYYY-MM) on which the signed-in member checked in.
+  days: (month: string) =>
+    apiClient.get<AttendanceDays>(`/attendance/days?month=${month}`),
   checkIn: (clientId: string, locationId?: string) =>
     apiClient.post<AttendanceRecord>('/attendance/check-in', {
       clientId,

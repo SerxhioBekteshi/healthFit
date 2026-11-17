@@ -1,4 +1,5 @@
 // Empty means same origin (the Vite dev proxy or a reverse proxy in production).
+import axios, { type Method } from 'axios';
 import { msg, t } from '@/i18n';
 
 export const API_BASE_URL: string = import.meta.env.VITE_API_BASE_URL ?? '';
@@ -30,49 +31,48 @@ const fallbackMessage = (status: number): string => {
   return msg('Server error. Please try again later.');
 };
 
+const http = axios.create({
+  baseURL: `${API_BASE_URL}/api/v1`,
+  withCredentials: true,
+});
+
 const request = async <T>(
-  method: string,
+  method: Method,
   path: string,
   body?: unknown
 ): Promise<T> => {
   // Files go up as raw bytes with their own content type; everything else is JSON.
   const isFile = body instanceof Blob;
-  let response: Response;
   try {
-    response = await fetch(`${API_BASE_URL}/api/v1${path}`, {
+    const response = await http.request<{ data?: T }>({
       method,
+      url: path,
+      data: body,
       headers:
         body === undefined
           ? undefined
           : { 'Content-Type': isFile ? body.type : 'application/json' },
-      body:
-        body === undefined ? undefined : isFile ? body : JSON.stringify(body),
-      credentials: 'include',
     });
-  } catch {
-    throw new ApiClientError(
-      t(msg('Network error. Please verify your connection and try again.')),
-      0
-    );
-  }
-
-  const payload = (await response.json().catch(() => null)) as
-    ({ data?: T } & ErrorPayload) | null;
-
-  if (!response.ok) {
+    return response.data?.data as T;
+  } catch (error) {
+    if (!axios.isAxiosError<ErrorPayload>(error) || !error.response) {
+      throw new ApiClientError(
+        t(msg('Network error. Please verify your connection and try again.')),
+        0
+      );
+    }
+    const { status, data } = error.response;
     // /me is polled on public pages; its 401 just means "signed out".
-    if (response.status === 401 && path !== '/me') {
+    if (status === 401 && path !== '/me') {
       window.location.assign('/login');
     }
     // Server messages are English texts; the known ones are translated here for every caller.
     throw new ApiClientError(
-      t(payload?.message ?? fallbackMessage(response.status)),
-      response.status,
-      payload?.code
+      t(data?.message ?? fallbackMessage(status)),
+      status,
+      data?.code
     );
   }
-
-  return payload?.data as T;
 };
 
 export const apiClient = {

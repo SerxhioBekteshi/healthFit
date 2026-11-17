@@ -6,7 +6,9 @@
   "exports": {
     "./types": "./src/types/index.ts",
     "./types/*": "./src/types/*/index.ts",
-    "./validation/*": "./src/validation/*/index.ts"
+    "./validation/*": "./src/validation/*/index.ts",
+    "./i18n/*": "./src/i18n/*/index.ts",
+    "./calendar": "./src/calendar/index.ts"
   },
   "scripts": {
     "type-check": "tsc --noEmit"

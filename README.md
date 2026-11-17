@@ -1,6 +1,6 @@
 # Gym Management App
 
-Multi-tenant gym management platform: a Node.js REST API (`backend/`), a React + Vite web client (`frontend/`), shared Zod schemas and types (`shared/`) and a planned mobile app (`mobile/`). See `ARCHITECTURE.md` for the design and `PRODUCT_REQUIREMENTS.md` for requirements.
+Multi-tenant gym management platform: a Node.js REST API (`backend/`), a React + Vite web client (`frontend/`), shared Zod schemas and types (`shared/`) and a React Native (Expo) member app (`mobile/`). See `ARCHITECTURE.md` for the design and `PRODUCT_REQUIREMENTS.md` for requirements.
 
 ## Roles
 
@@ -52,6 +52,7 @@ Tests use a separate database: create `gym_app_test`, set its URL in `backend/.e
 
 - `ARCHITECTURE.md` - design, layers, tenancy rules
 - `claude.md` - quick project reference
+- `mobile/GUIDE.md` - beginner guide to the mobile app (Expo, how to run it, how the code is organised)
 - `mobile/README.md`, `mobile/API_CONTRACT.md` - how mobile consumes the API
 - `.github/instructions/` - code rules per folder (backend, frontend, shared, mobile)
 - `.github/skills/SKILLS.md` - code templates

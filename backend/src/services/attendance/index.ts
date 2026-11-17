@@ -8,6 +8,7 @@ import { openVisitWhere } from '@/services/attendance/open';
 import type { TenantContext } from '@/tenant/context';
 import {
   addDays,
+  addMonths,
   formatDateOnly,
   localParts,
   parseDateOnly,
@@ -16,6 +17,7 @@ import {
 } from '@/utils/dates';
 import { retryOnConflict } from '@/utils/transactions';
 import type {
+  AttendanceDays,
   AttendanceHistoryPage,
   AttendanceRecord,
   ClientWeek,
@@ -441,6 +443,29 @@ export const attendanceService = {
       checkedInDates: dates.filter((date) => date >= start),
       previousVisits: dates.filter((date) => date < start).length,
     };
+  },
+
+  // Days of one month (YYYY-MM) on which the signed-in client checked in, by the gym's local calendar.
+  async myDays(ctx: TenantContext, month: string): Promise<AttendanceDays> {
+    const gym = await requireGym(ctx);
+    const first = `${month}-01`;
+    const next = formatDateOnly(addMonths(parseDateOnly(first), 1));
+    const rows = await ctx.db.attendance.findMany({
+      where: {
+        clientId: ctx.clientId ?? '',
+        checkedInAt: {
+          gte: startOfLocalDay(first, gym.timezone),
+          lt: startOfLocalDay(next, gym.timezone),
+        },
+      },
+      select: { checkedInAt: true },
+    });
+    const days = [
+      ...new Set(
+        rows.map((row) => localParts(row.checkedInAt, gym.timezone).date)
+      ),
+    ].sort();
+    return { month, days };
   },
 
   // The signed-in client's own visit counts.

@@ -6,7 +6,7 @@ Multi-tenant gym management platform. See `ARCHITECTURE.md` for the design and `
 
 - **Super Admin**: platform owner; manages gyms, gym admins, platform subscriptions
 - **Gym Admin**: manages one gym with one or more locations ("My gyms"); clients, memberships, attendance, products, programs are gym-wide
-- **Client**: gym member; own membership, attendance, balance, programs (web now, mobile app planned)
+- **Client**: gym member; own membership, attendance, balance, programs (web, and the Expo mobile app in `mobile/`)
 
 The backend exposes a REST API used by both the web SPA and the mobile app.
 
@@ -16,7 +16,7 @@ The backend exposes a REST API used by both the web SPA and the mobile app.
 backend/    Node.js + Express 5 + Prisma + Better Auth  (REST API on :4000)
 frontend/   React 19 + Vite SPA + react-router          (dev server on :5173, proxies /api)
 shared/     @gym/shared - Zod schemas + entity types used by backend and frontend
-mobile/     README + API_CONTRACT.md (app not scaffolded yet)
+mobile/     Expo + React Native member app, clients only (own node_modules, Node 22; see mobile/GUIDE.md)
 docker-compose.yml   Postgres (host port 5433)
 ```
 
