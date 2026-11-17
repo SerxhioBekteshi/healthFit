@@ -1,4 +1,5 @@
 import React from 'react';
+import { PriceCards } from '@/components/membership-plans/PriceCards';
 import {
   buildPriceTable,
   type PriceCell,
@@ -108,7 +109,16 @@ export const PriceMatrix: React.FC<PriceMatrixProps> = ({
         ) : null}
       </div>
 
-      <div className="overflow-x-auto">
+      <div className="p-4 sm:hidden">
+        <PriceCards
+          plans={plans}
+          onSelect={onSelect}
+          disabled={disabled}
+          showOfferName={!offer}
+        />
+      </div>
+
+      <div className="hidden overflow-x-auto sm:block">
         <table className="w-full min-w-[32rem] border-collapse text-left">
           <thead>
             <tr>

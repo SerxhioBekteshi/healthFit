@@ -2,6 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { Alert } from '@/components/ui/Alert';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
+import { ActionMenu } from '@/components/ui/ActionMenu';
 import { Modal } from '@/components/ui/Modal';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { Table, type Column } from '@/components/ui/Table';
@@ -130,38 +131,33 @@ export const ClassesPage: React.FC = () => {
       actions: true,
       align: 'right',
       cell: (item) => (
-        <>
-          <Button
-            size="sm"
-            variant="secondary"
-            icon="pencil"
-            onClick={() => openDrawer(item)}
-          >
-            {t('Edit')}
-          </Button>
-          <Button
-            size="sm"
-            variant={item.isActive ? 'warning' : 'success'}
-            disabled={setClassActive.isPending}
-            onClick={() =>
-              setClassActive.mutate({
-                classId: item.id,
-                isActive: !item.isActive,
-              })
-            }
-          >
-            {item.isActive ? t('Hide') : t('Show')}
-          </Button>
-          <Button
-            size="sm"
-            variant="danger"
-            icon="trash"
-            disabled={deleteClass.isPending}
-            onClick={() => setDeleting(item)}
-          >
-            {t('Remove')}
-          </Button>
-        </>
+        <ActionMenu
+          items={[
+            {
+              label: t('Edit'),
+              icon: 'pencil',
+              onClick: () => openDrawer(item),
+            },
+            {
+              label: item.isActive ? t('Hide') : t('Show'),
+              icon: 'power',
+              tone: item.isActive ? 'warning' : 'success',
+              disabled: setClassActive.isPending,
+              onClick: () =>
+                setClassActive.mutate({
+                  classId: item.id,
+                  isActive: !item.isActive,
+                }),
+            },
+            {
+              label: t('Remove'),
+              icon: 'trash',
+              tone: 'danger',
+              disabled: deleteClass.isPending,
+              onClick: () => setDeleting(item),
+            },
+          ]}
+        />
       ),
     },
   ];
