@@ -1280,5 +1280,86 @@ export const de: Record<string, string> = {
   '1 day with a check-in': '1 Tag mit Check-in',
   '{{n}} days with a check-in': '{{n}} Tage mit Check-in',
   'Apply': 'Anwenden',
+  '{{gym}} already added you as a member.':
+    '{{gym}} hat dich bereits als Mitglied hinzugefügt.',
+  '{{gym}} already added you as a member. Ask them for your invite link or QR code to set your password.':
+    '{{gym}} hat dich bereits als Mitglied hinzugefügt. Frag nach deinem Einladungslink oder QR-Code, um dein Passwort festzulegen.',
+  'Already have an account?': 'Du hast bereits ein Konto?',
+  'An account with this email already exists. Sign in instead.':
+    'Mit dieser E-Mail existiert bereits ein Konto. Melde dich stattdessen an.',
+  'Change': 'Ändern',
+  'Choose a gym.': 'Wähle ein Studio.',
+  'Community': 'Community',
+  'Create a new join link?': 'Neuen Beitrittslink erstellen?',
+  'Create account': 'Konto erstellen',
+  'Create an account': 'Ein Konto erstellen',
+  'Create an account without a gym': 'Ein Konto ohne Studio erstellen',
+  'Create new link': 'Neuen Link erstellen',
+  'Create your account': 'Erstelle dein Konto',
+  'Creating account': 'Konto wird erstellt',
+  'Demo mode: no email is sent. Your code is {{code}}.':
+    'Demo-Modus: Es wird keine E-Mail gesendet. Dein Code lautet {{code}}.',
+  'Enter the 6-digit code.': 'Gib den 6-stelligen Code ein.',
+  'Fill in the client details. The client chooses their own password with the invite link you get next.':
+    'Gib die Kundendaten ein. Der Kunde wählt sein Passwort selbst über den Einladungslink, den du als Nächstes erhältst.',
+  'Find a gym': 'Ein Studio finden',
+  'Find your': 'Finde dein',
+  'First name': 'Vorname',
+  'First name is required.': 'Vorname ist erforderlich.',
+  'gym': 'Studio',
+  'Join link': 'Beitrittslink',
+  'Join link for new members': 'Beitrittslink für neue Mitglieder',
+  'Join the community, then browse gyms and choose where to start.':
+    'Tritt der Community bei, stöbere dann durch die Studios und wähle, wo du startest.',
+  'New join link created. The old one no longer works.':
+    'Neuer Beitrittslink erstellt. Der alte funktioniert nicht mehr.',
+  'New member?': 'Neues Mitglied?',
+  'Open {{from}} to {{to}}': 'Geöffnet von {{from}} bis {{to}}',
+  'Password set. You are signed in.': 'Passwort festgelegt. Du bist angemeldet.',
+  'Put this QR code at the front desk or send the link. Anyone who opens it can sign up as a member of your gym. It does not expire.':
+    'Platziere diesen QR-Code am Empfang oder sende den Link. Jeder, der ihn öffnet, kann sich als Mitglied deines Studios registrieren. Er läuft nicht ab.',
+  'Start at {{gym}}?': 'Bei {{gym}} starten?',
+  'Start here': 'Hier starten',
+  'Surname': 'Nachname',
+  'Surname is required.': 'Nachname ist erforderlich.',
+  'The code is wrong or has expired.': 'Der Code ist falsch oder abgelaufen.',
+  'The current link and QR code stop working. Print or share the new one instead.':
+    'Der aktuelle Link und QR-Code funktionieren nicht mehr. Drucke oder teile stattdessen den neuen.',
+  'This join link is invalid or no longer active.':
+    'Dieser Beitrittslink ist ungültig oder nicht mehr aktiv.',
+  'You already belong to a gym.': 'Du gehörst bereits zu einem Studio.',
+  'You are joining {{gym}}.': 'Du trittst {{gym}} bei.',
+  'You are not a member of a gym yet. Look at the gyms below and choose where to start.':
+    'Du bist noch in keinem Studio Mitglied. Sieh dir die Studios unten an und wähle, wo du startest.',
+  'You become a member of this gym with the details you signed up with. You can then buy a membership and check in.':
+    'Du wirst mit den bei der Anmeldung angegebenen Daten Mitglied dieses Studios. Danach kannst du eine Mitgliedschaft kaufen und einchecken.',
+  'You joined the gym.': 'Du bist dem Studio beigetreten.',
+  'Your account is ready.': 'Dein Konto ist bereit.',
+  'Gym join code or link (optional)':
+    'Beitrittscode oder Link des Studios (optional)',
+  'Paste the link or code your gym gave you.':
+    'Füge den Link oder Code ein, den dir dein Studio gegeben hat.',
+  'All countries': 'Alle Länder',
+  'Change details': 'Angaben ändern',
+  'No gyms in {{country}} yet. Try another country.':
+    'Noch keine Studios in {{country}}. Probiere ein anderes Land.',
+  'Show all countries': 'Alle Länder anzeigen',
+  'We sent a 6-digit code to {{email}}.':
+    'Wir haben einen 6-stelligen Code an {{email}} gesendet.',
+  'The code expires in {{seconds}} seconds.':
+    'Der Code läuft in {{seconds}} Sekunden ab.',
+  'The code has expired.': 'Der Code ist abgelaufen.',
+  'Verify email': 'E-Mail bestätigen',
+  'Please wait a moment before asking for a new code.':
+    'Bitte warte einen Moment, bevor du einen neuen Code anforderst.',
+  'Email is not available right now. Please try again later.':
+    'E-Mail ist gerade nicht verfügbar. Bitte versuche es später erneut.',
+  'Invite email sent.': 'Einladungs-E-Mail gesendet.',
+  'Or send the link to {{email}}.': 'Oder sende den Link an {{email}}.',
+  'Send again': 'Erneut senden',
+  'Send by email': 'Per E-Mail senden',
+  'Sent to {{email}}.': 'Gesendet an {{email}}.',
+  'Gym shop': 'Studio-Shop',
+  'Buy {{name}}?': '{{name}} kaufen?',
   'No programs for this level.': 'Keine Programme für dieses Niveau.',
 };

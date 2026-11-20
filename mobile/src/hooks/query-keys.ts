@@ -11,6 +11,9 @@ export const queryKeys = {
   classes: ['classes'] as const,
   workoutPrograms: ['workout-programs'] as const,
   gymLocations: ['gym-locations'] as const,
+  communityGyms: (country: string) => ['community-gyms', country] as const,
+  products: ['products'] as const,
+  gymJoin: (joinCode: string) => ['gym-join', joinCode] as const,
 };
 
 // Money, memberships and visits feed each other, so a payment or a check-out refreshes them all.

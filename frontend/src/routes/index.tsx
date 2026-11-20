@@ -7,6 +7,7 @@ import { roleHomePath } from '@/utils/constants/navigation';
 import { LandingPage } from '@/views/landing/LandingPage';
 import { LoginPage } from '@/views/auth/LoginPage';
 import { AcceptInvitePage } from '@/views/auth/AcceptInvitePage';
+import { ClientSignUpPage } from '@/views/auth/ClientSignUpPage';
 import { SignUpPage } from '@/views/auth/SignUpPage';
 import type { UserRole } from '@gym/shared/types';
 
@@ -42,6 +43,17 @@ const SignUpRoute: React.FC = () => {
   return <SignUpPage />;
 };
 
+const JoinRoute: React.FC = () => {
+  const { user, isLoading } = useSession();
+  if (isLoading) {
+    return <PageSkeleton />;
+  }
+  if (user) {
+    return <Navigate to={roleHomePath[user.role]} replace />;
+  }
+  return <ClientSignUpPage />;
+};
+
 const shell = (role: UserRole): React.FC => {
   const Shell: React.FC = () => (
     <AuthShell role={role}>
@@ -66,6 +78,8 @@ export const router = createBrowserRouter([
       { path: '/', Component: HomeRoute },
       { path: '/login', Component: LoginRoute },
       { path: '/sign-up', Component: SignUpRoute },
+      { path: '/join', Component: JoinRoute },
+      { path: '/join/:code', Component: JoinRoute },
       { path: '/invite/:token', Component: AcceptInvitePage },
       {
         Component: shell('gym_admin'),
@@ -167,6 +181,13 @@ export const router = createBrowserRouter([
       {
         Component: shell('client'),
         children: [
+          {
+            path: '/client/community',
+            ...page(
+              () => import('@/views/client/community/CommunityPage'),
+              'CommunityPage'
+            ),
+          },
           {
             path: '/client/dashboard',
             ...page(

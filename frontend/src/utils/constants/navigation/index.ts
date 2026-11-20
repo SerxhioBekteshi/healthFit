@@ -204,3 +204,15 @@ export const navigationByRole: Record<UserRole, NavigationItem[]> = {
   gym_admin: gymAdminNavigationItems,
   client: clientNavigationItems,
 };
+
+export const communityPath = '/client/community';
+
+// A client who signed up without a gym only sees the page that lets them choose one.
+export const communityNavigationItems: NavigationItem[] = [
+  {
+    label: msg('Find a gym'),
+    to: communityPath,
+    icon: 'pin',
+    group: msg('Menu'),
+  },
+];

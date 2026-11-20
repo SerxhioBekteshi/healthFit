@@ -46,3 +46,9 @@ export const inviteRateLimit = createRateLimiter({
   windowMs: FIFTEEN_MINUTES,
   limit: env.rateLimit.inviteMax,
 });
+
+// Members signing up themselves; also stops guessing the claim code of a client the gym created.
+export const memberSignupRateLimit = createRateLimiter({
+  windowMs: FIFTEEN_MINUTES,
+  limit: env.rateLimit.memberSignupMax,
+});

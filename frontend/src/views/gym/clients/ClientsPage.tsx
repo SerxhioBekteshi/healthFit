@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { CheckInCode } from '@/components/clients/CheckInCode';
 import { ClientInviteDialog } from '@/components/clients/ClientInviteDialog';
+import { GymJoinDialog } from '@/components/clients/GymJoinDialog';
 import { ActionMenu } from '@/components/ui/ActionMenu';
 import {
   AssignMembershipDrawer,
@@ -50,13 +51,16 @@ export const ClientsPage: React.FC = () => {
   const { confirm, dialog } = useConfirm();
   const issueInvite = useIssueClientInvite();
   const [invite, setInvite] = useState<{
+    clientId: string;
     clientName: string;
+    clientEmail: string;
     link: ClientInvite;
   } | null>(null);
   const [assignDefaults, setAssignDefaults] = useState<AssignDefaults | null>(
     null
   );
   const [feedback, setFeedback] = useState<string | null>(null);
+  const [joinOpen, setJoinOpen] = useState(false);
 
   const activeClients = clients.filter((client) => client.isActive);
   const activePlans = plans.filter((plan) => plan.isActive);
@@ -112,7 +116,12 @@ export const ClientsPage: React.FC = () => {
   const showInvite = async (client: Client): Promise<void> => {
     try {
       const link = await issueInvite.mutateAsync(client.id);
-      setInvite({ clientName: client.fullName, link });
+      setInvite({
+        clientId: client.id,
+        clientName: client.fullName,
+        clientEmail: client.email,
+        link,
+      });
     } catch {
       // The error toast already explains what went wrong.
     }
@@ -129,8 +138,8 @@ export const ClientsPage: React.FC = () => {
       } else {
         const created = await createClient.mutateAsync(values);
         setIsDrawerOpen(false);
-        // No password given: the client sets their own through a one-time link.
-        if (!values.password) await showInvite(created);
+        // The gym never sets a password: hand over the link so the client chooses their own.
+        await showInvite(created);
       }
     } catch {
       // The error is shown in the drawer through serverError.
@@ -284,9 +293,18 @@ export const ClientsPage: React.FC = () => {
         title={t('Your')}
         accent={t('clients')}
         actions={
-          <Button icon="plus" onClick={() => openDrawer(null)}>
-            {t('Create client')}
-          </Button>
+          <div className="flex flex-wrap gap-2">
+            <Button
+              variant="secondary"
+              icon="scan"
+              onClick={() => setJoinOpen(true)}
+            >
+              {t('Join link')}
+            </Button>
+            <Button icon="plus" onClick={() => openDrawer(null)}>
+              {t('Create client')}
+            </Button>
+          </div>
         }
       />
 
@@ -366,9 +384,12 @@ export const ClientsPage: React.FC = () => {
       />
       <ClientInviteDialog
         invite={invite?.link ?? null}
+        clientId={invite?.clientId ?? ''}
         clientName={invite?.clientName ?? ''}
+        clientEmail={invite?.clientEmail ?? ''}
         onClose={() => setInvite(null)}
       />
+      <GymJoinDialog isOpen={joinOpen} onClose={() => setJoinOpen(false)} />
       {dialog}
     </>
   );

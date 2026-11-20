@@ -9,6 +9,14 @@ export const useIssueClientInvite = () =>
     mutationFn: (clientId: string) => clientInvitesService.issue(clientId),
   });
 
+// Gym admin: emails the link the dialog shows to the client.
+export const useSendClientInviteEmail = () =>
+  useMutation({
+    meta: { success: 'Invite email sent.' },
+    mutationFn: ({ clientId, token }: { clientId: string; token: string }) =>
+      clientInvitesService.sendByEmail(clientId, token),
+  });
+
 // The invite page loads before anyone is signed in; the gym's country sets its language.
 export const useClientInvitePreview = (token: string) =>
   useQuery({

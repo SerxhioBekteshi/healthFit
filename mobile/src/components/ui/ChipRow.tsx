@@ -13,6 +13,8 @@ interface ChipRowProps<TValue extends string | number> {
   // `null` means no chip is selected, for filters that start unfiltered.
   value: TValue | null;
   onChange: (value: TValue) => void;
+  // A chip that gets an accent outline while it is not selected, e.g. today among the weekdays.
+  marked?: TValue;
 }
 
 const createStyles = (theme: Theme) =>
@@ -31,6 +33,7 @@ export const ChipRow = <TValue extends string | number>({
   options,
   value,
   onChange,
+  marked,
 }: ChipRowProps<TValue>): React.ReactElement => {
   const { colors } = useTheme();
   const styles = useThemedStyles(createStyles);
@@ -42,6 +45,7 @@ export const ChipRow = <TValue extends string | number>({
     >
       {options.map((option) => {
         const selected = option.value === value;
+        const outlined = !selected && option.value === marked;
         return (
           <Pressable
             key={option.value}
@@ -52,14 +56,20 @@ export const ChipRow = <TValue extends string | number>({
               styles.chip,
               {
                 backgroundColor: selected ? colors.accent : colors.surface,
-                borderColor: selected ? colors.accent : colors.border,
+                borderColor:
+                  selected || outlined ? colors.accent : colors.border,
+                borderWidth: outlined ? 2 : 1,
               },
             ]}
           >
             <Text
               variant="caption"
               style={{
-                color: selected ? colors.onAccent : colors.text,
+                color: selected
+                  ? colors.onAccent
+                  : outlined
+                    ? colors.accent
+                    : colors.text,
                 fontWeight: '600',
               }}
             >

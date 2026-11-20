@@ -1580,5 +1580,86 @@ export const it: Record<string, string> = {
   '1 day with a check-in': '1 giorno con check-in',
   '{{n}} days with a check-in': '{{n}} giorni con check-in',
   Apply: 'Applica',
+  '{{gym}} already added you as a member.':
+    '{{gym}} ti ha già aggiunto come iscritto.',
+  '{{gym}} already added you as a member. Ask them for your invite link or QR code to set your password.':
+    '{{gym}} ti ha già aggiunto come iscritto. Chiedi il link di invito o il codice QR per impostare la password.',
+  'Already have an account?': 'Hai già un account?',
+  'An account with this email already exists. Sign in instead.':
+    'Esiste già un account con questa email. Accedi invece.',
+  Change: 'Cambia',
+  'Choose a gym.': 'Scegli una palestra.',
+  Community: 'Community',
+  'Create a new join link?': 'Creare un nuovo link di iscrizione?',
+  'Create account': 'Crea account',
+  'Create an account': 'Crea un account',
+  'Create an account without a gym': 'Crea un account senza palestra',
+  'Create new link': 'Crea nuovo link',
+  'Create your account': 'Crea il tuo account',
+  'Creating account': 'Creazione account in corso',
+  'Demo mode: no email is sent. Your code is {{code}}.':
+    'Modalità demo: nessuna email viene inviata. Il tuo codice è {{code}}.',
+  'Enter the 6-digit code.': 'Inserisci il codice di 6 cifre.',
+  'Fill in the client details. The client chooses their own password with the invite link you get next.':
+    'Inserisci i dati del cliente. Il cliente sceglie la propria password con il link di invito che riceverai subito dopo.',
+  'Find a gym': 'Trova una palestra',
+  'Find your': 'Trova la tua',
+  'First name': 'Nome',
+  'First name is required.': 'Il nome è obbligatorio.',
+  gym: 'palestra',
+  'Join link': 'Link di iscrizione',
+  'Join link for new members': 'Link di iscrizione per i nuovi iscritti',
+  'Join the community, then browse gyms and choose where to start.':
+    'Entra nella community, poi sfoglia le palestre e scegli da dove iniziare.',
+  'New join link created. The old one no longer works.':
+    'Nuovo link di iscrizione creato. Il vecchio non funziona più.',
+  'New member?': 'Nuovo iscritto?',
+  'Open {{from}} to {{to}}': 'Aperto dalle {{from}} alle {{to}}',
+  'Password set. You are signed in.': 'Password impostata. Sei connesso.',
+  'Put this QR code at the front desk or send the link. Anyone who opens it can sign up as a member of your gym. It does not expire.':
+    'Metti questo codice QR alla reception o invia il link. Chiunque lo apra può registrarsi come iscritto alla tua palestra. Non scade.',
+  'Start at {{gym}}?': 'Iniziare da {{gym}}?',
+  'Start here': 'Inizia qui',
+  Surname: 'Cognome',
+  'Surname is required.': 'Il cognome è obbligatorio.',
+  'The code is wrong or has expired.': 'Il codice è errato o è scaduto.',
+  'The current link and QR code stop working. Print or share the new one instead.':
+    'Il link e il codice QR attuali smettono di funzionare. Stampa o condividi quello nuovo.',
+  'This join link is invalid or no longer active.':
+    'Questo link di iscrizione non è valido o non è più attivo.',
+  'You already belong to a gym.': 'Appartieni già a una palestra.',
+  'You are joining {{gym}}.': 'Stai entrando in {{gym}}.',
+  'You are not a member of a gym yet. Look at the gyms below and choose where to start.':
+    'Non sei ancora iscritto a una palestra. Guarda le palestre qui sotto e scegli da dove iniziare.',
+  'You become a member of this gym with the details you signed up with. You can then buy a membership and check in.':
+    'Diventi iscritto a questa palestra con i dati con cui ti sei registrato. Poi potrai acquistare un abbonamento e fare il check-in.',
+  'You joined the gym.': 'Sei entrato nella palestra.',
+  'Your account is ready.': 'Il tuo account è pronto.',
+  'Gym join code or link (optional)':
+    'Codice o link di iscrizione della palestra (facoltativo)',
+  'Paste the link or code your gym gave you.':
+    'Incolla il link o il codice che ti ha dato la palestra.',
+  'All countries': 'Tutti i paesi',
+  'Change details': 'Modifica i dati',
+  'No gyms in {{country}} yet. Try another country.':
+    'Ancora nessuna palestra in {{country}}. Prova un altro paese.',
+  'Show all countries': 'Mostra tutti i paesi',
+  'We sent a 6-digit code to {{email}}.':
+    'Abbiamo inviato un codice di 6 cifre a {{email}}.',
+  'The code expires in {{seconds}} seconds.':
+    'Il codice scade tra {{seconds}} secondi.',
+  'The code has expired.': 'Il codice è scaduto.',
+  'Verify email': 'Verifica l’email',
+  'Please wait a moment before asking for a new code.':
+    'Attendi un momento prima di chiedere un nuovo codice.',
+  'Email is not available right now. Please try again later.':
+    'L’email non è disponibile al momento. Riprova più tardi.',
+  'Invite email sent.': 'Email di invito inviata.',
+  'Or send the link to {{email}}.': 'Oppure invia il link a {{email}}.',
+  'Send again': 'Invia di nuovo',
+  'Send by email': 'Invia per email',
+  'Sent to {{email}}.': 'Inviato a {{email}}.',
+  'Gym shop': 'Negozio della palestra',
+  'Buy {{name}}?': 'Acquistare {{name}}?',
   'No programs for this level.': 'Nessun programma per questo livello.',
 };

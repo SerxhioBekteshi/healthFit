@@ -2,11 +2,34 @@ import type { BadgeTone } from '@/components/ui/Badge';
 import { msg, t, translated } from '@/i18n';
 import type {
   BalanceTransactionType,
+  Gender,
   MembershipPlanType,
   MembershipStatus,
   PaymentMethod,
+  ProductCategory,
   WorkoutLevel,
 } from '@gym/shared/types';
+
+export const productCategoryLabels = translated<ProductCategory>({
+  supplement: msg('Supplement'),
+  snack: msg('Snack'),
+  drink: msg('Drink'),
+  merchandise: msg('Merchandise'),
+  shake: msg('Protein shake'),
+  smoothie: msg('Smoothie'),
+});
+
+// Translate it where it is shown: `t(PREPARED_WARNING)`.
+export const PREPARED_WARNING = msg(
+  'Made on the spot and payable only by cash at the gym.'
+);
+
+export const genderLabels = translated<Gender>({
+  male: msg('Men'),
+  female: msg('Women'),
+});
+
+export const genders = Object.keys(genderLabels) as Gender[];
 
 export const planTypeLabels = translated<MembershipPlanType>({
   monthly: msg('Monthly'),

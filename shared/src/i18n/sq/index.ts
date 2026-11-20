@@ -1564,5 +1564,87 @@ export const sq: Record<string, string> = {
   '1 day with a check-in': '1 ditë me hyrje',
   '{{n}} days with a check-in': '{{n}} ditë me hyrje',
   Apply: 'Apliko',
+  '{{gym}} already added you as a member.':
+    '{{gym}} të ka shtuar tashmë si anëtar.',
+  '{{gym}} already added you as a member. Ask them for your invite link or QR code to set your password.':
+    '{{gym}} të ka shtuar tashmë si anëtar. Kërkoji lidhjen e ftesës ose kodin QR për të vendosur fjalëkalimin.',
+  'Already have an account?': 'Ke tashmë një llogari?',
+  'An account with this email already exists. Sign in instead.':
+    'Ekziston tashmë një llogari me këtë email. Hyr në vend të kësaj.',
+  Change: 'Ndrysho',
+  'Choose a gym.': 'Zgjidh një palestër.',
+  Community: 'Komuniteti',
+  'Create a new join link?': 'Të krijohet një lidhje e re anëtarësimi?',
+  'Create account': 'Krijo llogari',
+  'Create an account': 'Krijo një llogari',
+  'Create an account without a gym': 'Krijo një llogari pa palestër',
+  'Create new link': 'Krijo lidhje të re',
+  'Create your account': 'Krijo llogarinë tënde',
+  'Creating account': 'Po krijohet llogaria',
+  'Demo mode: no email is sent. Your code is {{code}}.':
+    'Modaliteti demo: nuk dërgohet email. Kodi yt është {{code}}.',
+  'Enter the 6-digit code.': 'Shkruaj kodin 6-shifror.',
+  'Fill in the client details. The client chooses their own password with the invite link you get next.':
+    'Plotëso të dhënat e klientit. Klienti zgjedh vetë fjalëkalimin me lidhjen e ftesës që merr më pas.',
+  'Find a gym': 'Gjej një palestër',
+  'Find your': 'Gjej',
+  'First name': 'Emri',
+  'First name is required.': 'Emri është i detyrueshëm.',
+  gym: 'palestrën tënde',
+  'Join link': 'Lidhja e anëtarësimit',
+  'Join link for new members': 'Lidhja e anëtarësimit për anëtarë të rinj',
+  'Join the community, then browse gyms and choose where to start.':
+    'Bashkohu me komunitetin, pastaj shfleto palestrat dhe zgjidh ku të fillosh.',
+  'New join link created. The old one no longer works.':
+    'U krijua një lidhje e re anëtarësimi. E vjetra nuk funksionon më.',
+  'New member?': 'Anëtar i ri?',
+  'Open {{from}} to {{to}}': 'Hapur nga {{from}} deri në {{to}}',
+  'Password set. You are signed in.':
+    'Fjalëkalimi u vendos. Ke hyrë në llogari.',
+  'Put this QR code at the front desk or send the link. Anyone who opens it can sign up as a member of your gym. It does not expire.':
+    'Vendose këtë kod QR te recepsioni ose dërgo lidhjen. Kushdo që e hap mund të regjistrohet si anëtar i palestrës tënde. Nuk skadon.',
+  'Start at {{gym}}?': 'Të fillosh te {{gym}}?',
+  'Start here': 'Fillo këtu',
+  Surname: 'Mbiemri',
+  'Surname is required.': 'Mbiemri është i detyrueshëm.',
+  'The code is wrong or has expired.': 'Kodi është i gabuar ose ka skaduar.',
+  'The current link and QR code stop working. Print or share the new one instead.':
+    'Lidhja dhe kodi QR aktual nuk do të funksionojnë më. Printo ose ndaj të riun në vend të tyre.',
+  'This join link is invalid or no longer active.':
+    'Kjo lidhje anëtarësimi është e pavlefshme ose nuk është më aktive.',
+  'You already belong to a gym.': 'Tashmë i përket një palestre.',
+  'You are joining {{gym}}.': 'Po bashkohesh me {{gym}}.',
+  'You are not a member of a gym yet. Look at the gyms below and choose where to start.':
+    'Ende nuk je anëtar i një palestre. Shiko palestrat më poshtë dhe zgjidh ku të fillosh.',
+  'You become a member of this gym with the details you signed up with. You can then buy a membership and check in.':
+    'Bëhesh anëtar i kësaj palestre me të dhënat me të cilat u regjistrove. Pastaj mund të blesh një anëtarësim dhe të bësh hyrje.',
+  'You joined the gym.': 'U bashkove me palestrën.',
+  'Your account is ready.': 'Llogaria jote është gati.',
+  'Gym join code or link (optional)':
+    'Kodi ose lidhja e anëtarësimit në palestër (opsionale)',
+  'Paste the link or code your gym gave you.':
+    'Ngjit lidhjen ose kodin që të dha palestra.',
+  'All countries': 'Të gjitha vendet',
+  'Change details': 'Ndrysho të dhënat',
+  'No gyms in {{country}} yet. Try another country.':
+    'Ende nuk ka palestra në {{country}}. Provo një vend tjetër.',
+  'Show all countries': 'Shfaq të gjitha vendet',
+  'We sent a 6-digit code to {{email}}.':
+    'Dërguam një kod 6-shifror te {{email}}.',
+  'The code expires in {{seconds}} seconds.':
+    'Kodi skadon pas {{seconds}} sekondash.',
+  'The code has expired.': 'Kodi ka skaduar.',
+  'Verify email': 'Verifiko emailin',
+  'Please wait a moment before asking for a new code.':
+    'Prit pak para se të kërkosh një kod të ri.',
+  'Email is not available right now. Please try again later.':
+    'Emaili nuk është i disponueshëm tani. Provo përsëri më vonë.',
+  'Invite email sent.': 'Emaili i ftesës u dërgua.',
+  'Or send the link to {{email}}.': 'Ose dërgoje lidhjen te {{email}}.',
+  'Send again': 'Dërgo përsëri',
+  'Send by email': 'Dërgo me email',
+  'Sent to {{email}}.': 'U dërgua te {{email}}.',
+  'Gym shop': 'Dyqani i palestrës',
+  'Buy {{name}}?': 'Të blesh {{name}}?',
   'No programs for this level.': 'Nuk ka programe për këtë nivel.',
 };

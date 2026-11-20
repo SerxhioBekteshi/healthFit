@@ -144,6 +144,16 @@ export const LoginPage: React.FC = () => {
           </form>
 
           <p className="mt-6 text-center text-sm text-bone/55">
+            {t('New member?')}{' '}
+            <Link
+              to="/join"
+              className="font-medium text-signal hover:underline"
+            >
+              {t('Create an account')}
+            </Link>
+          </p>
+
+          <p className="mt-3 text-center text-sm text-bone/55">
             {t('Own a gym?')}{' '}
             <Link
               to="/sign-up"

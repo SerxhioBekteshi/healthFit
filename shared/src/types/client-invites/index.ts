@@ -6,6 +6,11 @@ export interface ClientInvite {
   expiresAt: string;
 }
 
+// What the admin sees after emailing a link.
+export interface ClientInviteSent {
+  sentTo: string;
+}
+
 // What the invite page shows before the client chooses a password.
 export interface ClientInvitePreview {
   clientName: string;

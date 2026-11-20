@@ -9,6 +9,11 @@ const password = z
 // What the API accepts.
 export const acceptClientInviteSchema = z.object({ password });
 
+// The admin's dialog still holds the link it just created; the server checks it before emailing it.
+export const sendClientInviteSchema = z.object({
+  token: z.string().min(1).max(200),
+});
+
 // The form adds a confirmation field.
 export const acceptClientInviteFormSchema = z
   .object({

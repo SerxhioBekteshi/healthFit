@@ -1,4 +1,3 @@
-import { createCredentialUser } from '@/auth/credentials';
 import { prisma } from '@/db/client';
 import {
   ConflictError,
@@ -48,26 +47,28 @@ export const createClientAccount = async (
   input: CreateClientValues
 ) => {
   assertGymAdmin(ctx);
+  const email = input.email.toLowerCase();
   try {
     return await prisma.$transaction(async (tx) => {
-      // Without a password the user has no credential yet and cannot sign in until the invite is used.
-      const user = input.password
-        ? await createCredentialUser(tx, {
-            name: input.fullName,
-            email: input.email,
-            password: input.password,
-            role: 'client',
-            gymId: ctx.gymId,
-          })
-        : await tx.user.create({
-            data: {
-              name: input.fullName,
-              email: input.email.toLowerCase(),
-              emailVerified: true,
-              role: 'client',
-              gymId: ctx.gymId,
-            },
-          });
+      const existing = await tx.user.findUnique({ where: { email } });
+      // Someone who signed up on their own (community, no gym yet) joins this gym and keeps their
+      // password. Any other existing account is a conflict. A new client has no credential until
+      // they use the invite link, so the gym never knows or sets a password.
+      const user =
+        existing && existing.role === 'client' && existing.gymId === null
+          ? await tx.user.update({
+              where: { id: existing.id },
+              data: { gymId: ctx.gymId },
+            })
+          : await tx.user.create({
+              data: {
+                name: input.fullName,
+                email,
+                emailVerified: true,
+                role: 'client',
+                gymId: ctx.gymId,
+              },
+            });
       return tx.client.create({
         data: {
           gymId: ctx.gymId,

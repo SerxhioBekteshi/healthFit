@@ -14,12 +14,17 @@ import { t } from '@/i18n';
 import { useSidebarCollapsed } from '@/hooks/sidebar';
 import { authClient } from '@/services/auth';
 import type { UserRole } from '@gym/shared/types';
-import { navigationByRole } from '@/utils/constants/navigation';
+import {
+  navigationByRole,
+  type NavigationItem,
+} from '@/utils/constants/navigation';
 
 interface BaseLayoutProps {
   role: UserRole;
   userName: string;
   userEmail: string;
+  // Replaces the role's menu, e.g. for a client who has not joined a gym yet.
+  navigation?: NavigationItem[];
   children: React.ReactNode;
 }
 
@@ -29,6 +34,7 @@ export const BaseLayout: React.FC<BaseLayoutProps> = ({
   role,
   userName,
   userEmail,
+  navigation,
   children,
 }) => {
   const { pathname } = useLocation();
@@ -37,7 +43,7 @@ export const BaseLayout: React.FC<BaseLayoutProps> = ({
   const [mobileOpen, setMobileOpen] = useState(false);
   const [passwordOpen, setPasswordOpen] = useState(false);
   const { collapsed, toggleCollapsed } = useSidebarCollapsed();
-  const items = navigationByRole[role];
+  const items = navigation ?? navigationByRole[role];
 
   useEffect(() => {
     setMobileOpen(false);

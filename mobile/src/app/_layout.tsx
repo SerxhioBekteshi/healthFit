@@ -14,7 +14,7 @@ import { useTheme } from '@/theme';
 void SplashScreen.preventAutoHideAsync();
 
 const RootNavigator: React.FC = () => {
-  const { status, retry } = useSession();
+  const { status, user, retry } = useSession();
   const { colors, isDark } = useTheme();
   const { t } = useTranslation();
 
@@ -44,6 +44,9 @@ const RootNavigator: React.FC = () => {
   }
 
   const signedIn = status === 'signedIn';
+  // A community member signed up without a gym and only sees the list of gyms until they join one.
+  const hasGym = signedIn && user !== null && user.gymId !== null;
+  const inCommunity = signedIn && user !== null && user.gymId === null;
 
   return (
     <>
@@ -58,17 +61,22 @@ const RootNavigator: React.FC = () => {
         }}
       >
         {/* Only members who are signed in reach the app; everyone else lands on the sign-in screen. */}
-        <Stack.Protected guard={signedIn}>
+        <Stack.Protected guard={hasGym}>
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
           <Stack.Screen name="balance" options={{ title: t('Balance') }} />
           <Stack.Screen name="attendance" options={{ title: t('My visits') }} />
+          <Stack.Screen name="products" options={{ title: t('Gym shop') }} />
           <Stack.Screen
             name="locations"
             options={{ title: t('Gym locations') }}
           />
         </Stack.Protected>
+        <Stack.Protected guard={inCommunity}>
+          <Stack.Screen name="community" options={{ title: t('Find a gym') }} />
+        </Stack.Protected>
         <Stack.Protected guard={!signedIn}>
           <Stack.Screen name="sign-in" options={{ headerShown: false }} />
+          <Stack.Screen name="sign-up" options={{ headerShown: false }} />
         </Stack.Protected>
       </Stack>
     </>

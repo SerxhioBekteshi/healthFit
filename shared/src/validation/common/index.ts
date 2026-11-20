@@ -11,6 +11,13 @@ export const genderSchema = z.enum(['male', 'female'], {
 
 export const isoDateSchema = z.iso.date('Enter a valid date.');
 
+// The rule for every password a person chooses themselves.
+export const passwordSchema = z
+  .string()
+  .min(8, 'Password must be at least 8 characters.')
+  .regex(/[A-Z]/, 'Password must contain an uppercase letter.')
+  .regex(/[0-9]/, 'Password must contain a number.');
+
 export const activeStatusSchema = z.object({ isActive: z.boolean() });
 
 // Path returned by `POST /uploads`; an empty string means no image.

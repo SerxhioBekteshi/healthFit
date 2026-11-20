@@ -144,6 +144,9 @@ model Gym {
   // Membership prices and locker numbers can each be kept the same for men and women.
   samePricesForGenders  Boolean  @default(false)
   sameLockersForGenders Boolean  @default(false)
+  // Permanent code behind the gym's join link and QR: anyone who opens it can sign up as a member.
+  // The owner can replace it if it leaks.
+  joinCode              String   @unique @default(uuid())
   isActive              Boolean  @default(true)
   createdAt             DateTime @default(now())
   updatedAt             DateTime @updatedAt
@@ -246,8 +249,13 @@ model User {
   emailVerified Boolean  @default(false)
   image         String?
   role          UserRole @default(client)
-  // null only for super_admin
+  // null for super_admin, and for a community member who has not picked a gym yet
   gymId         String?
+  // Collected at self sign-up; copied to the client profile when the member joins a gym.
+  phone         String   @default("")
+  gender        Gender?
+  // Where a self-signed-up member lives; picks the gyms the community page suggests first.
+  country       Country?
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 

@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { Alert } from 'react-native';
 import Constants from 'expo-constants';
 import { useRouter } from 'expo-router';
 import { ProfileHeader } from '@/components/profile/ProfileHeader';
@@ -9,6 +8,7 @@ import { ListGroup, ListRow } from '@/components/ui/ListRow';
 import { Screen } from '@/components/ui/Screen';
 import { SectionHeader } from '@/components/ui/SectionHeader';
 import { Text } from '@/components/ui/Text';
+import { useConfirmSignOut } from '@/hooks/auth';
 import { useClientDashboard } from '@/hooks/dashboard';
 import { useMoney } from '@/hooks/money';
 import { LANGUAGES, languageNames, setLanguage, useTranslation } from '@/i18n';
@@ -24,7 +24,8 @@ type OpenSheet = 'language' | 'appearance' | 'password' | null;
 export default function ProfileScreen(): React.ReactElement {
   const router = useRouter();
   const { t, language } = useTranslation();
-  const { user, signOut } = useSession();
+  const confirmSignOut = useConfirmSignOut();
+  const { user } = useSession();
   const formatMoney = useMoney();
   const balance = useClientDashboard().data?.balance;
   const { preference } = useThemePreference();
@@ -35,17 +36,6 @@ export default function ProfileScreen(): React.ReactElement {
     system: t('Same as phone'),
     light: t('Light'),
     dark: t('Dark'),
-  };
-
-  const confirmSignOut = (): void => {
-    Alert.alert(t('Sign out'), t('Do you want to sign out of this phone?'), [
-      { text: t('Cancel'), style: 'cancel' },
-      {
-        text: t('Sign out'),
-        style: 'destructive',
-        onPress: () => void signOut(),
-      },
-    ]);
   };
 
   return (
@@ -69,6 +59,12 @@ export default function ProfileScreen(): React.ReactElement {
           title={t('My visits')}
           subtitle={t('Every check-in and check-out')}
           onPress={() => router.push('/attendance')}
+        />
+        <ListRow
+          icon="cart-outline"
+          title={t('Gym shop')}
+          subtitle={t('Purchase from the gym using your balance.')}
+          onPress={() => router.push('/products')}
         />
         <ListRow
           icon="location-outline"

@@ -1,11 +1,14 @@
-import { afterAll, beforeEach, describe, expect, it } from 'vitest';
+import { afterAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import { PrismaClient } from '@prisma/client';
 import { verifyPassword } from 'better-auth/crypto';
 import { NotFoundError } from '@/errors';
+import { sendMail } from '@/mail';
 import { clientInviteService } from '@/services/client-invites';
 import { clientService } from '@/services/clients';
 import type { TenantContext } from '@/tenant/context';
 import { createTenantDb } from '@/tenant/scopedDb';
+
+vi.mock('@/mail', () => ({ sendMail: vi.fn().mockResolvedValue(undefined) }));
 
 const prisma = new PrismaClient();
 const visitor = { db: prisma };
@@ -27,13 +30,12 @@ const adminContext = (gymId: string): TenantContext => ({
   db: createTenantDb(prisma, gymId),
 });
 
-const newClient = (ctx: TenantContext, password = '') =>
+const newClient = (ctx: TenantContext) =>
   clientService.create(ctx, {
     fullName: 'Ilir Invited',
     email: 'Ilir@Test.dev',
     phone: '+355 69 000 1111',
     gender: 'male',
-    password,
   });
 
 const wipe = async (): Promise<void> => {
@@ -63,20 +65,16 @@ describe('clients without a password', () => {
     const created = await newClient(adminContext(gymAId));
     expect(created.hasLogin).toBe(false);
     expect(await prisma.account.count()).toBe(0);
+  });
 
-    const withPassword = await clientService.create(adminContext(gymAId), {
-      fullName: 'Has Login',
-      email: 'login@test.dev',
-      phone: '+355 69 000 2222',
-      gender: 'female',
-      password: 'Password123!',
-    });
-    expect(withPassword.hasLogin).toBe(true);
-    const listed = await clientService.list(adminContext(gymAId));
-    expect(listed.map((client) => client.hasLogin).sort()).toEqual([
-      false,
-      true,
-    ]);
+  it('show a login once they accept their invite', async () => {
+    const admin = adminContext(gymAId);
+    const created = await newClient(admin);
+    const invite = await clientInviteService.issue(admin, created.id);
+    await clientInviteService.accept(visitor, invite.token, 'Password123!');
+
+    const listed = await clientService.list(admin);
+    expect(listed.map((client) => client.hasLogin)).toEqual([true]);
   });
 });
 
@@ -143,7 +141,9 @@ describe('clientInviteService', () => {
 
   it('replaces the earlier link and resets an existing password', async () => {
     const admin = adminContext(gymAId);
-    const client = await newClient(admin, 'Password123!');
+    const client = await newClient(admin);
+    const firstSetup = await clientInviteService.issue(admin, client.id);
+    await clientInviteService.accept(visitor, firstSetup.token, 'Password123!');
     const first = await clientInviteService.issue(admin, client.id);
     const second = await clientInviteService.issue(admin, client.id);
 
@@ -188,5 +188,56 @@ describe('clientInviteService', () => {
     await expect(
       clientInviteService.preview(visitor, 'not-a-token')
     ).rejects.toBeInstanceOf(NotFoundError);
+  });
+});
+
+describe('clientInviteService.sendByEmail', () => {
+  beforeEach(() => {
+    vi.mocked(sendMail).mockClear();
+  });
+
+  it('emails the live link to the client, built by the server', async () => {
+    const admin = adminContext(gymAId);
+    const client = await newClient(admin);
+    const invite = await clientInviteService.issue(admin, client.id);
+
+    const sent = await clientInviteService.sendByEmail(
+      admin,
+      client.id,
+      invite.token
+    );
+    expect(sent).toEqual({ sentTo: 'ilir@test.dev' });
+    expect(sendMail).toHaveBeenCalledTimes(1);
+    const mail = vi.mocked(sendMail).mock.calls[0][0];
+    expect(mail.to).toBe('ilir@test.dev');
+    expect(mail.text).toContain(`/invite/${invite.token}`);
+  });
+
+  it('refuses another gym, a wrong, replaced or used token', async () => {
+    const admin = adminContext(gymAId);
+    const client = await newClient(admin);
+    const first = await clientInviteService.issue(admin, client.id);
+    const second = await clientInviteService.issue(admin, client.id);
+
+    await expect(
+      clientInviteService.sendByEmail(
+        adminContext(gymBId),
+        client.id,
+        second.token
+      )
+    ).rejects.toBeInstanceOf(NotFoundError);
+    await expect(
+      clientInviteService.sendByEmail(admin, client.id, 'not-a-token')
+    ).rejects.toBeInstanceOf(NotFoundError);
+    // A newer link replaced the first one.
+    await expect(
+      clientInviteService.sendByEmail(admin, client.id, first.token)
+    ).rejects.toBeInstanceOf(NotFoundError);
+
+    await clientInviteService.accept(visitor, second.token, 'Password123!');
+    await expect(
+      clientInviteService.sendByEmail(admin, client.id, second.token)
+    ).rejects.toBeInstanceOf(NotFoundError);
+    expect(sendMail).not.toHaveBeenCalled();
   });
 });

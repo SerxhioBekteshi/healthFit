@@ -30,6 +30,8 @@ interface SessionState {
 interface SessionContextValue extends SessionState {
   signIn: (values: LoginFormValues) => Promise<void>;
   signOut: () => Promise<void>;
+  // Reads `/me` again, for example after a community member joined a gym.
+  refreshUser: () => Promise<void>;
   retry: () => void;
 }
 
@@ -130,17 +132,23 @@ export const SessionProvider: React.FC<{ children: React.ReactNode }> = ({
     await clearSession();
   }, [clearSession]);
 
+  const refreshUser = useCallback(async (): Promise<void> => {
+    const user = await authService.me();
+    if (user.role === 'client') update({ status: 'signedIn', user });
+  }, [update]);
+
   const value = useMemo<SessionContextValue>(
     () => ({
       ...state,
       signIn,
       signOut,
+      refreshUser,
       retry: () => {
         update({ status: 'loading', user: null });
         setAttempt((count) => count + 1);
       },
     }),
-    [state, signIn, signOut, update]
+    [state, signIn, signOut, refreshUser, update]
   );
 
   return (

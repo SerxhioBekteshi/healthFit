@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useRouter } from 'expo-router';
 import { useForm } from 'react-hook-form';
 import { Banner } from '@/components/ui/Banner';
 import { Button } from '@/components/ui/Button';
@@ -27,11 +28,18 @@ const createStyles = (theme: Theme) =>
       backgroundColor: theme.colors.accentSoft,
     },
     form: { gap: theme.spacing.lg },
+    signUp: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      justifyContent: 'center',
+      gap: theme.spacing.xs,
+    },
   });
 
 export default function SignInScreen(): React.ReactElement {
   const styles = useThemedStyles(createStyles);
   const { t } = useTranslation();
+  const router = useRouter();
   const { signIn } = useSession();
   const [serverError, setServerError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
@@ -109,6 +117,21 @@ export default function SignInScreen(): React.ReactElement {
           loading={isSubmitting}
           fullWidth
         />
+      </View>
+
+      <View style={styles.signUp}>
+        <Text variant="caption" tone="subtle">
+          {t('New member?')}
+        </Text>
+        <Pressable
+          accessibilityRole="link"
+          hitSlop={10}
+          onPress={() => router.push('/sign-up')}
+        >
+          <Text variant="caption" tone="accent" style={{ fontWeight: '600' }}>
+            {t('Create an account')}
+          </Text>
+        </Pressable>
       </View>
 
       <Text variant="caption" tone="subtle" align="center">

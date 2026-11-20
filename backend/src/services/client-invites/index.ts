@@ -1,8 +1,14 @@
 import { createHash, randomBytes } from 'node:crypto';
 import { hashPassword } from 'better-auth/crypto';
+import { env } from '@/config/env';
 import { NotFoundError, ValidationError } from '@/errors';
+import { sendMail } from '@/mail';
 import type { PublicContext, TenantContext } from '@/tenant/context';
-import type { ClientInvite, ClientInvitePreview } from '@gym/shared/types';
+import type {
+  ClientInvite,
+  ClientInvitePreview,
+  ClientInviteSent,
+} from '@gym/shared/types';
 
 const INVITE_DAYS = 7;
 const DAY_MS = 24 * 60 * 60 * 1000;
@@ -41,6 +47,37 @@ export const clientInviteService = {
       });
     });
     return { token, expiresAt: expiresAt.toISOString() };
+  },
+
+  // Emails the link the admin is looking at. The token comes back from the dialog, so the server
+  // first checks it is a live link of this gym's client; the URL itself is built here, never taken
+  // from the request.
+  async sendByEmail(
+    ctx: TenantContext,
+    clientId: string,
+    token: string,
+    now: Date = new Date()
+  ): Promise<ClientInviteSent> {
+    const invite = await ctx.db.clientInvite.findFirst({
+      where: {
+        clientId,
+        tokenHash: hashToken(token),
+        usedAt: null,
+        expiresAt: { gt: now },
+      },
+      include: { client: true },
+    });
+    if (!invite) {
+      throw new NotFoundError('This invite link is invalid or has expired.');
+    }
+    const gym = await ctx.db.gym.findFirst({ where: { id: ctx.gymId } });
+    const link = `${env.webOrigin}/invite/${token}`;
+    await sendMail({
+      to: invite.client.email,
+      subject: `${gym?.name ?? 'Your gym'} invited you to HealthFIT`,
+      text: `Hello ${invite.client.fullName},\n\n${gym?.name ?? 'Your gym'} invited you to HealthFIT. Open this link to choose your password:\n\n${link}\n\nThe link works once and expires on ${invite.expiresAt.toISOString().slice(0, 10)}. If you did not expect this message, ignore it.`,
+    });
+    return { sentTo: invite.client.email };
   },
 
   // Anonymous: shows who the link is for. Unknown, used and expired links look the same.

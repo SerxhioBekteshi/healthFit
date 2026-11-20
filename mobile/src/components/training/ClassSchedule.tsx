@@ -25,7 +25,8 @@ const createStyles = (theme: Theme) =>
 export const ClassSchedule: React.FC<ClassScheduleProps> = ({ classes }) => {
   const styles = useThemedStyles(createStyles);
   const { t } = useTranslation();
-  const [day, setDay] = useState<number>(todayWeekday());
+  const today = todayWeekday();
+  const [day, setDay] = useState<number>(today);
 
   const ofDay = classes
     .filter((item) => item.weekdays.includes(day))
@@ -40,6 +41,7 @@ export const ClassSchedule: React.FC<ClassScheduleProps> = ({ classes }) => {
         }))}
         value={day}
         onChange={setDay}
+        marked={today}
       />
       {ofDay.length === 0 ? (
         <EmptyState

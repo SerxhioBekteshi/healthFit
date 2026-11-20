@@ -84,6 +84,7 @@ src/
 - Better Auth client (`@/services/auth`) with the HTTP-only session cookie. Never store tokens in `localStorage`/`sessionStorage`.
 - `useSession()` reads `/api/v1/me`. `AuthShell` redirects unauthenticated users to `/login` and wrong-role users to `roleHomePath[role]`; this is UX only, the backend enforces roles.
 - Hiding UI by role is a convenience, not authorization.
+- Members sign themselves up on `views/auth/ClientSignUpPage.tsx` (`/join` for the community, `/join/<joinCode>` for a gym's permanent link): one form (`components/client-signups/NewMemberForm.tsx`, including the country) is filled in first, then the email is checked: existing login -> sign-in message, a client a gym already added -> `ClaimCodeForm` (code only), new -> the account is created and the member is signed in. A client whose `/me` has `gymId: null` is a community member: `AuthShell` keeps them on `views/client/community/CommunityPage.tsx` (`/client/community`, gyms suggested for their country with a country picker) with a one-item menu until they pick a gym, and sends everyone else away from it. The gym admin never types a client's password; the Clients page shows the gym's join QR (`components/clients/GymJoinDialog.tsx`) and the per-client invite link.
 
 ## Environment
 

@@ -2,8 +2,10 @@ import type { Request, RequestHandler } from 'express';
 import type { ZodType } from 'zod';
 import {
   publicContext,
+  requireCommunityMember,
   requirePlatform,
   requireTenant,
+  type CommunityContext,
   type PlatformContext,
   type PublicContext,
   type TenantContext,
@@ -49,6 +51,21 @@ export const withPlatform =
   (handler: PlatformHandler): RequestHandler =>
   async (req, res) => {
     const ctx = await requirePlatform(req);
+    const result = await handler(ctx, req, req.params as Params);
+    res.status(result.status).json(result.body);
+  };
+
+// A client who has not joined a gym yet (see CommunityContext).
+export const withCommunity =
+  (
+    handler: (
+      ctx: CommunityContext,
+      req: Request,
+      params: Params
+    ) => Promise<ApiResult>
+  ): RequestHandler =>
+  async (req, res) => {
+    const ctx = await requireCommunityMember(req);
     const result = await handler(ctx, req, req.params as Params);
     res.status(result.status).json(result.body);
   };

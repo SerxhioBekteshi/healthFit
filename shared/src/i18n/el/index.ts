@@ -1590,6 +1590,89 @@ export const el: Record<string, string> = {
   '1 day with a check-in': '1 ημέρα με check-in',
   '{{n}} days with a check-in': '{{n}} ημέρες με check-in',
   Apply: 'Εφαρμογή',
+  '{{gym}} already added you as a member.':
+    'Το {{gym}} σε έχει ήδη προσθέσει ως μέλος.',
+  '{{gym}} already added you as a member. Ask them for your invite link or QR code to set your password.':
+    'Το {{gym}} σε έχει ήδη προσθέσει ως μέλος. Ζήτησε τον σύνδεσμο πρόσκλησης ή τον κωδικό QR για να ορίσεις τον κωδικό πρόσβασής σου.',
+  'Already have an account?': 'Έχεις ήδη λογαριασμό;',
+  'An account with this email already exists. Sign in instead.':
+    'Υπάρχει ήδη λογαριασμός με αυτό το email. Συνδέσου.',
+  Change: 'Αλλαγή',
+  'Choose a gym.': 'Επίλεξε ένα γυμναστήριο.',
+  Community: 'Κοινότητα',
+  'Create a new join link?': 'Να δημιουργηθεί νέος σύνδεσμος εγγραφής;',
+  'Create account': 'Δημιουργία λογαριασμού',
+  'Create an account': 'Δημιούργησε λογαριασμό',
+  'Create an account without a gym':
+    'Δημιούργησε λογαριασμό χωρίς γυμναστήριο',
+  'Create new link': 'Δημιουργία νέου συνδέσμου',
+  'Create your account': 'Δημιούργησε τον λογαριασμό σου',
+  'Creating account': 'Δημιουργείται ο λογαριασμός',
+  'Demo mode: no email is sent. Your code is {{code}}.':
+    'Λειτουργία επίδειξης: δεν στέλνεται email. Ο κωδικός σου είναι {{code}}.',
+  'Enter the 6-digit code.': 'Εισήγαγε τον 6ψήφιο κωδικό.',
+  'Fill in the client details. The client chooses their own password with the invite link you get next.':
+    'Συμπλήρωσε τα στοιχεία του πελάτη. Ο πελάτης επιλέγει μόνος του τον κωδικό πρόσβασής του με τον σύνδεσμο πρόσκλησης που θα λάβεις στη συνέχεια.',
+  'Find a gym': 'Βρες γυμναστήριο',
+  'Find your': 'Βρες το',
+  'First name': 'Όνομα',
+  'First name is required.': 'Το όνομα είναι υποχρεωτικό.',
+  gym: 'γυμναστήριό σου',
+  'Join link': 'Σύνδεσμος εγγραφής',
+  'Join link for new members': 'Σύνδεσμος εγγραφής για νέα μέλη',
+  'Join the community, then browse gyms and choose where to start.':
+    'Μπες στην κοινότητα, μετά δες τα γυμναστήρια και επίλεξε από πού θα ξεκινήσεις.',
+  'New join link created. The old one no longer works.':
+    'Δημιουργήθηκε νέος σύνδεσμος εγγραφής. Ο παλιός δεν λειτουργεί πια.',
+  'New member?': 'Νέο μέλος;',
+  'Open {{from}} to {{to}}': 'Ανοιχτά από {{from}} έως {{to}}',
+  'Password set. You are signed in.': 'Ο κωδικός ορίστηκε. Έχεις συνδεθεί.',
+  'Put this QR code at the front desk or send the link. Anyone who opens it can sign up as a member of your gym. It does not expire.':
+    'Βάλε αυτόν τον κωδικό QR στη reception ή στείλε τον σύνδεσμο. Όποιος τον ανοίξει μπορεί να εγγραφεί ως μέλος του γυμναστηρίου σου. Δεν λήγει.',
+  'Start at {{gym}}?': 'Να ξεκινήσεις στο {{gym}};',
+  'Start here': 'Ξεκίνα εδώ',
+  Surname: 'Επώνυμο',
+  'Surname is required.': 'Το επώνυμο είναι υποχρεωτικό.',
+  'The code is wrong or has expired.':
+    'Ο κωδικός είναι λάθος ή έχει λήξει.',
+  'The current link and QR code stop working. Print or share the new one instead.':
+    'Ο τρέχων σύνδεσμος και ο κωδικός QR θα σταματήσουν να λειτουργούν. Εκτύπωσε ή μοιράσου τον νέο.',
+  'This join link is invalid or no longer active.':
+    'Αυτός ο σύνδεσμος εγγραφής δεν είναι έγκυρος ή δεν είναι πια ενεργός.',
+  'You already belong to a gym.': 'Ανήκεις ήδη σε γυμναστήριο.',
+  'You are joining {{gym}}.': 'Εγγράφεσαι στο {{gym}}.',
+  'You are not a member of a gym yet. Look at the gyms below and choose where to start.':
+    'Δεν είσαι ακόμα μέλος γυμναστηρίου. Δες τα γυμναστήρια παρακάτω και επίλεξε από πού θα ξεκινήσεις.',
+  'You become a member of this gym with the details you signed up with. You can then buy a membership and check in.':
+    'Γίνεσαι μέλος αυτού του γυμναστηρίου με τα στοιχεία που έδωσες στην εγγραφή. Μετά μπορείς να αγοράσεις συνδρομή και να κάνεις check-in.',
+  'You joined the gym.': 'Μπήκες στο γυμναστήριο.',
+  'Your account is ready.': 'Ο λογαριασμός σου είναι έτοιμος.',
+  'Gym join code or link (optional)':
+    'Κωδικός ή σύνδεσμος εγγραφής του γυμναστηρίου (προαιρετικό)',
+  'Paste the link or code your gym gave you.':
+    'Επικόλλησε τον σύνδεσμο ή τον κωδικό που σου έδωσε το γυμναστήριο.',
+  'All countries': 'Όλες οι χώρες',
+  'Change details': 'Αλλαγή στοιχείων',
+  'No gyms in {{country}} yet. Try another country.':
+    'Δεν υπάρχουν ακόμα γυμναστήρια στη χώρα {{country}}. Δοκίμασε άλλη χώρα.',
+  'Show all countries': 'Εμφάνιση όλων των χωρών',
+  'We sent a 6-digit code to {{email}}.':
+    'Στείλαμε έναν 6ψήφιο κωδικό στο {{email}}.',
+  'The code expires in {{seconds}} seconds.':
+    'Ο κωδικός λήγει σε {{seconds}} δευτερόλεπτα.',
+  'The code has expired.': 'Ο κωδικός έχει λήξει.',
+  'Verify email': 'Επαλήθευση email',
+  'Please wait a moment before asking for a new code.':
+    'Περίμενε λίγο πριν ζητήσεις νέο κωδικό.',
+  'Email is not available right now. Please try again later.':
+    'Το email δεν είναι διαθέσιμο αυτή τη στιγμή. Δοκίμασε ξανά αργότερα.',
+  'Invite email sent.': 'Το email πρόσκλησης στάλθηκε.',
+  'Or send the link to {{email}}.': 'Ή στείλε τον σύνδεσμο στο {{email}}.',
+  'Send again': 'Αποστολή ξανά',
+  'Send by email': 'Αποστολή με email',
+  'Sent to {{email}}.': 'Στάλθηκε στο {{email}}.',
+  'Gym shop': 'Κατάστημα γυμναστηρίου',
+  'Buy {{name}}?': 'Αγορά {{name}};',
   'No programs for this level.':
     'Δεν υπάρχουν προγράμματα για αυτό το επίπεδο.',
 };

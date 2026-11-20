@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm, type DefaultValues, type Resolver } from 'react-hook-form';
+import { useForm, type DefaultValues } from 'react-hook-form';
 import { Drawer } from '@/components/ui/Drawer';
 import { FormField, fieldInputClass } from '@/components/common/FormField';
 import { t } from '@/i18n';
@@ -8,7 +8,6 @@ import type { Client } from '@gym/shared/types';
 import { genders, genderLabels } from '@/utils/constants/labels';
 import {
   createClientSchema,
-  updateClientSchema,
   type CreateClientValues,
 } from '@gym/shared/validation/clients';
 
@@ -27,7 +26,6 @@ const emptyValues: DefaultValues<CreateClientValues> = {
   email: '',
   phone: '',
   gender: undefined,
-  password: '',
 };
 
 export const ClientFormDrawer: React.FC<ClientFormDrawerProps> = ({
@@ -45,10 +43,7 @@ export const ClientFormDrawer: React.FC<ClientFormDrawerProps> = ({
     reset,
     formState: { errors },
   } = useForm<CreateClientValues>({
-    // The edit form omits the password field, so the edit resolver is widened to the create shape.
-    resolver: zodResolver(
-      isEditing ? updateClientSchema : createClientSchema
-    ) as unknown as Resolver<CreateClientValues>,
+    resolver: zodResolver(createClientSchema),
     defaultValues: emptyValues,
   });
 
@@ -61,7 +56,6 @@ export const ClientFormDrawer: React.FC<ClientFormDrawerProps> = ({
               email: client.email,
               phone: client.phone,
               gender: client.gender ?? undefined,
-              password: '',
             }
           : emptyValues
       );
@@ -72,7 +66,13 @@ export const ClientFormDrawer: React.FC<ClientFormDrawerProps> = ({
     <Drawer
       isOpen={isOpen}
       title={isEditing ? t('Edit Client') : t('Create Client')}
-      description={t('Fill in client details and save your changes.')}
+      description={
+        isEditing
+          ? t('Fill in client details and save your changes.')
+          : t(
+              'Fill in the client details. The client chooses their own password with the invite link you get next.'
+            )
+      }
       onClose={onClose}
       onSubmitClick={handleSubmit(onSubmit)}
       submitLabel={isEditing ? t('Update client') : t('Create client')}
@@ -128,25 +128,6 @@ export const ClientFormDrawer: React.FC<ClientFormDrawerProps> = ({
             ))}
           </select>
         </FormField>
-
-        {isEditing ? null : (
-          <FormField
-            id="password"
-            label={t('Initial Password (optional)')}
-            hint={t(
-              'Leave it empty to get an invite link instead, so the client chooses their own password.'
-            )}
-            error={errors.password?.message}
-          >
-            <input
-              id="password"
-              type="password"
-              autoComplete="new-password"
-              className={fieldInputClass}
-              {...register('password')}
-            />
-          </FormField>
-        )}
       </form>
     </Drawer>
   );

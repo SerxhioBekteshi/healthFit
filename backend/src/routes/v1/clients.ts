@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { ok, parseBody, withTenant } from '@/http/withTenant';
 import { clientService } from '@/services/clients';
 import { clientInviteService } from '@/services/client-invites';
+import { sendClientInviteSchema } from '@gym/shared/validation/client-invites';
 import {
   clientStatusSchema,
   createClientSchema,
@@ -52,4 +53,13 @@ clientsRouter.post(
   withTenant(['gym_admin'], async (ctx, _req, params) =>
     ok(await clientInviteService.issue(ctx, params.id), 201)
   )
+);
+
+// Emails that link to the client; the body carries the token the dialog is showing.
+clientsRouter.post(
+  '/:id/invite/send',
+  withTenant(['gym_admin'], async (ctx, req, params) => {
+    const { token } = parseBody(req, sendClientInviteSchema);
+    return ok(await clientInviteService.sendByEmail(ctx, params.id, token));
+  })
 );

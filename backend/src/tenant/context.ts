@@ -27,6 +27,13 @@ export interface PublicContext {
   db: PrismaClient;
 }
 
+// A signed-in client who has no gym yet (they signed up on their own, the "community"). Unscoped by
+// design: it only reads the gym list and links this one user to the gym they choose.
+export interface CommunityContext {
+  user: SessionUser;
+  db: PrismaClient;
+}
+
 export const publicContext = (): PublicContext => ({ db: prisma });
 
 export const requireUser = async (req: Request): Promise<SessionUser> => {
@@ -90,6 +97,17 @@ export const requireTenant = async (
     clientId,
     db: createTenantDb(prisma, user.gymId),
   };
+};
+
+// Only a client without a gym: anyone already in a gym goes through requireTenant instead.
+export const requireCommunityMember = async (
+  req: Request
+): Promise<CommunityContext> => {
+  const user = await requireUser(req);
+  if (user.role !== 'client' || user.gymId) {
+    throw new ForbiddenError();
+  }
+  return { user, db: prisma };
 };
 
 export const requirePlatform = async (

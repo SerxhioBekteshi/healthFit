@@ -29,7 +29,6 @@ const clientInput = (email: string) => ({
   email,
   phone: '+355690000000',
   gender: 'male' as const,
-  password: 'Password123!',
 });
 
 const reset = async (): Promise<void> => {
@@ -53,7 +52,7 @@ afterAll(async () => {
 });
 
 describe('clientService', () => {
-  it('creates a client with a login account in the admin gym', async () => {
+  it('creates a client without a login in the admin gym', async () => {
     const ctxA = contextFor(gymAId);
     const created = await clientService.create(
       ctxA,
@@ -62,6 +61,7 @@ describe('clientService', () => {
 
     expect(created.gymId).toBe(gymAId);
     expect(created.email).toBe('ann@test.dev');
+    expect(created.hasLogin).toBe(false);
 
     const user = await prisma.user.findUniqueOrThrow({
       where: { email: 'ann@test.dev' },
@@ -69,7 +69,33 @@ describe('clientService', () => {
     });
     expect(user.role).toBe('client');
     expect(user.gymId).toBe(gymAId);
-    expect(user.accounts[0]?.providerId).toBe('credential');
+    expect(user.accounts).toHaveLength(0);
+  });
+
+  it('adds a community member who signed up alone, keeping their login', async () => {
+    const community = await prisma.user.create({
+      data: { name: 'Solo', email: 'solo@test.dev', role: 'client' },
+    });
+    await prisma.account.create({
+      data: {
+        userId: community.id,
+        accountId: community.id,
+        providerId: 'credential',
+        password: 'hash',
+      },
+    });
+
+    const created = await clientService.create(
+      contextFor(gymAId),
+      clientInput('Solo@Test.dev')
+    );
+
+    expect(created.hasLogin).toBe(true);
+    const user = await prisma.user.findUniqueOrThrow({
+      where: { id: community.id },
+    });
+    expect(user.gymId).toBe(gymAId);
+    expect(await prisma.user.count()).toBe(1);
   });
 
   it('rejects duplicate emails and leaves no orphan user', async () => {

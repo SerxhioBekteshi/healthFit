@@ -66,4 +66,6 @@ Tests use a separate database: create `gym_app_test`, set its URL in `backend/.e
 | `BETTER_AUTH_URL`    | backend  | Public base URL of the API                |
 | `PORT`               | backend  | API port (default 4000)                   |
 | `CORS_ORIGINS`       | backend  | Comma-separated web origins (credentials) |
+| `SMTP_HOST`          | backend  | SMTP server for sign-up codes (required in production; in development the code is `111111`) |
+| `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `MAIL_FROM` | backend | Optional SMTP port (587), login and sender |
 | `VITE_API_BASE_URL`  | frontend | API origin; empty uses the dev proxy      |
